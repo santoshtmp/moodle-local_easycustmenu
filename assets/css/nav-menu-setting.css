@@ -1,0 +1,96 @@
+.menu-setting-content {
+    margin: 24px 0;
+}
+
+.menu-setting-content form {
+    max-width: 750px;
+    padding: 0 24px;
+}
+
+.action-add-menu {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 12px
+}
+
+.action-add-menu .btn-add-menu {
+    margin: auto;
+}
+
+.sub-menu:first-child>.menu-item .btn-up-arrow,
+.sub-menu:last-child>.menu-item .btn-down-arrow,
+.sub-menu-child:first-child>.menu-item .btn-up-arrow,
+.sub-menu-child:last-child>.menu-item .btn-down-arrow,
+.menu-item-wrapper:first-child>.menu-item .btn-up-arrow,
+.menu-item-wrapper:last-child>.menu-item .btn-down-arrow,
+.sub-menu-child .btn-add-sub-menu {
+    display: none;
+}
+
+.menu .menu-item-wrapper:nth-child(odd) {
+    background-color: #ebebeb;
+}
+
+.menu .menu-item-wrapper:nth-child(even) {
+    background-color: #e0e0e0;
+}
+
+.menu-item-wrapper {
+    padding: 12px;
+}
+
+.menu-item {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 6px;
+    margin: 12px;
+}
+
+.menu-item .icon {
+    max-width: 16px;
+    max-height: 16px;
+}
+
+.menu-item-child {
+    padding-left: 24px;
+}
+
+.btn-collapse-exp.expand .icon:nth-child(2) {
+    display: none;
+}
+
+.btn-collapse-exp.expand-off .icon:nth-child(1) {
+    display: none;
+}
+
+.btn-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.btn-wrapper .icon {
+    cursor: pointer;
+    padding-top: 9PX;
+}
+
+.btn-add-condition.active::after {
+    content: "\25BC";
+    margin-left: -8px;
+    font-size: 9px;
+}
+
+.condition-fields {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 3px;
+    width: 100%;
+}
+
+.condition-wrapper {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: solid 1px darkgray;
+}

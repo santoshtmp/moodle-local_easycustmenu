@@ -1,0 +1,84 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_easycustmenu/menu/menu_item_section
+
+    Example context (json):
+    {
+    }
+}}
+<div class="menu-item {{menu_child_num}}" >
+    <div class="general-field form-row">
+        <input type="hidden" name="itemdepth[]" value="{{itemdepth}}">
+        <div class="col">
+            <input type="text" name="label[]" class="form-control input-label" placeholder="Menu Label" value="{{label}}" required>
+        </div>
+        <div class="col">
+            <input type="text" name="link[]" class="form-control input-link" placeholder="Menu Link" value="{{link}}">
+        </div>
+        <div class="btn-action btn-wrapper">
+            <div class="btn-remove" data-id="{{sort_id}}" title="Remove menu">
+                {{#pix}}minus,local_easycustmenu {{/pix}}
+            </div>
+            {{#menu_child}}
+            <div class="btn-add-sub-menu" data-id="{{sort_id}}" title="Add sub menu">
+                {{#pix}}add,local_easycustmenu {{/pix}}
+            </div>
+            {{/menu_child}}
+            <div class="btn-add-condition" data-id="{{sort_id}}" title="Add condition settings">
+                {{#pix}}settings,local_easycustmenu {{/pix}}
+            </div>
+            <div class="btn-down-arrow" data-id="{{sort_id}}" title="Move menu down ">
+                {{#pix}}arrow-down,local_easycustmenu {{/pix}}
+            </div>
+            <div class="btn-up-arrow" data-id="{{sort_id}}" title="Move menu upward">
+                {{#pix}}arrow-up,local_easycustmenu {{/pix}}
+            </div>
+        </div>
+    </div>
+    <div class="condition-fields" style="display:none;">
+        <div class="condition-wrapper">
+            <div class="condition">
+                1. Open in New Tab : 
+                <label data-id="{{sort_id}}">
+                    <input type="checkbox" name="target_blank[]"  class="target_blank_no" id="target_no_{{sort_id}}" value="0" {{^target_blank}}checked{{/target_blank}} >
+                    No 
+                </label> 
+                <label data-id="{{sort_id}}">
+                    <input type="checkbox" name="target_blank[]" class="target_blank_yes" id="target_yes_{{sort_id}}" value="1" {{#target_blank}}checked{{/target_blank}}>
+                    Yes
+                </label>
+            </div>
+            <div class="condition">
+                <label>2. Show the menu when language is</label>   
+                <input type="input" name="language[]" class="form-control input-language"  placeholder="language code Example: en, es, ne " value="{{languages}}">      
+            </div>
+            <div class="condition">
+                <label for="user_rolw_{{sort_id}}">
+                    3. Show the menu when user is 
+                </label>
+                <select name="user_role[]" class="custom-select user_role" id="user_rolw_{{sort_id}}">
+                    {{#condition_user_roles}}
+                        <option value="{{key}}" {{#is_selected}}selected{{/is_selected}} > {{value}}</option>
+                    {{/condition_user_roles}}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+
