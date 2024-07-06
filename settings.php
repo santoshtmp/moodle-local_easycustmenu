@@ -76,4 +76,5 @@ if ($hassiteconfig) {
     }
     $setting = new admin_setting_configselect($name, $title, $description, $default, $options);
     $settings->add($setting);
+
 }

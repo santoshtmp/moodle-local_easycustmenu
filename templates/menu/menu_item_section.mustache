@@ -53,23 +53,12 @@
     <div class="condition-fields" style="display:none;">
         <div class="condition-wrapper">
             <div class="condition">
-                1. Open in New Tab : 
-                <label data-id="{{sort_id}}">
-                    <input type="checkbox" name="target_blank[]"  class="target_blank_no" id="target_no_{{sort_id}}" value="0" {{^target_blank}}checked{{/target_blank}} >
-                    No 
-                </label> 
-                <label data-id="{{sort_id}}">
-                    <input type="checkbox" name="target_blank[]" class="target_blank_yes" id="target_yes_{{sort_id}}" value="1" {{#target_blank}}checked{{/target_blank}}>
-                    Yes
-                </label>
-            </div>
-            <div class="condition">
-                <label>2. Show the menu when language is</label>   
+                <label>1. Show the menu when language is</label>   
                 <input type="input" name="language[]" class="form-control input-language"  placeholder="language code Example: en, es, ne " value="{{languages}}">      
             </div>
             <div class="condition">
                 <label for="user_rolw_{{sort_id}}">
-                    3. Show the menu when user is 
+                    2. Show the menu when user is 
                 </label>
                 <select name="user_role[]" class="custom-select user_role" id="user_rolw_{{sort_id}}">
                     {{#condition_user_roles}}

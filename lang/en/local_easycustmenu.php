@@ -35,3 +35,4 @@ $string['setting_primarynav_heading'] = 'Primary navigation';
 $string['hide_primarynavigation_title'] = 'Hide primary navigation';
 $string['hide_primarynavigation_description'] = 'You can hide default primary navigation with the select one or multiple values';
 $string['setting_custom_menu_heading'] = 'Custom Menu Settings';
+$string['setting_user_menu_heading'] = 'User Menu Settings';

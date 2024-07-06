@@ -156,6 +156,7 @@ class helper
                     }
                 }
             }
+            $easycustmenu_text_output = str_replace('target_blank_on', '"target="_blank',$easycustmenu_text_output);
             $CFG->custommenuitems = $easycustmenu_text_output . $CFG->custommenuitems;
         }
     }

@@ -58,7 +58,7 @@ class navmenu
                         }
                     }
                     if ($target_blank[$key] == '1') {
-                        $target_blank_value = '"target="_blank';
+                        $target_blank_value = 'target_blank_on';
                     }
                     $each_line = $prefix . $value . "|" . $link[$key] . $target_blank_value . "||" . $language[$key] . "|" . $user_role[$key] . "\n";
                     $custommenuitems_text = $custommenuitems_text .  $each_line;
@@ -95,7 +95,7 @@ class navmenu
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');
         $lines = explode("\n", $custommenuitems);
         $menu_order = $menu_order_child_1 =  $menu_order_child_2 = -1;
-        $target_blank_value = '"target="_blank';
+        $target_blank_value = 'target_blank_on';
         foreach ($lines as $linenumber => $line) {
             $line = trim($line);
             if (strlen($line) == 0) {
