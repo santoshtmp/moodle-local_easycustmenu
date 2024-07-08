@@ -133,6 +133,9 @@ class helper
                 }
                 $settings = explode('|', $line);
                 $item_user_role = isset($settings[4]) ? $settings[4] : '';
+                if ($item_user_role) {
+                    $line = str_replace('|' . $item_user_role, '', $line);
+                }
                 // Get depth of new item.
                 preg_match('/^(\-*)/', $line, $match);
                 $itemdepth = strlen($match[1]);
@@ -157,7 +160,7 @@ class helper
                     }
                 }
             }
-            $easycustmenu_text_output = str_replace('target_blank_on', '"target="_blank', $easycustmenu_text_output);
+            $easycustmenu_text_output = str_replace('target_blank_on', '\"target=\"_blank', $easycustmenu_text_output);
             $CFG->custommenuitems = $easycustmenu_text_output . $CFG->custommenuitems;
         }
     }
