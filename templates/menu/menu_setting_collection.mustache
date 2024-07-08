@@ -25,7 +25,7 @@
 
 }}
 
-<div class="menu-setting-content">
+<div class="menu-setting-content" id="menu_setting_collection">
     <form action="{{menu_setting_form_action}}" method="post">
         <div class="menu-wrapper">
             <div class="menu" total-menu="">
@@ -38,7 +38,6 @@
             </div>
         </div>
         <div class="form-input-hidden">
-            <input type="hidden" name="action" value="primary_menu">
             <input type="hidden" id="primary_menu_sesskey" name="sesskey" value="">
             <script>
                 document.getElementById("primary_menu_sesskey").value = M.cfg.sesskey;

@@ -25,10 +25,127 @@
 
 namespace local_easycustmenu\menu;
 
+use local_easycustmenu\helper;
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
 class usermenu
 {
+
+    /**
+     * set_usertmenu for POST Method
+     */
+    public function set_usertmenu()
+    {
+        $url = new moodle_url('/local/easycustmenu/pages/usermenu.php');
+        if ($_POST) {
+            $label = optional_param_array('label', [], PARAM_RAW);
+            $link = optional_param_array('link', [], PARAM_RAW);
+            $user_role = optional_param_array('user_role', [], PARAM_RAW);
+            $sesskey = required_param('sesskey', PARAM_ALPHANUM);
+            if ($sesskey == sesskey()) {
+                $custommenuitems_text = '';
+                foreach ($label as $key => $value) {
+                    $each_line = $value . "|" . $link[$key] . "\n";
+                    $custommenuitems_text = $custommenuitems_text .  $each_line;
+                }
+                // validate
+                if (str_contains($value, '|') || str_contains($link[$key], '|')) {
+                    $message = "Something went wromg, <br> input value contain '|' specific character. Which is not allowed.";
+                    $messagetype = \core\output\notification::NOTIFY_WARNING;
+                    redirect($url, $message, null, $messagetype);
+                }
+                // set custommenuitems_text
+                try {
+                    set_config('customusermenuitems', $custommenuitems_text);
+                    $message = "User Menu save sucessfully ";
+                    $messagetype = \core\output\notification::NOTIFY_INFO;
+                } catch (\Throwable $th) {
+                    $message = "Something went wromg";
+                    $messagetype = \core\output\notification::NOTIFY_WARNING;
+                }
+                redirect($url, $message, null, $messagetype);
+            } else {
+                echo "Your key is incorrect";
+                echo "<br>";
+                echo "<a href='" . $url . "'> Return Back</a>";
+                die;
+            }
+        }
+    }
+
+    /**
+     * get_usermenu_setting_section 
+     * return the user menu setting form template
+     * 
+     */
+    public function get_usermenu_setting_section($json = false)
+    {
+        global $OUTPUT;
+        $url = new moodle_url('/local/easycustmenu/pages/usermenu.php');
+        $easycustmenu_values = [];
+        $custommenuitems = get_config('core', 'customusermenuitems');
+        $lines = explode("\n", $custommenuitems);
+        $menu_order = 0;
+        $target_blank_value = 'target_blank_on';
+        foreach ($lines as $linenumber => $line) {
+            $line = trim($line);
+            if (strlen($line) == 0) {
+                continue;
+            }
+            $settings = explode('|', $line);
+            $item_text = $item_url = $item_languages = $item_user_role = '';
+            $item_target_blank = false;
+            foreach ($settings as $i => $setting) {
+                $setting = trim($setting);
+                if ($setting !== '') {
+                    switch ($i) {
+                        case 0: // Menu text.
+                            $item_text = ltrim($setting, '-');
+                            break;
+                        case 1: // URL.
+                            $item_target_blank = str_contains($setting, $target_blank_value);
+                            $item_url = str_replace($target_blank_value, '', $setting);
+                            break;
+                        case 2: // title.
+                            $title = $setting;
+                            break;
+                        case 3: // Language.
+                            $item_languages = $setting;
+                            break;
+                        case 4: // user_role.
+                            $item_user_role = $setting;
+                            break;
+                    }
+                }
+            }
+            // Get depth of new item.
+            preg_match('/^(\-*)/', $line, $match);
+            $itemdepth = strlen($match[1]);
+
+            // arrange the menu values
+            $values = [
+                'itemdepth' => $itemdepth + 1,
+                'label' => $item_text,
+                'link' => $item_url,
+                'sort_id' => 'menu-' . $menu_order + 1
+            ];
+            $easycustmenu_values[$menu_order] = $values;
+            $menu_order++;
+        }
+        if ($json === true) {
+            echo json_encode($easycustmenu_values);
+            die;
+        }
+        $templatename = 'local_easycustmenu/menu/menu_setting_collection';
+        $context = [
+            'menu_setting_form_action' => $url,
+            'values' => $easycustmenu_values,
+            'menu_child' => false,
+        ];
+
+        $contents = $OUTPUT->render_from_template($templatename, $context);
+        return $contents;
+    }
 }

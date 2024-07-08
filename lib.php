@@ -46,10 +46,23 @@ function local_easycustmenu_before_standard_html_head()
 {
     helper::revert_cfg_custommenuitems();
 }
+
 /**
- * 
+ * @return string
  */
 // function local_easycustmenu_render_navbar_output()
 // {
 //     helper::revert_cfg_custommenuitems();
 // }
+
+/**
+ * Callback allowing to add contetnt inside the region-main, in the very end
+ *
+ * @return string
+ */
+function local_easycustmenu_before_footer()
+{
+    return helper::before_footer_content();
+}
+
+

@@ -24,7 +24,7 @@
  */
 
 use local_easycustmenu\helper;
-use local_easycustmenu\menu\navmenu;
+use local_easycustmenu\menu\usermenu;
 
 // Require config.
 require_once(dirname(__FILE__) . '/../../../config.php');
@@ -36,11 +36,11 @@ $context = \context_system::instance();
 
 // Prepare the page information.
 $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
-$page_title = 'Header Nav Menu Setting';
+$page_title = 'User Menu Setting';
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin'); // admin , standard , ...
-$PAGE->set_pagetype('custmenu_setting');
+$PAGE->set_pagetype('usermenu_setting');
 $PAGE->set_title($page_title);
 $PAGE->set_heading($page_title);
 // $PAGE->navbar->add($page_title);
@@ -48,29 +48,27 @@ $PAGE->requires->jquery();
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/js/nav-menu-setting.js'));
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/css/nav-menu-setting.css'));
 
-$navmenu = new navmenu();
+$usermenu = new usermenu();
 // Access checks.
-// admin_externalpage_setup('local_easycustmenu_menu');
 require_login();
 if (!has_capability('moodle/site:config', $context)) {
     $contents = "You don't have permission to access this pages";
     $contents .= "<br>";
     $contents .= "<a href='/'> Return Back</a>";
 } else {
-
     /**
      * ========================================================
      *     For POST Method Save the data 
      * ========================================================
      */
-    $navmenu->set_easycustmenu();
+    $usermenu->set_usertmenu();
 
     /**
      * ========================================================
      *     Get the data and display in form
      * ========================================================
      */
-    $contents = $navmenu->get_easycustmenu_setting_section();
+    $contents = $usermenu->get_usermenu_setting_section();
     $contents .= helper::menu_item_wrapper_script();
 }
 /**

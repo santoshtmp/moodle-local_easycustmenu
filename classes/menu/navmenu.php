@@ -60,6 +60,13 @@ class navmenu
                     if ($target_blank[$key] == '1') {
                         $target_blank_value = 'target_blank_on';
                     }
+                    // validate
+                    if (str_contains($value, '|') || str_contains($link[$key], '|') || str_contains($language[$key], '|')) {
+                        $message = "Something went wromg, <br> Input value contain '|' specific character. Which is not allowed.";
+                        $messagetype = \core\output\notification::NOTIFY_WARNING;
+                        redirect($url, $message, null, $messagetype);
+                    }
+                    // prepare each line
                     $each_line = $prefix . $value . "|" . $link[$key] . $target_blank_value . "||" . $language[$key] . "|" . $user_role[$key] . "\n";
                     $custommenuitems_text = $custommenuitems_text .  $each_line;
                 }
@@ -68,6 +75,7 @@ class navmenu
                     set_config('custommenuitems', $custommenuitems_text, 'local_easycustmenu');
                     $message = "Menu save sucessfully ";
                     $messagetype = \core\output\notification::NOTIFY_INFO;
+
                 } catch (\Throwable $th) {
                     $message = "Something went wromg";
                     $messagetype = \core\output\notification::NOTIFY_WARNING;
@@ -87,7 +95,7 @@ class navmenu
      * return the custum menu setting form template
      * 
      */
-    public function get_easycustmenu($json = false)
+    public function get_easycustmenu_setting_section($json = false)
     {
         global $OUTPUT;
         $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
@@ -167,66 +175,11 @@ class navmenu
         $context = [
             'menu_setting_form_action' => $url,
             'values' => $easycustmenu_values,
-            'menu_child' => get_config('local_easycustmenu', 'menu_level')
+            'menu_child' => (get_config('local_easycustmenu', 'menu_level') == '0') ? false : true,
+            'apply_condition' => true
         ];
 
         $contents = $OUTPUT->render_from_template($templatename, $context);
         return $contents;
-    }
-
-    /**
-     * menu_item_wrapper
-     * @return string :: the menu_item_wrapper template
-     */
-    public function menu_item_wrapper()
-    {
-        global $OUTPUT;
-        $templatename = 'local_easycustmenu/menu/menu_item_wrapper';
-        $context = [
-            'sort_id' => 'null-id',
-            'label' => '',
-            'link' => '',
-            'itemdepth' => 'null-depth',
-            'condition_user_roles' => helper::get_condition_user_roles(),
-            'langs' => helper::get_languages(),
-            'menu_child' => (get_config('local_easycustmenu', 'menu_level') == '2') ? true : false,
-        ];
-        $contents = $OUTPUT->render_from_template($templatename, $context);
-        $contents = trim(str_replace(["\r", "\n"], '', $contents));
-        return  $contents;
-    }
-
-    /**
-     * check the permisssion  
-     */
-    public function menu_setting_access_check($context)
-    {
-        require_login();
-        if (!has_capability('moodle/site:config', $context)) {
-            echo "You don't have permission to access this pages";
-            echo "<br>";
-            echo "<a href='/'> Return Back</a>";
-            die;
-        }
-    }
-
-    /**
-     * menu_main_script
-     * @return string :: the menu_item_wrapper in the menu_item_wrapper function for browser
-     */
-    public function menu_main_script()
-    {
-        ob_start(); ?>
-        <script>
-            //<![CDATA[
-            function menu_item_wrapper() {
-                return '<?php echo $this->menu_item_wrapper(); ?>'
-            }
-            //]]>
-        </script>
-<?php
-        $contents = ob_get_contents();
-        ob_end_clean();
-        return  $contents;
     }
 }

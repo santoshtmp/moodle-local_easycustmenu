@@ -12,7 +12,9 @@ menu_define.forEach((element) => {
     sub_menu.forEach((child) => {
         child.classList.add("sub-menu");
         let child_id = child.getAttribute('id');
-        (document.querySelector('.menu #' + child_id + ' > .menu-item .btn-add-sub-menu')).setAttribute('title', 'Add sub menu child ');
+        if (document.querySelector('.menu #' + child_id + ' > .menu-item .btn-add-sub-menu')) {
+            (document.querySelector('.menu #' + child_id + ' > .menu-item .btn-add-sub-menu')).setAttribute('title', 'Add sub menu child ');
+        }
         (document.querySelector('.menu #' + child_id + ' > .menu-item .btn-up-arrow')).setAttribute('title', 'Move sub menu up ');
         (document.querySelector('.menu #' + child_id + ' > .menu-item .btn-down-arrow')).setAttribute('title', 'Move sub menu down ');
         let child_sub_menu = document.querySelectorAll('.menu #' + child_id + ' .sub-menu-item-child-wrapper > .menu-item-child');

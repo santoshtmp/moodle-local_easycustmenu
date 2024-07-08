@@ -1,3 +1,15 @@
+.easycustmenu_setting_header {
+    padding: 0 24px;
+
+    h2 {
+        margin-bottom: .5rem;
+    }
+}
+
+
+
+/* ---------------- */
+
 .menu-setting-content {
     margin: 24px 0;
 }

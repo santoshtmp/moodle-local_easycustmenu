@@ -84,17 +84,19 @@ class hook_callbacks
         helper::revert_cfg_custommenuitems();
     }
 
-    // /**
-    //  * Callback allowing to add contetnt inside the region-main, in the very end
-    //  *
-    //  * @param \core\hook\output\before_footer_html_generation $hook
-    //  */
-    // public static function before_footer_html_generation(\core\hook\output\before_footer_html_generation $hook): void
-    // {
-    //     global $CFG;
-    //     if (during_initial_install() || isset($CFG->upgraderunning)) {
-    //         // Do nothing during installation or upgrade.
-    //         return;
-    //     }
-    // }
+    /**
+     * Callback allowing to add contetnt inside the region-main, in the very end
+     *
+     * @param \core\hook\output\before_footer_html_generation $hook
+     */
+    public static function before_footer_html_generation(\core\hook\output\before_footer_html_generation $hook): void
+    {
+        global $CFG;
+        if (during_initial_install() || isset($CFG->upgraderunning)) {
+            // Do nothing during installation or upgrade.
+            return;
+        }
+        $output = helper::before_footer_content();
+        $hook->add_html($output);
+    }
 }

@@ -25,6 +25,8 @@
 
 namespace local_easycustmenu;
 
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
 
 class helper
@@ -35,13 +37,12 @@ class helper
      */
     public function check_custum_header_menu()
     {
-            global $PAGE;
-            // hide primarynavigation if the data is present in hide_primarynavigation
-            $theme = $PAGE->theme;
-            $theme->removedprimarynavitems = explode(',', get_config('local_easycustmenu', 'hide_primarynavigation'));
-            // define new custom menus
-            $this->define_new_cfg_custommenuitems();
-        
+        global $PAGE;
+        // hide primarynavigation if the data is present in hide_primarynavigation
+        $theme = $PAGE->theme;
+        $theme->removedprimarynavitems = explode(',', get_config('local_easycustmenu', 'hide_primarynavigation'));
+        // define new custom menus
+        $this->define_new_cfg_custommenuitems();
     }
 
 
@@ -156,7 +157,7 @@ class helper
                     }
                 }
             }
-            $easycustmenu_text_output = str_replace('target_blank_on', '"target="_blank',$easycustmenu_text_output);
+            $easycustmenu_text_output = str_replace('target_blank_on', '"target="_blank', $easycustmenu_text_output);
             $CFG->custommenuitems = $easycustmenu_text_output . $CFG->custommenuitems;
         }
     }
@@ -167,6 +168,89 @@ class helper
     public static function revert_cfg_custommenuitems()
     {
         global $CFG;
-        $CFG->custommenuitems = get_config('core','custommenuitems');
+        $CFG->custommenuitems = get_config('core', 'custommenuitems');
+    }
+
+
+    /**
+     * menu_item_wrapper_script
+     * @return string :: the menu_item_wrapper in the menu_item_wrapper function for browser
+     */
+    public static function menu_item_wrapper_script()
+    {
+        global $OUTPUT;
+        $templatename = 'local_easycustmenu/menu/menu_item_wrapper';
+        $context = [
+            'sort_id' => 'null-id',
+            'label' => '',
+            'link' => '',
+            'itemdepth' => 'null-depth',
+            'condition_user_roles' => helper::get_condition_user_roles(),
+            'langs' => helper::get_languages(),
+            'menu_child' => (get_config('local_easycustmenu', 'menu_level') == '2') ? true : false,
+            'apply_condition' => true
+        ];
+        $contents = $OUTPUT->render_from_template($templatename, $context);
+        $contents = trim(str_replace(["\r", "\n"], '', $contents));
+        ob_start(); ?>
+        <script>
+            //<![CDATA[
+            function menu_item_wrapper() {
+                return '<?php echo $contents; ?>'
+            }
+            //]]>
+        </script>
+<?php
+        $contents = ob_get_contents();
+        ob_end_clean();
+        return  $contents;
+    }
+
+
+    /**
+     * 
+     */
+    public static function before_footer_content()
+    {
+        global $PAGE, $CFG;
+        $content = '';
+        if ($PAGE->pagelayout === 'admin' && is_siteadmin()) {
+            $url = $_SERVER['REQUEST_URI'];
+            $defined_urls = [
+                "General Setting" => "/admin/settings.php?section=local_easycustmenu",
+                "Header Nav Menu Setting" => "/local/easycustmenu/pages/navmenu.php",
+                "User Menu Setting" => "/local/easycustmenu/pages/usermenu.php"
+
+            ];
+            $content .= '
+            <div class="easycustmenu_setting_header_top" style="display:none;">
+                <div class="easycustmenu_setting_header  ">
+                    <h2>' . get_string('pluginname', 'local_easycustmenu') . '</h2>
+                <div class="menu_setting_tabs moremenu" style=" display: flex;flex-wrap: wrap;gap: 12px;opacity:1;">
+            ';
+            foreach ($defined_urls as $key => $value) {
+                $active_class = (str_contains($url, $value)) ? "active" : "";
+                $content .= '<a href="' . $value . '" class="nav-link ' . $active_class . '">' . $key . '</a>';
+            }
+            $content .= '
+                    </div>
+                </div>
+            </div>
+            ';
+            $content = trim(str_replace(["\r", "\n"], '', $content));
+            $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/js/ecm-setting-adjust.js'));
+        }
+        if (get_config('local_easycustmenu', 'menu_show_on_hover') == '1') {
+            $content .= '
+            <style id="easycustommenu-hover-menu">
+                ul.nav .nav-item:hover .dropdown-menu,
+                ul.nav .nav-item .dropdown-menu:hover{
+                    display: block;
+                    margin-top: -2px;
+                }
+            </style>
+            ';
+        }
+        return $content;
     }
 }
