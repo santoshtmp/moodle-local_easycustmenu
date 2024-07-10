@@ -40,12 +40,13 @@ $page_title = 'Header Nav Menu Setting';
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin'); // admin , standard , ...
-$PAGE->set_pagetype('custmenu_setting');
+$PAGE->set_pagetype('easycustmenu_navmenu_setting');
 $PAGE->set_title($page_title);
 $PAGE->set_heading($page_title);
 // $PAGE->navbar->add($page_title);
 $PAGE->requires->jquery();
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/js/nav-menu-setting.js'));
+// $PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', [helper::menu_item_wrapper_section()]);
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/css/nav-menu-setting.css'));
 
 $navmenu = new navmenu();
@@ -71,7 +72,6 @@ if (!has_capability('moodle/site:config', $context)) {
      * ========================================================
      */
     $contents = $navmenu->get_easycustmenu_setting_section();
-    $contents .= helper::menu_item_wrapper_script();
 }
 /**
  * ========================================================

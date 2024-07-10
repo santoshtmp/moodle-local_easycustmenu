@@ -46,25 +46,25 @@ class helper
     }
 
 
-    public function check_menu_line_role($condition_user_role,  $menu_line)
+    public function check_menu_line_role($condition_user_role)
     {
         if ($condition_user_role == 'all') {
-            return $menu_line  . "\n";
+            return true;
         } else if ($condition_user_role == 'guest') {
             if (!isloggedin() or isguestuser()) {
-                return $menu_line  . "\n";
+                return true;
             }
         } else if ($condition_user_role == 'auth') {
             // if ($USER->id > 1) {
             if (isloggedin() && !isguestuser()) {
-                return $menu_line  . "\n";
+                return true;
             }
         } else if ($condition_user_role == 'admin') {
             if (is_siteadmin()) {
-                return $menu_line  . "\n";
+                return true;
             }
         }
-        return '';
+        return false;
     }
 
     /**
@@ -120,6 +120,8 @@ class helper
     public function define_new_cfg_custommenuitems()
     {
         global $CFG;
+        global $target_blank_on_menu;
+        $target_blank_on_menu = [];
         // check and update custom menu
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');
         if ($custommenuitems) {
@@ -132,54 +134,73 @@ class helper
                     continue;
                 }
                 $settings = explode('|', $line);
-                $item_user_role = isset($settings[4]) ? $settings[4] : '';
-                if ($item_user_role) {
-                    $line = str_replace('|' . $item_user_role, '', $line);
+                $item_text = $item_url = $title = $item_languages = $item_user_role =  $item_target_blank = '';
+                foreach ($settings as $i => $setting) {
+                    $setting = trim($setting);
+                    if ($setting !== '') {
+                        switch ($i) {
+                            case 0: // prefix and Menu text.
+                                $item_text = $setting;
+                                break;
+                            case 1: // URL.
+                                $item_url = ($setting) ?: '#';
+                                break;
+                            case 2: // title.
+                                $title = $setting;
+                                break;
+                            case 3: // Language.
+                                $item_languages = $setting;
+                                break;
+                            case 4: // user_role.
+                                $item_user_role = $setting;
+                                break;
+                            case 5: // item_target_blank.
+                                $item_target_blank = (int)$setting;
+                                break;
+                        }
+                    }
                 }
-                // Get depth of new item.
-                preg_match('/^(\-*)/', $line, $match);
-                $itemdepth = strlen($match[1]);
-
-                if ($itemdepth === 0) {
-                    if ($menu_line = $this->check_menu_line_role($item_user_role, $line)) {
-                        $easycustmenu_text_output .= $menu_line;
-                        $menu_depth_0_value = 1;
-                    } else {
-                        $menu_depth_0_value = 0;
+                if ($item_text) {
+                    // check meu condition to open in new window for this line menu and then remove it from line menu data 
+                    if ($item_target_blank) {
+                        $target_blank_on_menu[ltrim($item_text, '-')] = $item_url;
                     }
-                } else if ($itemdepth === 1 &&  $menu_depth_0_value) {
-                    if ($menu_line = $this->check_menu_line_role($item_user_role, $line)) {
-                        $easycustmenu_text_output .= $menu_line;
-                        $menu_depth_1_value = 1;
-                    } else {
-                        $menu_depth_1_value = 0;
-                    }
-                } else if ($itemdepth === 2 && $menu_depth_1_value) {
-                    if ($menu_line = $this->check_menu_line_role($item_user_role, $line)) {
-                        $easycustmenu_text_output .= $menu_line;
+                    // Get depth of new item.
+                    preg_match('/^(\-*)/', $line, $match);
+                    $itemdepth = strlen($match[1]);
+                    // new mwnu line
+                    $new_line = $item_text . "|" . $item_url .  "|" . $title . "|" . $item_languages . "\n";
+                    // add menu line according to user role condition
+                    if ($itemdepth === 0) {
+                        if ($this->check_menu_line_role($item_user_role)) {
+                            $easycustmenu_text_output .= $new_line . "\n";
+                            $menu_depth_0_value = 1;
+                        } else {
+                            $menu_depth_0_value = 0;
+                        }
+                    } else if ($itemdepth === 1 &&  $menu_depth_0_value) {
+                        if ($this->check_menu_line_role($item_user_role)) {
+                            $easycustmenu_text_output .= $new_line . "\n";
+                            $menu_depth_1_value = 1;
+                        } else {
+                            $menu_depth_1_value = 0;
+                        }
+                    } else if ($itemdepth === 2 && $menu_depth_1_value) {
+                        if ($this->check_menu_line_role($item_user_role)) {
+                            $easycustmenu_text_output .= $new_line . "\n";
+                        }
                     }
                 }
             }
-            $easycustmenu_text_output = str_replace('target_blank_on', '\"target=\"_blank', $easycustmenu_text_output);
             $CFG->custommenuitems = $easycustmenu_text_output . $CFG->custommenuitems;
         }
     }
 
     /**
-     * reverse to default $CFG->custommenuitems value
-     */
-    public static function revert_cfg_custommenuitems()
-    {
-        global $CFG;
-        $CFG->custommenuitems = get_config('core', 'custommenuitems');
-    }
-
-
-    /**
-     * menu_item_wrapper_script
+     * menu_item_wrapper_section
      * @return string :: the menu_item_wrapper in the menu_item_wrapper function for browser
      */
-    public static function menu_item_wrapper_script()
+    public static function menu_item_wrapper_section()
     {
         global $OUTPUT;
         $templatename = 'local_easycustmenu/menu/menu_item_wrapper';
@@ -189,23 +210,13 @@ class helper
             'link' => '',
             'itemdepth' => 'null-depth',
             'condition_user_roles' => helper::get_condition_user_roles(),
-            'langs' => helper::get_languages(),
             'menu_child' => (get_config('local_easycustmenu', 'menu_level') == '2') ? true : false,
-            'apply_condition' => true
+            'apply_condition' => true,
+            'multi_lang' => (count(helper::get_languages()) > 1) ? true : false
+
         ];
         $contents = $OUTPUT->render_from_template($templatename, $context);
         $contents = trim(str_replace(["\r", "\n"], '', $contents));
-        ob_start(); ?>
-        <script>
-            //<![CDATA[
-            function menu_item_wrapper() {
-                return '<?php echo $contents; ?>'
-            }
-            //]]>
-        </script>
-<?php
-        $contents = ob_get_contents();
-        ob_end_clean();
         return  $contents;
     }
 
@@ -215,45 +226,75 @@ class helper
      */
     public static function before_footer_content()
     {
-        global $PAGE, $CFG;
+        global $PAGE, $CFG, $target_blank_on_menu;
+        require_once($CFG->dirroot . '/local/easycustmenu/inc/change_js.php');
         $content = '';
-        if ($PAGE->pagelayout === 'admin' && is_siteadmin()) {
-            $url = $_SERVER['REQUEST_URI'];
-            $defined_urls = [
-                "General Setting" => "/admin/settings.php?section=local_easycustmenu",
-                "Header Nav Menu Setting" => "/local/easycustmenu/pages/navmenu.php",
-                "User Menu Setting" => "/local/easycustmenu/pages/usermenu.php"
+        $script_content = $style_content = '';
+        $allow_page_type = [
+            'admin-setting-themesettingsadvanced',
+            'admin-setting-themesettings',
+            'admin-setting-local_easycustmenu',
+            'easycustmenu_navmenu_setting',
+            'easycustmenu_usermenu_setting'
+        ];
+        //
+        if ($PAGE->pagelayout === 'admin' && in_array($PAGE->pagetype, $allow_page_type) && is_siteadmin()) {
+            if (
+                $PAGE->pagetype === 'admin-setting-local_easycustmenu' ||
+                $PAGE->pagetype == 'easycustmenu_navmenu_setting' ||
+                $PAGE->pagetype == 'easycustmenu_usermenu_setting'
+            ) {
+                $url = $_SERVER['REQUEST_URI'];
+                $defined_urls = [
+                    "General Setting" => "/admin/settings.php?section=local_easycustmenu",
+                    "Header Nav Menu Setting" => "/local/easycustmenu/pages/navmenu.php",
+                    "User Menu Setting" => "/local/easycustmenu/pages/usermenu.php"
 
-            ];
-            $content .= '
-            <div class="easycustmenu_setting_header_top" style="display:none;">
-                <div class="easycustmenu_setting_header  ">
-                    <h2>' . get_string('pluginname', 'local_easycustmenu') . '</h2>
-                <div class="menu_setting_tabs moremenu" style=" display: flex;flex-wrap: wrap;gap: 12px;opacity:1;">
-            ';
-            foreach ($defined_urls as $key => $value) {
-                $active_class = (str_contains($url, $value)) ? "active" : "";
-                $content .= '<a href="' . $value . '" class="nav-link ' . $active_class . '">' . $key . '</a>';
-            }
-            $content .= '
+                ];
+                $content .= '
+                <div class="easycustmenu_setting_header_top" style="display:none;">
+                    <div class="easycustmenu_setting_header  ">
+                        <h2>' . get_string('pluginname', 'local_easycustmenu') . '</h2>
+                    <div class="menu_setting_tabs moremenu" style=" display: flex;flex-wrap: wrap;gap: 12px;opacity:1;">
+                ';
+                foreach ($defined_urls as $key => $value) {
+                    $active_class = (str_contains($url, $value)) ? "active" : "";
+                    $content .= '<a href="' . $value . '" class="nav-link ' . $active_class . '">' . $key . '</a>';
+                }
+                $content .= '
+                        </div>
                     </div>
                 </div>
-            </div>
-            ';
-            $content = trim(str_replace(["\r", "\n"], '', $content));
+                ';
+                $content = trim(str_replace(["\r", "\n"], '', $content));
+            }
             $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/js/ecm-setting-adjust.js'));
+            $script_content .= ecm_setting_adjust(get_config('core', 'custommenuitems'));
+            $script_content .= menu_item_wrapper_scripts();
         }
+        //
         if (get_config('local_easycustmenu', 'menu_show_on_hover') == '1') {
-            $content .= '
-            <style id="easycustommenu-hover-menu">
+            $style_content .= '
                 ul.nav .nav-item:hover .dropdown-menu,
                 ul.nav .nav-item .dropdown-menu:hover{
                     display: block;
                     margin-top: -2px;
                 }
-            </style>
             ';
         }
+        //
+        if (count($target_blank_on_menu)) {
+            $script_content .= menu_target_blank($target_blank_on_menu);
+        }
+
+        // 
+        if ($style_content) {
+            $content .= '<style>' . $style_content . '</style>';
+        }
+        if ($script_content) {
+            $content .= '<script>' . $script_content . '</script>';
+        }
+
         return $content;
     }
 }

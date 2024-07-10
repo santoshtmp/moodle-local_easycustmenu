@@ -14,8 +14,9 @@
     margin: 24px 0;
 }
 
+.default-custom-menu-exist,
 .menu-setting-content form {
-    max-width: 750px;
+    max-width: 950px;
     padding: 0 24px;
 }
 

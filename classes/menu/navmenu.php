@@ -25,6 +25,7 @@
 
 namespace local_easycustmenu\menu;
 
+use cache;
 use local_easycustmenu\helper;
 use moodle_url;
 
@@ -40,6 +41,7 @@ class navmenu
     {
         $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
         if ($_POST) {
+            // Get the parameters
             $label = optional_param_array('label', [], PARAM_RAW);
             $link = optional_param_array('link', [], PARAM_RAW);
             $target_blank = optional_param_array('target_blank', [], PARAM_RAW);
@@ -47,18 +49,18 @@ class navmenu
             $user_role = optional_param_array('user_role', [], PARAM_RAW);
             $itemdepth = optional_param_array('itemdepth', [], PARAM_RAW);
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
+            $remove_core_custommenuitems = optional_param('core_custommenuitems', 0, PARAM_INT);
+
+            // check sesskey
             if ($sesskey == sesskey()) {
                 $custommenuitems_text = '';
                 foreach ($label as $key => $value) {
-                    $prefix = $target_blank_value = '';
+                    $prefix = '';
                     $itemdepth[$key] = (int)$itemdepth[$key];
                     if ($itemdepth[$key] > 1) {
                         for ($i = 1; $i < $itemdepth[$key]; $i++) {
                             $prefix .= '-';
                         }
-                    }
-                    if ($target_blank[$key] == '1') {
-                        $target_blank_value = 'target_blank_on';
                     }
                     // validate
                     if (str_contains($value, '|') || str_contains($link[$key], '|') || str_contains($language[$key], '|')) {
@@ -67,19 +69,23 @@ class navmenu
                         redirect($url, $message, null, $messagetype);
                     }
                     // prepare each line
-                    $each_line = $prefix . $value . "|" . $link[$key] . $target_blank_value . "||" . $language[$key] . "|" . $user_role[$key] . "\n";
+                    $each_line = $prefix . $value . "|" . $link[$key] .  "|" . "|" . $language[$key] . "|" . $user_role[$key] . "|" . $target_blank[$key] . "\n";
                     $custommenuitems_text = $custommenuitems_text .  $each_line;
                 }
                 // set custommenuitems_text
                 try {
                     set_config('custommenuitems', $custommenuitems_text, 'local_easycustmenu');
+                    if ($remove_core_custommenuitems == '1') {
+                        set_config('custommenuitems', '');
+                    }
                     $message = "Menu save sucessfully ";
                     $messagetype = \core\output\notification::NOTIFY_INFO;
-
+                    // purge_all_caches();
                 } catch (\Throwable $th) {
                     $message = "Something went wromg";
                     $messagetype = \core\output\notification::NOTIFY_WARNING;
                 }
+
                 redirect($url, $message, null, $messagetype);
             } else {
                 echo "Your key is incorrect";
@@ -100,18 +106,21 @@ class navmenu
         global $OUTPUT;
         $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
         $easycustmenu_values = [];
+        $core_custommenuitems = get_config('core', 'custommenuitems');
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');
+        $load_core_custommenuitems = optional_param('load_core_custommenuitems', 0, PARAM_INT);
+        if ($load_core_custommenuitems) {
+            $custommenuitems = $custommenuitems . "\n" . $core_custommenuitems;
+        }
         $lines = explode("\n", $custommenuitems);
         $menu_order = $menu_order_child_1 =  $menu_order_child_2 = -1;
-        $target_blank_value = 'target_blank_on';
         foreach ($lines as $linenumber => $line) {
             $line = trim($line);
             if (strlen($line) == 0) {
                 continue;
             }
             $settings = explode('|', $line);
-            $item_text = $item_url = $item_languages = $item_user_role = '';
-            $item_target_blank = false;
+            $item_text = $item_url = $title = $item_languages = $item_user_role =  $item_target_blank = '';
             foreach ($settings as $i => $setting) {
                 $setting = trim($setting);
                 if ($setting !== '') {
@@ -120,8 +129,7 @@ class navmenu
                             $item_text = ltrim($setting, '-');
                             break;
                         case 1: // URL.
-                            $item_target_blank = str_contains($setting, $target_blank_value);
-                            $item_url = str_replace($target_blank_value, '', $setting);
+                            $item_url = $setting;
                             break;
                         case 2: // title.
                             $title = $setting;
@@ -131,6 +139,9 @@ class navmenu
                             break;
                         case 4: // user_role.
                             $item_user_role = $setting;
+                            break;
+                        case 5: // item_target_blank.
+                            $item_target_blank = (int)$setting;
                             break;
                     }
                 }
@@ -171,12 +182,17 @@ class navmenu
             echo json_encode($easycustmenu_values);
             die;
         }
+
+
         $templatename = 'local_easycustmenu/menu/menu_setting_collection';
         $context = [
             'menu_setting_form_action' => $url,
             'values' => $easycustmenu_values,
             'menu_child' => (get_config('local_easycustmenu', 'menu_level') == '0') ? false : true,
-            'apply_condition' => true
+            'apply_condition' => true,
+            'multi_lang' => (count(helper::get_languages()) > 1) ? true : false,
+            'core_custommenuitems' => $core_custommenuitems,
+            'load_core_custommenuitems' => $load_core_custommenuitems
         ];
 
         $contents = $OUTPUT->render_from_template($templatename, $context);

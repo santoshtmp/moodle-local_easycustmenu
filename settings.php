@@ -50,6 +50,7 @@ if ($hassiteconfig) {
     $title = get_string('hide_primarynavigation_title', 'local_easycustmenu');
     $description = get_string('hide_primarynavigation_description', 'local_easycustmenu');
     $setting = new admin_setting_configmulticheckbox($name, $title, $description, array(), $hidenodesoptions);
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
     // Create custom_menu_heading.
@@ -65,9 +66,6 @@ if ($hassiteconfig) {
         <br> If "1" is selected the sub-menu can be added to main menu.
         <br> If "2" is selected the sub-menu-child can be added to sub-menu. The display of "sub-menu-child header nav" depends on the current theme template. 
         <br>
-        <a href="/local/easycustmenu/pages/navmenu.php" class="btn btn-secondary btn-manage-ecm" style="margin:8px 0;">
-            Manage Custom Menu Items
-        </a>
         ';
     $default = 0;
     $options = array();
@@ -75,11 +73,13 @@ if ($hassiteconfig) {
         $options[$i] = $i;
     }
     $setting = new admin_setting_configselect($name, $title, $description, $default, $options);
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
     $name = 'local_easycustmenu/menu_show_on_hover';
     $title = "Header nav menu show on hover";
     $description = 'Heaer primary menu child will be visible on hover without click on menu. By default menu need to be click to see the child menu. Ignore it, if this feature is alrady managed by current theme ';
     $setting = new admin_setting_configcheckbox($name, $title, $description, '0');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 }

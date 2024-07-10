@@ -95,8 +95,7 @@ class usermenu
                 continue;
             }
             $settings = explode('|', $line);
-            $item_text = $item_url = $item_languages = $item_user_role = '';
-            $item_target_blank = false;
+            $item_text = $item_url =  '';
             foreach ($settings as $i => $setting) {
                 $setting = trim($setting);
                 if ($setting !== '') {
@@ -105,28 +104,15 @@ class usermenu
                             $item_text = ltrim($setting, '-');
                             break;
                         case 1: // URL.
-                            $item_target_blank = str_contains($setting, $target_blank_value);
                             $item_url = str_replace($target_blank_value, '', $setting);
-                            break;
-                        case 2: // title.
-                            $title = $setting;
-                            break;
-                        case 3: // Language.
-                            $item_languages = $setting;
-                            break;
-                        case 4: // user_role.
-                            $item_user_role = $setting;
                             break;
                     }
                 }
             }
-            // Get depth of new item.
-            preg_match('/^(\-*)/', $line, $match);
-            $itemdepth = strlen($match[1]);
 
             // arrange the menu values
             $values = [
-                'itemdepth' => $itemdepth + 1,
+                'itemdepth' => 1,
                 'label' => $item_text,
                 'link' => $item_url,
                 'sort_id' => 'menu-' . $menu_order + 1
@@ -143,6 +129,7 @@ class usermenu
             'menu_setting_form_action' => $url,
             'values' => $easycustmenu_values,
             'menu_child' => false,
+            'multi_lang' => (count(helper::get_languages()) > 1) ? true : false
         ];
 
         $contents = $OUTPUT->render_from_template($templatename, $context);

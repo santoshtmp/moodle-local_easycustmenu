@@ -42,17 +42,15 @@ function local_easycustmenu_before_http_headers()
 /**
  * 
  */
-function local_easycustmenu_before_standard_html_head()
-{
-    helper::revert_cfg_custommenuitems();
-}
+// function local_easycustmenu_before_standard_html_head()
+// {
+// }
 
 /**
  * @return string
  */
 // function local_easycustmenu_render_navbar_output()
 // {
-//     helper::revert_cfg_custommenuitems();
 // }
 
 /**
@@ -64,5 +62,3 @@ function local_easycustmenu_before_footer()
 {
     return helper::before_footer_content();
 }
-
-

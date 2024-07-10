@@ -1,8 +1,9 @@
-
+//
+var menu_item = menu_item_wrapper();
 
 /**
  * 1. check and set sub-menu and sub-menu-child css class for each menu item.
- * 2. change move arrow title 
+ * 2. change move arrow title
  */
 
 let menu_define = document.querySelectorAll('.menu .menu-item-wrapper');
@@ -33,8 +34,7 @@ menu_define.forEach((element) => {
  */
 $('.btn-add-menu').on('click', function (e) {
     e.preventDefault();
-    let total_menu = $('.menu .menu-item-wrapper ').length + 1
-    var menu_item = menu_item_wrapper();
+    let total_menu = $('.menu .menu-item-wrapper ').length + 1;
     menu_item = menu_item.replaceAll('null-id', 'menu-' + total_menu);
     menu_item = menu_item.replaceAll('null-depth', '1');
     $('.menu-wrapper .menu').append(menu_item);
@@ -45,15 +45,13 @@ $('.btn-add-menu').on('click', function (e) {
  */
 $(document).on('click', '.btn-add-sub-menu', function (e) {
     e.preventDefault();
-    var menu_item = menu_item_wrapper();
     let sort_id = $(this).attr("data-id");
     let depth = parseInt($('#' + sort_id).attr('itemdepth')) + 1;
     var class_name = 'menu-item-child';
-    var total_sub_menu = add_menu_location_class = '';
+    var add_menu_location_class = '';
     var item_child_count = 0;
     if (depth === 2) {
         class_name = class_name + ' sub-menu';
-        total_sub_menu = 'total-sub-menu-child="0"';
         add_menu_location_class = ' .sub-menu-item-wrapper';
         item_child_count = $('#' + sort_id + add_menu_location_class + ' > .menu-item-child ').length + 1;
         menu_item = menu_item.replaceAll('sub-menu-item-wrapper', 'sub-menu-item-child-wrapper');
@@ -109,10 +107,10 @@ $(document).on('click', '.btn-add-condition', function (e) {
 $(document).on('change', '.target_blank_no,.target_blank_yes', function () {
     let sort_id = $(this).parent().attr("data-id");
     if ($(this).val() == "0") {
-        document.getElementById('target_yes_' + sort_id).checked = false
+        document.getElementById('target_yes_' + sort_id).checked = false;
     }
     if ($(this).val() == "1") {
-        document.getElementById('target_no_' + sort_id).checked = false
+        document.getElementById('target_no_' + sort_id).checked = false;
     }
 });
 
@@ -169,19 +167,3 @@ $(document).on('click', '.btn-down-arrow, .btn-up-arrow', function (e) {
     $('#' + current_id + ' .input-language').val(new_language);
     $('#' + current_id + ' .user_role').val(new_user_role);
 });
-
-// collapse or expand field
-// $(document).on('click', '.btn-collapse-exp', function (e) {
-//     e.stopPropagation();
-//     e.preventDefault();
-//     let sort_id = $(this).attr("data-id");
-//     if ($(this).hasClass('expand')) {
-//         $(this).removeClass('expand');
-//         $(this).addClass('expand-off');
-//         $('.menu-item[class*="' + sort_id + '"]').hide();
-//     } else {
-//         $(this).addClass('expand');
-//         $(this).removeClass('expand-off');
-//         $('.menu-item[class*="' + sort_id + '"]').show();
-//     }
-// });

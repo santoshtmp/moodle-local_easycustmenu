@@ -26,6 +26,18 @@
 }}
 
 <div class="menu-setting-content" id="menu_setting_collection">
+    {{#core_custommenuitems}}
+        <div class="default-custom-menu-exist">
+        {{#load_core_custommenuitems}}
+            <p>Default core menu is loaded withe existing menu.</p>
+        {{/load_core_custommenuitems}}
+        {{^load_core_custommenuitems}}
+            <a href="{{menu_setting_form_action}}?load_core_custommenuitems=1" class="btn btn-secondary btn-load_core_custommenuitems">
+                Load core custommenuitems
+            </a>
+        {{/load_core_custommenuitems}}
+        </div>
+    {{/core_custommenuitems}}
     <form action="{{menu_setting_form_action}}" method="post">
         <div class="menu-wrapper">
             <div class="menu" total-menu="">
@@ -38,6 +50,11 @@
             </div>
         </div>
         <div class="form-input-hidden">
+            {{#core_custommenuitems}}
+                {{#load_core_custommenuitems}}
+                    <input type="hidden" name="core_custommenuitems" value="1">
+                {{/load_core_custommenuitems}}
+            {{/core_custommenuitems}}
             <input type="hidden" id="primary_menu_sesskey" name="sesskey" value="">
             <script>
                 document.getElementById("primary_menu_sesskey").value = M.cfg.sesskey;

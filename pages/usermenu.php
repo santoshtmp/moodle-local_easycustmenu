@@ -40,7 +40,7 @@ $page_title = 'User Menu Setting';
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin'); // admin , standard , ...
-$PAGE->set_pagetype('usermenu_setting');
+$PAGE->set_pagetype('easycustmenu_usermenu_setting');
 $PAGE->set_title($page_title);
 $PAGE->set_heading($page_title);
 // $PAGE->navbar->add($page_title);
@@ -69,7 +69,6 @@ if (!has_capability('moodle/site:config', $context)) {
      * ========================================================
      */
     $contents = $usermenu->get_usermenu_setting_section();
-    $contents .= helper::menu_item_wrapper_script();
 }
 /**
  * ========================================================

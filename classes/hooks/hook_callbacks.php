@@ -81,7 +81,6 @@ class hook_callbacks
             // Do nothing during installation or upgrade.
             return;
         }
-        helper::revert_cfg_custommenuitems();
     }
 
     /**
