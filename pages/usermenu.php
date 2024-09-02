@@ -44,9 +44,8 @@ $PAGE->set_pagetype('easycustmenu_usermenu_setting');
 $PAGE->set_title($page_title);
 $PAGE->set_heading($page_title);
 // $PAGE->navbar->add($page_title);
-$PAGE->requires->jquery();
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/js/nav-menu-setting.js'));
-$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/css/nav-menu-setting.css'));
+$PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init',[helper::menu_item_wrapper_section()]);
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/easycustmenu/style/nav-menu-setting.css'));
 
 $usermenu = new usermenu();
 // Access checks.

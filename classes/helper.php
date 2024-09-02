@@ -46,6 +46,9 @@ class helper
     }
 
 
+    /**
+     * 
+     */
     public function check_menu_line_role($condition_user_role)
     {
         if ($condition_user_role == 'all') {
@@ -226,8 +229,7 @@ class helper
      */
     public static function before_footer_content()
     {
-        global $PAGE, $CFG, $target_blank_on_menu;
-        require_once($CFG->dirroot . '/local/easycustmenu/inc/change_js.php');
+        global $PAGE, $target_blank_on_menu;
         $content = '';
         $script_content = $style_content = '';
         $allow_page_type = [
@@ -267,10 +269,10 @@ class helper
                 </div>
                 ';
                 $content = trim(str_replace(["\r", "\n"], '', $content));
+
+                $custommenuitems = str_replace("\n", "line_breake_backslash_n", get_config('core', 'custommenuitems'));
+                $PAGE->requires->js_call_amd('local_easycustmenu/ecm-setting-adjust', 'init', ['custommenuitems' => $custommenuitems, 'target_blank_menu' => $target_blank_on_menu]);
             }
-            $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/easycustmenu/assets/js/ecm-setting-adjust.js'));
-            $script_content .= ecm_setting_adjust(get_config('core', 'custommenuitems'));
-            $script_content .= menu_item_wrapper_scripts();
         }
         //
         if (get_config('local_easycustmenu', 'menu_show_on_hover') == '1') {
@@ -281,10 +283,6 @@ class helper
                     margin-top: -2px;
                 }
             ';
-        }
-        //
-        if (count($target_blank_on_menu)) {
-            $script_content .= menu_target_blank($target_blank_on_menu);
         }
 
         // 
