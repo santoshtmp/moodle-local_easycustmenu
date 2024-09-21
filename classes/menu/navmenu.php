@@ -31,6 +31,14 @@ use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * class to handle navmenu admin action
+ *
+ * @package    local_easycustmenu
+ * @copyright  2024 santoshtmp <https://santoshmagar.com.np/>
+ * @author     santoshtmp
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class navmenu
 {
 

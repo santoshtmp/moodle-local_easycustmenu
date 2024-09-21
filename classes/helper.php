@@ -25,10 +25,16 @@
 
 namespace local_easycustmenu;
 
-use moodle_url;
-
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * class to handle local_easycustmenu helper action
+ *
+ * @package    local_easycustmenu
+ * @copyright  2024 santoshtmp <https://santoshmagar.com.np/>
+ * @author     santoshtmp
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class helper
 {
 
@@ -203,9 +209,12 @@ class helper
      * menu_item_wrapper_section
      * @return string :: the menu_item_wrapper in the menu_item_wrapper function for browser
      */
-    public static function menu_item_wrapper_section()
+    public static function menu_item_wrapper_section($menu_child = true, $apply_condition =true)
     {
         global $OUTPUT;
+        if ($menu_child) {
+            $menu_child = get_config('local_easycustmenu', 'menu_level');//(get_config('local_easycustmenu', 'menu_level') == '2') ? true : false,
+        }
         $templatename = 'local_easycustmenu/menu/menu_item_wrapper';
         $context = [
             'sort_id' => 'null-id',
@@ -213,8 +222,8 @@ class helper
             'link' => '',
             'itemdepth' => 'null-depth',
             'condition_user_roles' => helper::get_condition_user_roles(),
-            'menu_child' => (get_config('local_easycustmenu', 'menu_level') == '2') ? true : false,
-            'apply_condition' => true,
+            'menu_child' => $menu_child, 
+            'apply_condition' => $apply_condition,
             'multi_lang' => (count(helper::get_languages()) > 1) ? true : false
 
         ];

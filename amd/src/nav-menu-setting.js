@@ -65,7 +65,7 @@ export const init = (menu_item) => {
     });
 
     /**
-     * Add sub-menu oe sub-menu-child
+     * Add sub-menu and sub-menu-child
      */
     $(document).on('click', '.btn-add-sub-menu', function (e) {
         e.preventDefault();

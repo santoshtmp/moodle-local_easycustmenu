@@ -66,8 +66,8 @@ export const init = (data) => {
     ecm_setting_adjust(data.default_custommenuitems);
     menu_target_blank(data.target_blank_menu);
     /**
- * adjust the setting section
- */
+    * adjust the setting section
+    */
     const newDiv = document.querySelector(".easycustmenu_setting_header");
     if (newDiv) {
         let beforeDiv = "";
