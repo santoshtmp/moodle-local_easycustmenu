@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_easycustmenu/menu/menu_setting_collection
+    @template local_easycustmenu/menu_setting_collection
 
     Example context (json):
     {
@@ -40,10 +40,10 @@
     {{/core_custommenuitems}}
     <form action="{{menu_setting_form_action}}" method="post">
         <div class="menu-wrapper">
-            <div class="menu" total-menu="">
-            {{#values}}
-                {{> local_easycustmenu/menu/menu_item_wrapper }}
-            {{/values}}
+            <div class="menu menu-draggable-list" total-menu="">
+                {{#values}}
+                    {{> local_easycustmenu/menu_item_wrapper }}             
+                {{/values}}
             </div>
             <div class="action-add-menu">
                 <button type="button" class="btn btn-primary btn-add-menu"> Add Menu</button>

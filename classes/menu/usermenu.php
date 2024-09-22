@@ -132,7 +132,7 @@ class usermenu
             echo json_encode($easycustmenu_values);
             die;
         }
-        $templatename = 'local_easycustmenu/menu/menu_setting_collection';
+        $templatename = 'local_easycustmenu/menu_setting_collection';
         $context = [
             'menu_setting_form_action' => $url,
             'values' => $easycustmenu_values,

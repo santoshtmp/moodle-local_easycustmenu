@@ -212,17 +212,13 @@ class helper
     public static function menu_item_wrapper_section($menu_child = true, $apply_condition =true)
     {
         global $OUTPUT;
-        if ($menu_child) {
-            $menu_child = get_config('local_easycustmenu', 'menu_level');//(get_config('local_easycustmenu', 'menu_level') == '2') ? true : false,
-        }
-        $templatename = 'local_easycustmenu/menu/menu_item_wrapper';
+        $templatename = 'local_easycustmenu/menu_item_wrapper';
         $context = [
-            'sort_id' => 'null-id',
+            'menu_item_num'=>'menu-id',
             'label' => '',
             'link' => '',
-            'itemdepth' => 'null-depth',
+            'itemdepth' => '1',
             'condition_user_roles' => helper::get_condition_user_roles(),
-            'menu_child' => $menu_child, 
             'apply_condition' => $apply_condition,
             'multi_lang' => (count(helper::get_languages()) > 1) ? true : false
 

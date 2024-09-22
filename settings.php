@@ -60,22 +60,6 @@ if ($hassiteconfig) {
     $setting = new admin_setting_heading($name, $title, $description);
     $settings->add($setting);
 
-    $name = 'local_easycustmenu/menu_level';
-    $title = 'Menu level';
-    $description = 'This will allow to set the menu depth child for custom menu items.
-        <br> If "1" is selected the sub-menu can be added to main menu.
-        <br> If "2" is selected the sub-menu-child can be added to sub-menu. The display of "sub-menu-child header nav" depends on the current theme template. 
-        <br>
-        ';
-    $default = 0;
-    $options = array();
-    for ($i = 0; $i < 3; $i++) {
-        $options[$i] = $i;
-    }
-    $setting = new admin_setting_configselect($name, $title, $description, $default, $options);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
-
     $name = 'local_easycustmenu/menu_show_on_hover';
     $title = "Header nav menu show on hover";
     $description = 'Heaer primary menu child will be visible on hover without click on menu. By default menu need to be click to see the child menu. Ignore it, if this feature is alrady managed by current theme ';

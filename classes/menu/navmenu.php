@@ -121,7 +121,8 @@ class navmenu
             $custommenuitems = $custommenuitems . "\n" . $core_custommenuitems;
         }
         $lines = explode("\n", $custommenuitems);
-        $menu_order = $menu_order_child_1 =  $menu_order_child_2 = -1;
+        // $menu_order = $menu_order_child_1 =  $menu_order_child_2 = -1;
+        $menu_item_num = 1;
         foreach ($lines as $linenumber => $line) {
             $line = trim($line);
             if (strlen($line) == 0) {
@@ -160,6 +161,7 @@ class navmenu
 
             // arrange the menu values
             $values = [
+                'menu_item_num'=>'menu-'.$menu_item_num,
                 'itemdepth' => $itemdepth + 1,
                 'label' => $item_text,
                 'link' => $item_url,
@@ -167,24 +169,8 @@ class navmenu
                 'languages' => $item_languages,
                 'condition_user_roles' => helper::get_condition_user_roles($item_user_role),
             ];
-
-            if ($itemdepth === 0) {
-                $menu_order++;
-                $menu_order_child_1 =  $menu_order_child_2 = -1;
-                $values['sort_id'] = 'menu-' . $menu_order + 1;
-                $easycustmenu_values[$menu_order] = $values;
-            } else if ($itemdepth === 1) {
-                $menu_order_child_1++;
-                $menu_order_child_2 = -1;
-                $values['sort_id'] = 'menu-' . $menu_order + 1 . '-' . $menu_order_child_1 + 1;
-                $values['menu_child_num'] = 'menu-' . $menu_order + 1 . '-child';
-                $easycustmenu_values[$menu_order]['child1'][$menu_order_child_1] = $values;
-            } else if ($itemdepth === 2) {
-                $menu_order_child_2++;
-                $values['sort_id'] = 'menu-' . $menu_order + 1 . '-' . $menu_order_child_1 + 1 . '-' . $menu_order_child_2 + 1;
-                $values['menu_child_num'] =  'menu-' . $menu_order + 1 . '-' . $menu_order_child_1 + 1 . '-child';
-                $easycustmenu_values[$menu_order]['child1'][$menu_order_child_1]['child2'][$menu_order_child_2] = $values;
-            }
+            $easycustmenu_values[] = $values;
+            $menu_item_num++;
         }
         if ($json === true) {
             echo json_encode($easycustmenu_values);
@@ -192,11 +178,10 @@ class navmenu
         }
 
 
-        $templatename = 'local_easycustmenu/menu/menu_setting_collection';
+        $templatename = 'local_easycustmenu/menu_setting_collection';
         $context = [
             'menu_setting_form_action' => $url,
             'values' => $easycustmenu_values,
-            'menu_child' => (get_config('local_easycustmenu', 'menu_level') == '0') ? false : true,
             'apply_condition' => true,
             'multi_lang' => (count(helper::get_languages()) > 1) ? true : false,
             'core_custommenuitems' => $core_custommenuitems,
