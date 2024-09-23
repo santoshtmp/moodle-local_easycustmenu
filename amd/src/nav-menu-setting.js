@@ -45,8 +45,8 @@ export const init = (menu_item, menu_type = 'navmenu') => {
     $(document).on('click', '.btn-remove', function (e) {
         e.stopPropagation();
         e.preventDefault();
-        let sort_id = $(this).attr("data-id");
-        $('#' + sort_id).remove();
+        let menu_id = $(this).attr("data-id");
+        $('#' + menu_id).remove();
     });
 
 
@@ -54,13 +54,13 @@ export const init = (menu_item, menu_type = 'navmenu') => {
     $(document).on('click', '.btn-add-condition', function (e) {
         e.stopPropagation();
         e.preventDefault();
-        let sort_id = $(this).attr("data-id");
+        let menu_id = $(this).attr("data-id");
         if ($(this).hasClass('active')) {
             $(this).removeClass('active');
         } else {
             $(this).addClass('active');
         }
-        $('#' + sort_id + ' > .menu-item  .condition-fields').toggle();
+        $('#' + menu_id + '  .condition-fields').toggle();
     });
 
 
@@ -68,12 +68,12 @@ export const init = (menu_item, menu_type = 'navmenu') => {
      * Change input checkbox target_blank value
      */
     $(document).on('change', '.target_blank_no,.target_blank_yes', function () {
-        let sort_id = $(this).parent().attr("data-id");
+        let menu_id = $(this).parent().attr("data-id");
         if ($(this).val() == "0") {
-            document.getElementById('target_yes_' + sort_id).checked = false;
+            document.getElementById('target_yes_' + menu_id).checked = false;
         }
         if ($(this).val() == "1") {
-            document.getElementById('target_no_' + sort_id).checked = false;
+            document.getElementById('target_no_' + menu_id).checked = false;
         }
     });
 

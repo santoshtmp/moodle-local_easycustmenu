@@ -160,9 +160,11 @@ class navmenu
             $itemdepth = strlen($match[1]);
 
             // arrange the menu values
+            $pix = 24 * ($itemdepth + 1);
             $values = [
-                'menu_item_num'=>'menu-'.$menu_item_num,
+                'menu_item_num' => 'menu-' . $menu_item_num,
                 'itemdepth' => $itemdepth + 1,
+                'itemdepth_left_move' => 'padding-left: ' . $pix . 'px;',
                 'label' => $item_text,
                 'link' => $item_url,
                 'target_blank' => $item_target_blank,

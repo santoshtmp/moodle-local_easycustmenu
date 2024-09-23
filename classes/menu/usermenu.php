@@ -95,7 +95,7 @@ class usermenu
         $easycustmenu_values = [];
         $custommenuitems = get_config('core', 'customusermenuitems');
         $lines = explode("\n", $custommenuitems);
-        $menu_order = 0;
+        $menu_order = 1;
         $target_blank_value = 'target_blank_on';
         foreach ($lines as $linenumber => $line) {
             $line = trim($line);
@@ -121,11 +121,12 @@ class usermenu
             // arrange the menu values
             $values = [
                 'itemdepth' => 1,
+                'itemdepth_left_move' => 'padding-left: 24px;',
                 'label' => $item_text,
                 'link' => $item_url,
-                'sort_id' => 'menu-' . $menu_order + 1
+                'menu_item_num' => 'menu-' . $menu_order,
             ];
-            $easycustmenu_values[$menu_order] = $values;
+            $easycustmenu_values[] = $values;
             $menu_order++;
         }
         if ($json === true) {

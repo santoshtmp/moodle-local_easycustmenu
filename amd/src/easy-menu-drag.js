@@ -36,18 +36,37 @@ define(['jquery', 'core/sortable_list'], function ($, SortableList) {
                 let itemdepth = parseInt(element.attr('itemdepth'));
                 let end_x = info.endX;
                 let start_x = info.startX;
+                let prev_element = element.prev();
+                let prev_element_itemdepth = 1;
+                if (prev_element) {
+                    prev_element_itemdepth = parseInt(prev_element.attr('itemdepth'));
+                }
+                let menu_item = element.find('.menu-item');
+                // move to right; make child of inital menu
                 if (end_x > start_x && (end_x > (start_x + 25))) {
                     let new_itemdepth = itemdepth + 1;
-                    element.attr('itemdepth', new_itemdepth);
-                    input_itemdepth.attr('value', new_itemdepth);
+                    if (new_itemdepth <= prev_element_itemdepth + 1) {
+                        element.attr('itemdepth', new_itemdepth);
+                        input_itemdepth.attr('value', new_itemdepth);
+                        let pix = 24 * new_itemdepth;
+                        menu_item.css({
+                            'padding-left': pix + 'px'
+                        });
+                    }
+
                 }
+                // move to left; make parent menu.
                 if (end_x < start_x && (end_x < (start_x - 25))) {
-                    let new_itemdepth = itemdepth;
+                    let new_itemdepth = 1;
                     if (itemdepth > 1) {
                         new_itemdepth = itemdepth - 1;
                     }
                     element.attr('itemdepth', new_itemdepth);
                     input_itemdepth.attr('value', new_itemdepth);
+                    let pix = 24 * new_itemdepth;
+                    menu_item.css({
+                        'padding-left': pix + 'px'
+                    });
                 }
 
             });
