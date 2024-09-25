@@ -50,6 +50,8 @@
     flex-direction: row;
     gap: 6px;
     margin: 12px;
+    margin-left: 0;
+    width: 83%;
 }
 
 .btn-collapse-exp.expand .icon:nth-child(2) {
@@ -63,7 +65,7 @@
 .btn-action-wrapper {
     display: flex;
     flex-wrap: wrap;
-    margin: 0 12px 0 auto;
+    margin-left: auto;
 }
 
 .btn-add-condition.active::after {

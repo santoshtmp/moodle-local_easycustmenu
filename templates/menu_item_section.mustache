@@ -25,8 +25,8 @@
 <span tabindex="0" role="button" aria-haspopup="true" data-drag-type="move" title="{{label}}" style="margin: auto 0;">
     <i class="fa fa-arrows"></i>
 </span>
-<div class="menu-item {{menu_child_num}}" style="{{#itemdepth_left_move}}{{itemdepth_left_move}}{{/itemdepth_left_move}}{{^itemdepth_left_move}}padding-left: 24px;{{/itemdepth_left_move}}">
-    <div class="general-field form-row">
+<div class="menu-item {{menu_child_num}}" style="{{#itemdepth_left_move}}{{itemdepth_left_move}}{{/itemdepth_left_move}}{{^itemdepth_left_move}}padding-left: 7px;{{/itemdepth_left_move}}">
+    <div class="d-flex" style="width:100%;">
         <input type="hidden" name="itemdepth[]" value="{{itemdepth}}">
         <div class="col">
             <input type="text" name="label[]" class="form-control input-label" placeholder="Menu Label" value="{{label}}" required>

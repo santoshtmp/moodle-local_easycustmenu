@@ -121,7 +121,6 @@ class usermenu
             // arrange the menu values
             $values = [
                 'itemdepth' => 1,
-                'itemdepth_left_move' => 'padding-left: 24px;',
                 'label' => $item_text,
                 'link' => $item_url,
                 'menu_item_num' => 'menu-' . $menu_order,
