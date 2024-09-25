@@ -57,11 +57,11 @@ class navmenu
             $user_role = optional_param_array('user_role', [], PARAM_RAW);
             $itemdepth = optional_param_array('itemdepth', [], PARAM_RAW);
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
-            $remove_core_custommenuitems = optional_param('core_custommenuitems', 0, PARAM_INT);
 
             // check sesskey
             if ($sesskey == sesskey()) {
                 $custommenuitems_text = '';
+                $custommenuitems_text_core = '';
                 foreach ($label as $key => $value) {
                     $prefix = '';
                     $itemdepth[$key] = (int)$itemdepth[$key];
@@ -78,14 +78,14 @@ class navmenu
                     }
                     // prepare each line
                     $each_line = $prefix . $value . "|" . $link[$key] .  "|" . "|" . $language[$key] . "|" . $user_role[$key] . "|" . $target_blank[$key] . "\n";
+                    $each_line_core = $prefix . $value . "|" . $link[$key] .  "|" . "|" . $language[$key] . "\n";
+                    // 
                     $custommenuitems_text = $custommenuitems_text .  $each_line;
+                    $custommenuitems_text_core = $custommenuitems_text_core . $each_line_core;
                 }
                 // set custommenuitems_text
                 try {
                     set_config('custommenuitems', $custommenuitems_text, 'local_easycustmenu');
-                    if ($remove_core_custommenuitems == '1') {
-                        set_config('custommenuitems', '');
-                    }
                     $message = "Menu save sucessfully ";
                     $messagetype = \core\output\notification::NOTIFY_INFO;
                     // purge_all_caches();
@@ -118,7 +118,7 @@ class navmenu
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');
         $load_core_custommenuitems = optional_param('load_core_custommenuitems', 0, PARAM_INT);
         if ($load_core_custommenuitems) {
-            $custommenuitems = $custommenuitems . "\n" . $core_custommenuitems;
+            $custommenuitems = trim($custommenuitems, "\n") . "\n" . $core_custommenuitems;
         }
         $lines = explode("\n", $custommenuitems);
         // $menu_order = $menu_order_child_1 =  $menu_order_child_2 = -1;

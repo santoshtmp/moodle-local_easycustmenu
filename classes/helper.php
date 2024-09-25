@@ -46,9 +46,11 @@ class helper
         global $PAGE;
         // hide primarynavigation if the data is present in hide_primarynavigation
         $theme = $PAGE->theme;
-        $theme->removedprimarynavitems = explode(',', get_config('local_easycustmenu', 'hide_primarynavigation'));
-        // define new custom menus
-        $this->define_new_cfg_custommenuitems();
+        $activate = (get_config('local_easycustmenu', 'activate')) ?: "";
+        if ($activate) {
+            $theme->removedprimarynavitems = explode(',', get_config('local_easycustmenu', 'hide_primarynavigation'));
+            $this->define_new_cfg_custommenuitems(); // define new custom menus
+        }
     }
 
 
@@ -124,7 +126,7 @@ class helper
     }
 
     /**
-     * chck and define new custommenuitems accoeding to custommenuitems
+     * check and define new custommenuitems according to custommenuitems
      */
     public function define_new_cfg_custommenuitems()
     {
@@ -182,26 +184,26 @@ class helper
                     // add menu line according to user role condition
                     if ($itemdepth === 0) {
                         if ($this->check_menu_line_role($item_user_role)) {
-                            $easycustmenu_text_output .= $new_line . "\n";
+                            $easycustmenu_text_output .= $new_line;
                             $menu_depth_0_value = 1;
                         } else {
                             $menu_depth_0_value = 0;
                         }
                     } else if ($itemdepth === 1 &&  $menu_depth_0_value) {
                         if ($this->check_menu_line_role($item_user_role)) {
-                            $easycustmenu_text_output .= $new_line . "\n";
+                            $easycustmenu_text_output .= $new_line;
                             $menu_depth_1_value = 1;
                         } else {
                             $menu_depth_1_value = 0;
                         }
                     } else if ($itemdepth === 2 && $menu_depth_1_value) {
                         if ($this->check_menu_line_role($item_user_role)) {
-                            $easycustmenu_text_output .= $new_line . "\n";
+                            $easycustmenu_text_output .= $new_line;
                         }
                     }
                 }
             }
-            $CFG->custommenuitems = $easycustmenu_text_output . $CFG->custommenuitems;
+            $CFG->custommenuitems = $easycustmenu_text_output; // . $CFG->custommenuitems;
         }
     }
 
@@ -209,12 +211,12 @@ class helper
      * menu_item_wrapper_section
      * @return string :: the menu_item_wrapper in the menu_item_wrapper function for browser
      */
-    public static function menu_item_wrapper_section($menu_child = true, $apply_condition =true)
+    public static function menu_item_wrapper_section($apply_condition = true)
     {
         global $OUTPUT;
         $templatename = 'local_easycustmenu/menu_item_wrapper';
         $context = [
-            'menu_item_num'=>'menu-id',
+            'menu_item_num' => 'menu-id',
             'label' => '',
             'link' => '',
             'itemdepth' => '1',
@@ -234,6 +236,11 @@ class helper
      */
     public static function before_footer_content()
     {
+        $activate = (get_config('local_easycustmenu', 'activate')) ?: "";
+        if (!$activate) {
+            return;
+        }
+        
         global $PAGE, $target_blank_on_menu;
         $content = '';
         $script_content = $style_content = '';
@@ -274,10 +281,8 @@ class helper
                 </div>
                 ';
                 $content = trim(str_replace(["\r", "\n"], '', $content));
-
-                $custommenuitems = str_replace("\n", "line_breake_backslash_n", get_config('core', 'custommenuitems'));
-                $PAGE->requires->js_call_amd('local_easycustmenu/ecm-setting-adjust', 'init', ['custommenuitems' => $custommenuitems, 'target_blank_menu' => $target_blank_on_menu]);
             }
+            $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_setting_init');
         }
         //
         if (get_config('local_easycustmenu', 'menu_show_on_hover') == '1') {
@@ -296,6 +301,9 @@ class helper
         }
         if ($script_content) {
             $content .= '<script>' . $script_content . '</script>';
+        }
+        if ($target_blank_on_menu) {
+            $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'target_blank_menu', [json_encode($target_blank_on_menu)]);
         }
 
         return $content;

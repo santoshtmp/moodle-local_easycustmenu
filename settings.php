@@ -33,6 +33,20 @@ if ($hassiteconfig) {
     $ADMIN->add('appearance', $settings);
 
     // Create primary navigation heading.
+    $name = 'local_easycustmenu/setting_ecm_general';
+    $title = 'General';
+    $setting = new admin_setting_heading($name, $title, null);
+    $settings->add($setting);
+
+    $default = '';
+    $name = 'local_easycustmenu/activate';
+    $title = 'Activate';
+    $description = 'Activate the easy custom menu feature.';
+    $setting = new admin_setting_configcheckbox($name, $title, $description, $default, PARAM_RAW);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $settings->add($setting);
+
+    // Create primary navigation heading.
     $name = 'local_easycustmenu/setting_primarynav_heading';
     $title = get_string('setting_primarynav_heading', 'local_easycustmenu');
     $setting = new admin_setting_heading($name, $title, null);

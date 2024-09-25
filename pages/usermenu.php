@@ -44,7 +44,7 @@ $PAGE->set_pagetype('easycustmenu_usermenu_setting');
 $PAGE->set_title($page_title);
 $PAGE->set_heading($page_title);
 // $PAGE->navbar->add($page_title);
-$PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', [helper::menu_item_wrapper_section(false, false), 'usermenu']);
+$PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', [helper::menu_item_wrapper_section(false), 'usermenu']);
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/easycustmenu/style/nav-menu-setting.css'));
 
 $usermenu = new usermenu();
