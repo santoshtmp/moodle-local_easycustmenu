@@ -25,6 +25,8 @@
 
 namespace local_easycustmenu;
 
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -137,7 +139,7 @@ class helper
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');
         if ($custommenuitems) {
             $easycustmenu_text_output = '';
-            $menu_depth_0_value = $menu_depth_1_value = 0;
+            $menu_depth_0_value = $menu_depth_1_value = $menu_depth_2_value = 0;
             $lines = explode("\n", $custommenuitems);
             foreach ($lines as $linenumber => $line) {
                 $line = trim($line);
@@ -199,6 +201,13 @@ class helper
                     } else if ($itemdepth === 2 && $menu_depth_1_value) {
                         if ($this->check_menu_line_role($item_user_role)) {
                             $easycustmenu_text_output .= $new_line;
+                            $menu_depth_2_value = 1;
+                        } else {
+                            $menu_depth_2_value = 0;
+                        }
+                    } else if ($itemdepth === 3 && $menu_depth_2_value) {
+                        if ($this->check_menu_line_role($item_user_role)) {
+                            $easycustmenu_text_output .= $new_line;
                         }
                     }
                 }
@@ -240,7 +249,7 @@ class helper
         if (!$activate) {
             return;
         }
-        
+
         global $PAGE, $target_blank_on_menu;
         $content = '';
         $script_content = $style_content = '';
@@ -271,9 +280,10 @@ class helper
                         <h2>' . get_string('pluginname', 'local_easycustmenu') . '</h2>
                     <div class="menu_setting_tabs moremenu" style=" display: flex;flex-wrap: wrap;gap: 12px;opacity:1;">
                 ';
-                foreach ($defined_urls as $key => $value) {
-                    $active_class = (str_contains($url, $value)) ? "active" : "";
-                    $content .= '<a href="' . $value . '" class="nav-link ' . $active_class . '">' . $key . '</a>';
+                foreach ($defined_urls as $label => $value_url) {
+                    $active_class = (str_contains($url, $value_url)) ? "active" : "";
+                    $moodle_url = new moodle_url($value_url);
+                    $content .= '<a href="' . $moodle_url->out() . '" class="nav-link ' . $active_class . '">' . $label . '</a>';
                 }
                 $content .= '
                         </div>
