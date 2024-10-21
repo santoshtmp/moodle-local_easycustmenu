@@ -51,25 +51,27 @@
 <div class="condition-fields" style="display:none; flex-basis: 100%; padding-left: 24px;">
     <ul class="condition-wrapper">
         <li class="condition">
-            Open in a new browser window : 
+            {{#str}} open_in_a_new_browser_window, local_easycustmenu {{/str}} 
             <label data-id="{{menu_item_num}}">
                 <input type="checkbox" name="target_blank[]"  class="target_blank_no" id="target_no_{{menu_item_num}}" value="0" {{^target_blank}}checked{{/target_blank}} >
-                No 
+                {{#str}} no, core {{/str}} 
             </label> 
             <label data-id="{{menu_item_num}}">
                 <input type="checkbox" name="target_blank[]" class="target_blank_yes" id="target_yes_{{menu_item_num}}" value="1" {{#target_blank}}checked{{/target_blank}}>
-                Yes
+                {{#str}} yes, core {{/str}}
             </label>
         </li>
         {{#multi_lang}}
         <li class="condition">
-            <label>Show the menu when language is</label>   
-            <input type="input" name="language[]" class="form-control input-language"  placeholder="language code Example: en, es, ne " value="{{languages}}">      
+            <label>
+                {{#str}} show_the_menu_when_language_is, local_easycustmenu {{/str}} 
+            </label>   
+            <input type="input" name="language[]" class="form-control input-language"  placeholder="{{#str}} show_the_menu_when_language_placeholder, local_easycustmenu {{/str}}" value="{{languages}}">      
         </li>
         {{/multi_lang}}
         <li class="condition">
             <label for="user_rolw_{{menu_item_num}}">
-                Show the menu when user is 
+                {{#str}} show_the_menu_when_user_is, local_easycustmenu {{/str}} 
             </label>
             <select name="user_role[]" class="custom-select user_role" id="user_rolw_{{menu_item_num}}">
                 {{#condition_user_roles}}

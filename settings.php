@@ -34,14 +34,14 @@ if ($hassiteconfig) {
 
     // Create primary navigation heading.
     $name = 'local_easycustmenu/setting_ecm_general';
-    $title = 'General';
+    $title = get_string('setting_general', 'local_easycustmenu');
     $setting = new admin_setting_heading($name, $title, null);
     $settings->add($setting);
 
     $default = '';
     $name = 'local_easycustmenu/activate';
-    $title = 'Activate';
-    $description = 'Activate the easy custom menu feature.';
+    $title = get_string('setting_activate', 'local_easycustmenu');
+    $description = get_string('setting_activate_desc', 'local_easycustmenu');
     $setting = new admin_setting_configcheckbox($name, $title, $description, $default, PARAM_RAW);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
@@ -75,8 +75,8 @@ if ($hassiteconfig) {
     $settings->add($setting);
 
     $name = 'local_easycustmenu/menu_show_on_hover';
-    $title = "Header nav menu show on hover";
-    $description = 'Heaer primary menu child will be visible on hover without click on menu. By default menu need to be click to see the child menu. Ignore it, if this feature is alrady managed by current theme ';
+    $title = get_string('setting_menu_show_on_hover', 'local_easycustmenu');
+    $description = get_string('setting_menu_show_on_hover_desc', 'local_easycustmenu');
     $setting = new admin_setting_configcheckbox($name, $title, $description, '0');
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);

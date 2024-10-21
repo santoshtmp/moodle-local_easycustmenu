@@ -34,5 +34,29 @@ $string['configtitle'] = 'Easy Custom Menu Settings';
 $string['setting_primarynav_heading'] = 'Primary navigation';
 $string['hide_primarynavigation_title'] = 'Hide primary navigation';
 $string['hide_primarynavigation_description'] = 'You can hide default primary navigation with the select one or multiple values';
+
+$string['setting_general'] = "General";
+$string['setting_activate'] = "Activate";
+$string['setting_activate_desc'] = "Activate the easy custom menu feature.";
 $string['setting_custom_menu_heading'] = 'Custom Menu Settings';
 $string['setting_user_menu_heading'] = 'User Menu Settings';
+$string['setting_menu_show_on_hover'] = "Header nav menu show on hover";
+$string['setting_menu_show_on_hover_desc'] = 'Header primary menu child will be visible on hover without click on menu. By default menu need to be click to see the child menu. Ignore it, if this feature is alrady managed by current theme ';
+$string['setting_activate'] = "Activate";
+
+$string['general_setting'] = "General Setting";
+$string['header_nav_menu_setting'] = "Header Nav Menu Setting";
+$string['user_menu_settinig'] ="User Menu Setting";
+
+$string['show_menu_label'] = 'Show Default "Custom menu items" ';
+$string['hide_menu_label'] = 'Hide Default "Custom menu items" ';
+$string['show_menu_label_2'] = 'Show Default "User menu items" ';
+$string['hide_menu_label_2'] = 'Hide Default "User menu items" ';
+
+$string['add_menu'] = "Add Menu";
+$string['save_menu'] = "Save Menu";
+$string['load_more_custommenuitems'] = "Load core custommenuitems";
+$string['show_the_menu_when_user_is'] = "Show the menu when user is";
+$string['show_the_menu_when_language_is'] = "Show the menu when language is";
+$string['open_in_a_new_browser_window'] = "Open in a new browser window : ";
+$string['show_the_menu_when_language_placeholder'] = "language code Example: en, es, ne";

@@ -26,6 +26,8 @@
 }}
 
 <div class="menu-setting-content" id="menu_setting_collection">
+    <div class="ecm-header">
+    </div>
     {{#core_custommenuitems}}
         <div class="default-custom-menu-exist">
         {{#load_core_custommenuitems}}
@@ -41,7 +43,9 @@
                 {{/values}}
             </div>
             <div class="action-add-menu">
-                <button type="button" class="btn btn-primary btn-add-menu"> Add Menu</button>
+                <button type="button" class="btn btn-primary btn-add-menu">
+                     {{#str}} add_menu, local_easycustmenu {{/str}}
+                </button>
             </div>
         </div>
         <div class="form-input-hidden">
@@ -52,10 +56,12 @@
         </div>
 
        <div class="btn-wrraper">
-            <button type="submit" class="btn btn-primary">Save Menu</button>
+            <button type="submit" class="btn btn-primary">
+                {{#str}} save_menu, local_easycustmenu {{/str}}
+            </button>
             {{#core_custommenuitems}}
                     <a href="{{menu_setting_form_action}}?load_core_custommenuitems=1" class="btn btn-secondary btn-load_core_custommenuitems">
-                        Load core custommenuitems
+                        {{#str}} load_more_custommenuitems, local_easycustmenu {{/str}}
                     </a>
             {{/core_custommenuitems}}
        </div>

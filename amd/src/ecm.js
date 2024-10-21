@@ -48,37 +48,39 @@ export const target_blank_menu = (target_blank_menu) => {
 
 /**
  *
+ * @param {*} plugin_header_content
  */
-export const admin_setting_init = () => {
+export const admin_plugin_setting_init = (plugin_header_content) => {
     /**
     * adjust the setting section
     */
-    const newDiv = document.querySelector(".easycustmenu_setting_header");
-    if (newDiv) {
-        let beforeDiv = "";
-        beforeDiv = document.getElementById("menu_setting_collection");
-        if (beforeDiv) {
-            const parentDiv = beforeDiv.parentNode;
-            parentDiv.insertBefore(newDiv, beforeDiv);
-        }
+    let beforeDiv = "";
+    beforeDiv = document.querySelector("#menu_setting_collection .ecm-header");
+    if (beforeDiv) {
+        beforeDiv.outerHTML = plugin_header_content;
+    } else {
         beforeDiv = document.querySelector("#page-admin-setting-local_easycustmenu #adminsettings .settingsform > h2");
         if (beforeDiv) {
-            beforeDiv.outerHTML = newDiv.outerHTML;
-        }
-        let easycustmenu_setting_header_top = document.querySelector(".easycustmenu_setting_header_top");
-        if (easycustmenu_setting_header_top) {
-            easycustmenu_setting_header_top.remove();
+            beforeDiv.outerHTML = plugin_header_content;
         }
     }
 
+};
 
+
+/**
+ *
+ */
+export const admin_core_setting_init = (string_array) => {
+
+    window.console.log(string_array);
     /**
-   *
-   * @param {*} link
-   * @param {*} label
-   * @param {*} css_class
-   * @returns
-   */
+     *
+     * @param {*} link
+     * @param {*} label
+     * @param {*} css_class
+     * @returns
+     */
     function get_ecm_btn(link, label, css_class = '') {
         let btn = '<a href="' + link + '" class="btn btn-secondary btn-manage-ecm ' + css_class + ' " style="margin:8px;">' + label + '</a>';
         btn = new DOMParser().parseFromString(btn, 'text/html');

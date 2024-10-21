@@ -250,7 +250,7 @@ class helper
             return;
         }
 
-        global $PAGE, $target_blank_on_menu;
+        global $PAGE, $target_blank_on_menu, $OUTPUT;
         $content = '';
         $script_content = $style_content = '';
         $allow_page_type = [
@@ -269,30 +269,32 @@ class helper
             ) {
                 $url = $_SERVER['REQUEST_URI'];
                 $defined_urls = [
-                    "General Setting" => "/admin/settings.php?section=local_easycustmenu",
-                    "Header Nav Menu Setting" => "/local/easycustmenu/pages/navmenu.php",
-                    "User Menu Setting" => "/local/easycustmenu/pages/usermenu.php"
-
+                    get_string('general_setting', 'local_easycustmenu') => "/admin/settings.php?section=local_easycustmenu",
+                    get_string('header_nav_menu_setting', 'local_easycustmenu') => "/local/easycustmenu/pages/navmenu.php",
+                    get_string('user_menu_settinig', 'local_easycustmenu') => "/local/easycustmenu/pages/usermenu.php"
                 ];
-                $content .= '
-                <div class="easycustmenu_setting_header_top" style="display:none;">
-                    <div class="easycustmenu_setting_header  ">
-                        <h2>' . get_string('pluginname', 'local_easycustmenu') . '</h2>
-                    <div class="menu_setting_tabs moremenu" style=" display: flex;flex-wrap: wrap;gap: 12px;opacity:1;">
-                ';
+                $templatename = 'local_easycustmenu/easycustmenu_setting_header';
+                $template_context = [];
                 foreach ($defined_urls as $label => $value_url) {
-                    $active_class = (str_contains($url, $value_url)) ? "active" : "";
-                    $moodle_url = new moodle_url($value_url);
-                    $content .= '<a href="' . $moodle_url->out() . '" class="nav-link ' . $active_class . '">' . $label . '</a>';
+                    $single_menu = [
+                        'menu_active_class' => (str_contains($url, $value_url)) ? "active" : "",
+                        'menu_moodle_url' => new moodle_url($value_url),
+                        'menu_label' => $label
+                    ];
+                    $template_context['single_menu'][] = $single_menu;
                 }
-                $content .= '
-                        </div>
-                    </div>
-                </div>
-                ';
-                $content = trim(str_replace(["\r", "\n"], '', $content));
+                $plugin_header_content = $OUTPUT->render_from_template($templatename, $template_context);
+                $plugin_header_content = trim(str_replace(["\r", "\n"], '', $plugin_header_content));
+                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_plugin_setting_init', [$plugin_header_content]);
+            } else {
+                // $string_array = [
+                //     'show_menu_label' => get_string('show_menu_label', 'local_easycustmenu'),
+                //     'hide_menu_label' => get_string('hide_menu_label', 'local_easycustmenu'),
+                //     'show_menu_label_2' => get_string('show_menu_label_2', 'local_easycustmenu'),
+                //     'hide_menu_label_2' => get_string('hide_menu_label_2', 'local_easycustmenu'),
+                // ];
+                // $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_core_setting_init', [$string_array]);
             }
-            $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_setting_init');
         }
         //
         if (get_config('local_easycustmenu', 'menu_show_on_hover') == '1') {
