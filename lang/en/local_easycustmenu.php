@@ -62,5 +62,5 @@ $string['show_the_menu_when_user_is'] = "Show the menu when user is";
 $string['show_the_menu_when_language_is'] = "Show the menu when language is";
 $string['open_in_a_new_browser_window'] = "Open in a new browser window : ";
 $string['show_the_menu_when_language_placeholder'] = "language code Example: en, es, ne";
-
+$string['core_monu_loaded'] ="Default core menu is loaded withe existing menu. ";
 $string['privacy:metadata'] = 'local easycustmenu plugin is to manage the site menu item orders and does not store any data itself.';
