@@ -46,12 +46,14 @@ $string['setting_activate'] = "Activate";
 
 $string['general_setting'] = "General Setting";
 $string['header_nav_menu_setting'] = "Header Nav Menu Setting";
-$string['user_menu_settinig'] ="User Menu Setting";
+$string['user_menu_settinig'] = "User Menu Setting";
 
 $string['show_menu_label'] = 'Show Default "Custom menu items" ';
 $string['hide_menu_label'] = 'Hide Default "Custom menu items" ';
+$string['manage_menu_label'] = 'Manage Custom Menu Through Easy Custom Menu';
 $string['show_menu_label_2'] = 'Show Default "User menu items" ';
 $string['hide_menu_label_2'] = 'Hide Default "User menu items" ';
+$string['manage_menu_label_2'] = "Manage User Menu Through Easy Custom Menu";
 
 $string['add_menu'] = "Add Menu";
 $string['save_menu'] = "Save Menu";
