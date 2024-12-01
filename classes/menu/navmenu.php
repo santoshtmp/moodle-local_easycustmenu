@@ -61,8 +61,10 @@ class navmenu
             // check sesskey
             if ($sesskey == sesskey()) {
                 $custommenuitems_text = '';
-                $custommenuitems_text_core = '';
                 foreach ($label as $key => $value) {
+                    if (empty($value) || $value == '') {
+                        continue;
+                    }
                     $prefix = '';
                     $itemdepth[$key] = (int)$itemdepth[$key];
                     if ($itemdepth[$key] > 1) {
@@ -72,16 +74,13 @@ class navmenu
                     }
                     // validate
                     if (str_contains($value, '|') || str_contains($link[$key], '|') || str_contains($language[$key], '|')) {
-                        $message = "Something went wromg, <br> Input value contain '|' specific character. Which is not allowed.";
+                        $message = "Something went wromg, <br> Input menu value contain '|' specific character. Which is not allowed.";
                         $messagetype = \core\output\notification::NOTIFY_WARNING;
                         redirect($url, $message, null, $messagetype);
                     }
                     // prepare each line
                     $each_line = $prefix . $value . "|" . $link[$key] .  "|" . "|" . $language[$key] . "|" . $user_role[$key] . "|" . $target_blank[$key] . "\n";
-                    $each_line_core = $prefix . $value . "|" . $link[$key] .  "|" . "|" . $language[$key] . "\n";
-                    // 
                     $custommenuitems_text = $custommenuitems_text .  $each_line;
-                    $custommenuitems_text_core = $custommenuitems_text_core . $each_line_core;
                 }
                 // set custommenuitems_text
                 try {

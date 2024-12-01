@@ -55,15 +55,19 @@ class usermenu
             if ($sesskey == sesskey()) {
                 $custommenuitems_text = '';
                 foreach ($label as $key => $value) {
+                    if (empty($value) || $value == '') {
+                        continue;
+                    }
+                    // validate
+                    if (str_contains($value, '|') || str_contains($link[$key], '|')) {
+                        $message = "Something went wromg, <br> input menu value contain '|' specific character. Which is not allowed.";
+                        $messagetype = \core\output\notification::NOTIFY_WARNING;
+                        redirect($url, $message, null, $messagetype);
+                    }
                     $each_line = $value . "|" . $link[$key] . "\n";
                     $custommenuitems_text = $custommenuitems_text .  $each_line;
                 }
-                // validate
-                if (str_contains($value, '|') || str_contains($link[$key], '|')) {
-                    $message = "Something went wromg, <br> input value contain '|' specific character. Which is not allowed.";
-                    $messagetype = \core\output\notification::NOTIFY_WARNING;
-                    redirect($url, $message, null, $messagetype);
-                }
+
                 // set custommenuitems_text
                 try {
                     set_config('customusermenuitems', $custommenuitems_text);
