@@ -27,9 +27,7 @@
 // This line protects the file from being accessed by a URL directly.
 defined('MOODLE_INTERNAL') || die();
 
-// This is the component name of the plugin - it always starts with type of plugin 
-// like 'mod_', 'local_','block_','theme_' ......
-// should be the same as the name of the folder.
+// This is the component name of the plugin.
 $plugin->component = 'local_easycustmenu';
 
 // This is the named version.
