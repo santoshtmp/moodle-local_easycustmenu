@@ -46,6 +46,14 @@ if ($hassiteconfig) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
+    $name = 'local_easycustmenu/show_ecm_core';
+    $title = get_string('setting_show_ecm_core', 'local_easycustmenu');
+    $description = get_string('setting_show_ecm_core_desc', 'local_easycustmenu');
+    $default = 0;
+    $choices = array(0 => 'Hide', 1 => 'Show');
+    $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
+    $settings->add($setting);
+
     // Create primary navigation heading.
     $name = 'local_easycustmenu/setting_primarynav_heading';
     $title = get_string('setting_primarynav_heading', 'local_easycustmenu');

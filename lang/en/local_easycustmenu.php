@@ -42,15 +42,16 @@ $string['setting_custom_menu_heading'] = 'Custom Menu Settings';
 $string['setting_user_menu_heading'] = 'User Menu Settings';
 $string['setting_menu_show_on_hover'] = "Header nav menu show on hover";
 $string['setting_menu_show_on_hover_desc'] = 'Header primary menu child will be visible on hover without click on menu. By default menu need to be click to see the child menu. Ignore it, if this feature is alrady managed by current theme ';
-$string['setting_activate'] = "Activate";
+$string['setting_show_ecm_core'] = "Show ECM in Default Custom Menu";
+$string['setting_show_ecm_core_desc'] = 'This will hide or show Easy Custom Menu(ECM) link in default admin custom menu section';
 
 $string['general_setting'] = "General Setting";
 $string['header_nav_menu_setting'] = "Header Nav Menu Setting";
 $string['user_menu_settinig'] = "User Menu Setting";
 
-$string['show_menu_label'] = 'Show Default "Custom menu items" ';
-$string['hide_menu_label'] = 'Hide Default "Custom menu items" ';
-$string['manage_menu_label'] = 'Manage Custom Menu Through Easy Custom Menu';
+$string['show_menu_label'] = 'Show Default "menu items" ';
+$string['hide_menu_label'] = 'Hide Default "menu items" ';
+$string['manage_menu_label'] = 'Manage Menu Through Easy Custom Menu';
 $string['show_menu_label_2'] = 'Show Default "User menu items" ';
 $string['hide_menu_label_2'] = 'Hide Default "User menu items" ';
 $string['manage_menu_label_2'] = "Manage User Menu Through Easy Custom Menu";
@@ -62,5 +63,4 @@ $string['show_the_menu_when_user_is'] = "Show the menu when user is";
 $string['show_the_menu_when_language_is'] = "Show the menu when language is";
 $string['open_in_a_new_browser_window'] = "Open in a new browser window : ";
 $string['show_the_menu_when_language_placeholder'] = "language code Example: en, es, ne";
-$string['core_monu_loaded'] ="Default core menu is loaded withe existing menu. ";
 $string['privacy:metadata'] = 'local easycustmenu plugin is to manage the site menu item orders and does not store any data itself.';

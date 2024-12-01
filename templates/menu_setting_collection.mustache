@@ -28,13 +28,6 @@
 <div class="menu-setting-content" id="menu_setting_collection">
     <div class="ecm-header">
     </div>
-    {{#core_custommenuitems}}
-        <div class="default-custom-menu-exist">
-        {{#load_core_custommenuitems}}
-            <p> {{#str}} core_monu_loaded, local_easycustmenu {{/str}} </p>
-        {{/load_core_custommenuitems}}
-        </div>
-    {{/core_custommenuitems}}
     <form action="{{menu_setting_form_action}}" method="post">
         <div class="menu-wrapper">
             <div class="menu menu-draggable-list" total-menu="">
@@ -60,8 +53,8 @@
                 {{#str}} save_menu, local_easycustmenu {{/str}}
             </button>
             {{#core_custommenuitems}}
-                    <a href="{{menu_setting_form_action}}?load_core_custommenuitems=1" class="btn btn-secondary btn-load_core_custommenuitems">
-                        {{#str}} load_more_custommenuitems, local_easycustmenu {{/str}}
+                    <a href="/admin/settings.php?section=themesettingsadvanced#admin-custommenuitems" class="btn btn-secondary">
+                        Manage Other Core "Custom menu items"
                     </a>
             {{/core_custommenuitems}}
        </div>

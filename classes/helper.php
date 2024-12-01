@@ -43,7 +43,8 @@ class helper
     /**
      * check check_custum_header_menu
      */
-    public function check_custum_header_menu() {
+    public function check_custum_header_menu()
+    {
         global $PAGE;
         // ... hide primarynavigation if the data is present in hide_primarynavigation
         $theme = $PAGE->theme;
@@ -58,7 +59,8 @@ class helper
     /**
      * 
      */
-    public function check_menu_line_role($condition_user_role) {
+    public function check_menu_line_role($condition_user_role)
+    {
         if ($condition_user_role == 'all') {
             return true;
         } else if ($condition_user_role == 'guest') {
@@ -284,15 +286,18 @@ class helper
                 $plugin_header_content = trim(str_replace(["\r", "\n"], '', $plugin_header_content));
                 $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_plugin_setting_init', [$plugin_header_content]);
             } else {
-                $string_array = [
-                    'show_menu_label' => get_string('show_menu_label', 'local_easycustmenu'),
-                    'hide_menu_label' => get_string('hide_menu_label', 'local_easycustmenu'),
-                    'manage_menu_label' => get_string('manage_menu_label', 'local_easycustmenu'),
-                    'show_menu_label_2' => get_string('show_menu_label_2', 'local_easycustmenu'),
-                    'hide_menu_label_2' => get_string('hide_menu_label_2', 'local_easycustmenu'),
-                    'manage_menu_label_2' => get_string('manage_menu_label_2', 'local_easycustmenu'),
-                ];
-                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_core_setting_init', [$string_array]);
+                $show_ecm_core = get_config('local_easycustmenu', 'show_ecm_core');
+                if ($show_ecm_core) {
+                    $string_array = [
+                        'show_menu_label' => get_string('show_menu_label', 'local_easycustmenu'),
+                        'hide_menu_label' => get_string('hide_menu_label', 'local_easycustmenu'),
+                        'manage_menu_label' => get_string('manage_menu_label', 'local_easycustmenu'),
+                        'show_menu_label_2' => get_string('show_menu_label_2', 'local_easycustmenu'),
+                        'hide_menu_label_2' => get_string('hide_menu_label_2', 'local_easycustmenu'),
+                        'manage_menu_label_2' => get_string('manage_menu_label_2', 'local_easycustmenu'),
+                    ];
+                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_core_setting_init', [$string_array]);
+                }
             }
         }
         //

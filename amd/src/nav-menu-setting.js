@@ -72,7 +72,11 @@ export const init = (menu_type = 'navmenu') => {
     $('.btn-add-menu').on('click', function (e) {
         e.preventDefault();
         var menu_id = $('.menu .menu-item-wrapper:last-child ').attr('id');
-        menu_id = parseInt(menu_id.split('-')[1]) + 1;
+        if (menu_id) {
+            menu_id = parseInt(menu_id.split('-')[1]) + 1;
+        } else {
+            menu_id = 1;
+        }
         ajax_get_menu_item_context(menu_id, 1, add_condition, function (response) {
             if (response.status) {
                 Templates.render(response.template_name, response.template_context)

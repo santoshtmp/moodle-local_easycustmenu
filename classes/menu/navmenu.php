@@ -53,7 +53,7 @@ class navmenu
             $label = optional_param_array('label', [], PARAM_TEXT);
             $link = optional_param_array('link', [], PARAM_URL);
             $target_blank = optional_param_array('target_blank', [], PARAM_INT);
-            $language = optional_param_array('language', [], PARAM_LANG);
+            $language = optional_param_array('language', [], PARAM_TEXT);
             $user_role = optional_param_array('user_role', [], PARAM_TEXT);
             $itemdepth = optional_param_array('itemdepth', [], PARAM_INT);
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
@@ -116,10 +116,6 @@ class navmenu
         $easycustmenu_values = [];
         $core_custommenuitems = get_config('core', 'custommenuitems');
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');
-        $load_core_custommenuitems = optional_param('load_core_custommenuitems', 0, PARAM_INT);
-        if ($load_core_custommenuitems) {
-            $custommenuitems = trim($custommenuitems, "\n") . "\n" . $core_custommenuitems;
-        }
         $lines = explode("\n", $custommenuitems);
         // $menu_order = $menu_order_child_1 =  $menu_order_child_2 = -1;
         $menu_item_num = 1;
@@ -187,7 +183,6 @@ class navmenu
             'apply_condition' => true,
             'multi_lang' => (count(helper::get_languages()) > 1) ? true : false,
             'core_custommenuitems' => $core_custommenuitems,
-            'load_core_custommenuitems' => $load_core_custommenuitems
         ];
 
         $contents = $OUTPUT->render_from_template($templatename, $context);
