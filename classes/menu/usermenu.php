@@ -48,9 +48,9 @@ class usermenu
     {
         $url = new moodle_url('/local/easycustmenu/pages/usermenu.php');
         if ($_POST) {
-            $label = optional_param_array('label', [], PARAM_RAW);
-            $link = optional_param_array('link', [], PARAM_RAW);
-            $user_role = optional_param_array('user_role', [], PARAM_RAW);
+            $label = optional_param_array('label', [], PARAM_TEXT);
+            $link = optional_param_array('link', [], PARAM_URL);
+            // $user_role = optional_param_array('user_role', [], PARAM_TEXT);
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
             if ($sesskey == sesskey()) {
                 $custommenuitems_text = '';

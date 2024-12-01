@@ -50,12 +50,12 @@ class navmenu
         $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
         if ($_POST) {
             // Get the parameters
-            $label = optional_param_array('label', [], PARAM_RAW);
-            $link = optional_param_array('link', [], PARAM_RAW);
-            $target_blank = optional_param_array('target_blank', [], PARAM_RAW);
-            $language = optional_param_array('language', [], PARAM_RAW);
-            $user_role = optional_param_array('user_role', [], PARAM_RAW);
-            $itemdepth = optional_param_array('itemdepth', [], PARAM_RAW);
+            $label = optional_param_array('label', [], PARAM_TEXT);
+            $link = optional_param_array('link', [], PARAM_URL);
+            $target_blank = optional_param_array('target_blank', [], PARAM_INT);
+            $language = optional_param_array('language', [], PARAM_LANG);
+            $user_role = optional_param_array('user_role', [], PARAM_TEXT);
+            $itemdepth = optional_param_array('itemdepth', [], PARAM_INT);
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
 
             // check sesskey

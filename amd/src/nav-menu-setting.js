@@ -22,21 +22,68 @@
  *
  */
 import $ from 'jquery';
+import Ajax from 'core/ajax';
+import Templates from 'core/templates';
 import menu_drag from 'local_easycustmenu/easy-menu-drag';
 
+/**
+ *
+ * @param {*} menu_item_num
+ * @param {*} itemdepth
+ * @param {*} condition
+ * @param {*} callback
+ */
+function ajax_get_menu_item_context(menu_item_num, itemdepth, condition, callback) {
 
-export const init = (menu_item, menu_type = 'navmenu') => {
+    let request = {
+        methodname: 'get_menu_item_context',
+        args: {
+            menu_item_num: parseInt(menu_item_num),
+            itemdepth: parseInt(itemdepth),
+            menu_condition: Boolean(condition),
+        }
+    };
+
+    let ajax = Ajax.call([request])[0];
+    ajax.done(function (response) {
+        if (!response.status) {
+            window.console.log('something is wrong...');
+        }
+        if (callback) {
+            callback(response);
+        }
+    });
+    ajax.fail(function () {
+        window.console.log('request failed.');
+    });
+    // ajax.always(function (response) {
+    //     window.console.log(response);
+    // });
+}
+
+
+export const init = (menu_type = 'navmenu') => {
     //
     menu_drag.easy_menu_drag(menu_type);
-
+    let add_condition = (menu_type == 'navmenu') ? true : false;
     /**
      * Add menu
      */
     $('.btn-add-menu').on('click', function (e) {
         e.preventDefault();
-        let total_menu = $('.menu .menu-item-wrapper ').length + 1;
-        menu_item = menu_item.replaceAll('menu-id', 'menu-' + total_menu);
-        $('.menu-wrapper .menu').append(menu_item);
+        var menu_id = $('.menu .menu-item-wrapper:last-child ').attr('id');
+        menu_id = parseInt(menu_id.split('-')[1]) + 1;
+        ajax_get_menu_item_context(menu_id, 1, add_condition, function (response) {
+            if (response.status) {
+                Templates.render(response.template_name, response.template_context)
+                    .then(function (html) {
+                        $('.menu-wrapper .menu').append(html);
+                        menu_drag.easy_menu_drag(menu_type);
+                    });
+            }
+        });
+
+
     });
 
     /**

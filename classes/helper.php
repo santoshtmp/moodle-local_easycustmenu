@@ -43,10 +43,9 @@ class helper
     /**
      * check check_custum_header_menu
      */
-    public function check_custum_header_menu()
-    {
+    public function check_custum_header_menu() {
         global $PAGE;
-        // hide primarynavigation if the data is present in hide_primarynavigation
+        // ... hide primarynavigation if the data is present in hide_primarynavigation
         $theme = $PAGE->theme;
         $activate = (get_config('local_easycustmenu', 'activate')) ?: "";
         if ($activate) {
@@ -59,8 +58,7 @@ class helper
     /**
      * 
      */
-    public function check_menu_line_role($condition_user_role)
-    {
+    public function check_menu_line_role($condition_user_role) {
         if ($condition_user_role == 'all') {
             return true;
         } else if ($condition_user_role == 'guest') {
@@ -68,7 +66,6 @@ class helper
                 return true;
             }
         } else if ($condition_user_role == 'auth') {
-            // if ($USER->id > 1) {
             if (isloggedin() && !isguestuser()) {
                 return true;
             }

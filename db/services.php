@@ -15,34 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for easycustmenu.
- * 
+ *
  * @package    local_easycustmenu
- * @copyright  2024 https://santoshmagar.com.np/
- * @author     santoshtmp7
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
  */
 
-// This line protects the file from being accessed by a URL directly.
 defined('MOODLE_INTERNAL') || die();
 
-// This is the component name of the plugin - it always starts with type of plugin 
-// like 'mod_', 'local_','block_','theme_' ......
-// should be the same as the name of the folder.
-$plugin->component = 'local_easycustmenu';
+$functions = array(
+    'get_menu_item_context' => array(
+        'classname' => 'local_easycustmenu\api\menu_item_context',
+        'methodname' => 'menu_item_context',
+        'description' => 'return get_menu_item_context section.',
+        'type' => 'read',
+        'ajax' => true
+    ),
 
-// This is the named version.
-$plugin->release = '1.0.0';
-
-// This is the version of the plugin.
-$plugin->version = 2024122402;
-
-// This is a stable release.
-$plugin->maturity = MATURITY_STABLE;
-
-// This is the version of Moodle this plugin requires.
-$plugin->requires = 2023041800;
-
-// This is the release of Moodle this plugin requires.
-$plugin->supported = [402, 404];
+);

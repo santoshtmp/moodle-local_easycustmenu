@@ -23,7 +23,6 @@
  * 
  */
 
-use local_easycustmenu\helper;
 use local_easycustmenu\menu\navmenu;
 
 // Require config.
@@ -44,13 +43,13 @@ $PAGE->set_pagetype('easycustmenu_navmenu_setting');
 $PAGE->set_title($page_title);
 $PAGE->set_heading($page_title);
 // $PAGE->navbar->add($page_title);
-$PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', [helper::menu_item_wrapper_section(),'navmenu']);
+$PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', ['navmenu']);
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/easycustmenu/style/nav-menu-setting.css'));
 
 $navmenu = new navmenu();
 // Access checks.
 // admin_externalpage_setup('local_easycustmenu_menu');
-require_login();
+require_login(null, false);
 if (!has_capability('moodle/site:config', $context)) {
     $contents = "You don't have permission to access this pages";
     $contents .= "<br>";
