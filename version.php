@@ -19,7 +19,7 @@
  * 
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
- * @author     santoshtmp7
+ * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * 
  */
@@ -34,7 +34,7 @@ $plugin->component = 'local_easycustmenu';
 $plugin->release = '1.0.0';
 
 // This is the version of the plugin.
-$plugin->version = 2024122402;
+$plugin->version = 2025012900;
 
 // This is a stable release.
 $plugin->maturity = MATURITY_STABLE;
@@ -43,4 +43,4 @@ $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2023041800;
 
 // This is the release of Moodle this plugin requires.
-$plugin->supported = [402, 404];
+$plugin->supported = [402, 405];

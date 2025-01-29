@@ -18,7 +18,7 @@
  * 
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
- * @author     santoshtmp7
+ * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * 
  */
@@ -35,7 +35,7 @@ use local_easycustmenu\helper;
  * Hook callbacks for local_easycustmenu
  *
  * @package    local_easycustmenu
- * @copyright  santoshtmp7
+ * @copyright  santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class hook_callbacks

@@ -19,7 +19,7 @@
  * 
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
- * @author     santoshtmp7
+ * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * 
  */
