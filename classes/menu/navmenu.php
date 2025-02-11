@@ -180,6 +180,8 @@ class navmenu
             'menu_setting_form_action' => $url,
             'values' => $easycustmenu_values,
             'apply_condition' => true,
+            'user_role_condition' => true,
+            'new_tab_condition' => true,
             'multi_lang' => (count(helper::get_languages()) > 1) ? true : false,
             'core_custommenuitems' => $core_custommenuitems,
         ];

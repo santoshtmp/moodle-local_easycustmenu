@@ -30,17 +30,17 @@ import menu_drag from 'local_easycustmenu/easy-menu-drag';
  *
  * @param {*} menu_item_num
  * @param {*} itemdepth
- * @param {*} condition
+ * @param {*} menu_type
  * @param {*} callback
  */
-function ajax_get_menu_item_context(menu_item_num, itemdepth, condition, callback) {
+function ajax_get_menu_item_context(menu_item_num, itemdepth, menu_type, callback) {
 
     let request = {
         methodname: 'get_menu_item_context',
         args: {
             menu_item_num: parseInt(menu_item_num),
             itemdepth: parseInt(itemdepth),
-            menu_condition: Boolean(condition),
+            menu_type: menu_type,
         }
     };
 
@@ -65,7 +65,6 @@ function ajax_get_menu_item_context(menu_item_num, itemdepth, condition, callbac
 export const init = (menu_type = 'navmenu') => {
     //
     menu_drag.easy_menu_drag(menu_type);
-    let add_condition = (menu_type == 'navmenu') ? true : false;
     /**
      * Add menu
      */
@@ -77,7 +76,7 @@ export const init = (menu_type = 'navmenu') => {
         } else {
             menu_id = 1;
         }
-        ajax_get_menu_item_context(menu_id, 1, add_condition, function (response) {
+        ajax_get_menu_item_context(menu_id, 1, menu_type, function (response) {
             if (response.status) {
                 Templates.render(response.template_name, response.template_context)
                     .then(function (html) {

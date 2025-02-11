@@ -37,7 +37,8 @@ class menu_item_context extends external_api
      *
      * @return external_function_parameters
      */
-    public static function menu_item_context_parameters() {
+    public static function menu_item_context_parameters()
+    {
         return new external_function_parameters(
             [
                 'menu_item_num' => new external_value(
@@ -49,9 +50,9 @@ class menu_item_context extends external_api
                     'itemdepth.',
                     VALUE_OPTIONAL
                 ),
-                'menu_condition' => new external_value(
-                    PARAM_BOOL,
-                    'apply menu condition or not.',
+                'menu_type' => new external_value(
+                    PARAM_TEXT,
+                    'apply menu type "navmenu" or "usermenu".',
                     VALUE_OPTIONAL
                 ),
             ]
@@ -61,21 +62,22 @@ class menu_item_context extends external_api
     /**
      * @param int $menuitemnum
      * @param int $itemdepth
-     * @param bool $menucondition
+     * @param string $menu_type
      * @return array
      */
-    public static function menu_item_context($menuitemnum, $itemdepth = 1, $menucondition = true) {
+    public static function menu_item_context($menuitemnum, $itemdepth = 1, $menu_type = 'navmenu')
+    {
 
         $params = self::validate_parameters(
             self::menu_item_context_parameters(),
             [
                 'menu_item_num' => $menuitemnum,
                 'itemdepth' => $itemdepth,
-                'menu_condition' => boolval($menucondition),
+                'menu_type' => $menu_type
             ]
         );
 
-        $applycondition = $params['menu_condition'];
+        $menu_type = $params['menu_type'];
         $menuitemnum = $params['menu_item_num'];
         $itemdepth = $params['itemdepth'];
         $pix = 24 * $itemdepth;
@@ -87,7 +89,9 @@ class menu_item_context extends external_api
             'itemdepth' => $itemdepth,
             'itemdepth_left_move' => 'padding-left: ' . $pix . 'px;',
             'condition_user_roles' => helper::get_condition_user_roles(),
-            'apply_condition' => $applycondition,
+            'apply_condition' => true,
+            'user_role_condition' => true,
+            'new_tab_condition' => ($menu_type == 'navmenu') ? true : false,
             'multi_lang' => (count(helper::get_languages()) > 1) ? true : false,
 
         ];
@@ -106,7 +110,8 @@ class menu_item_context extends external_api
      *
      * @return external_single_structure
      */
-    public static function menu_item_context_returns() {
+    public static function menu_item_context_returns()
+    {
         return new external_single_structure(
             [
                 'status' => new external_value(PARAM_BOOL, 'status'),
@@ -128,6 +133,8 @@ class menu_item_context extends external_api
                             )
                         ),
                         'apply_condition' => new external_value(PARAM_BOOL, 'apply_condition'),
+                        'user_role_condition' => new external_value(PARAM_BOOL, 'user_role_condition'),
+                        'new_tab_condition' => new external_value(PARAM_BOOL, 'new_tab_condition'),
                         'multi_lang' => new external_value(PARAM_BOOL, 'multi_lang'),
 
                     ],

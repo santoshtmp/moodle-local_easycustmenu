@@ -50,6 +50,8 @@ class usermenu
         if ($_POST) {
             $label = optional_param_array('label', [], PARAM_TEXT);
             $link = optional_param_array('link', [], PARAM_URL);
+            $user_role = optional_param_array('user_role', [], PARAM_TEXT);
+
             // $user_role = optional_param_array('user_role', [], PARAM_TEXT);
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
             if ($sesskey == sesskey()) {
@@ -64,7 +66,7 @@ class usermenu
                         $messagetype = \core\output\notification::NOTIFY_WARNING;
                         redirect($url, $message, null, $messagetype);
                     }
-                    $each_line = $value . "|" . $link[$key] . "\n";
+                    $each_line = $value . "|" . $link[$key] . "|" . $user_role[$key] . "\n";
                     $custommenuitems_text = $custommenuitems_text .  $each_line;
                 }
 
@@ -107,7 +109,7 @@ class usermenu
                 continue;
             }
             $settings = explode('|', $line);
-            $item_text = $item_url =  '';
+            $item_text = $item_url = $item_user_role =  '';
             foreach ($settings as $i => $setting) {
                 $setting = trim($setting);
                 if ($setting !== '') {
@@ -117,6 +119,9 @@ class usermenu
                             break;
                         case 1: // URL.
                             $item_url = str_replace($target_blank_value, '', $setting);
+                            break;
+                        case 2: // user_role.
+                            $item_user_role = $setting;
                             break;
                     }
                 }
@@ -128,6 +133,8 @@ class usermenu
                 'label' => $item_text,
                 'link' => $item_url,
                 'menu_item_num' => 'menu-' . $menu_order,
+                'condition_user_roles' => helper::get_condition_user_roles($item_user_role),
+
             ];
             $easycustmenu_values[] = $values;
             $menu_order++;
@@ -141,6 +148,8 @@ class usermenu
             'menu_setting_form_action' => $url,
             'values' => $easycustmenu_values,
             'menu_child' => false,
+            'apply_condition' => true,
+            'user_role_condition' => true,
             'multi_lang' => (count(helper::get_languages()) > 1) ? true : false
         ];
 

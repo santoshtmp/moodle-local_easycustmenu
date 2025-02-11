@@ -173,14 +173,14 @@ class helper
                     }
                 }
                 if ($item_text) {
-                    // check meu condition to open in new window for this line menu and then remove it from line menu data 
+                    // check menu condition to open in new window for this line menu and then remove it from line menu data 
                     if ($item_target_blank) {
                         $target_blank_on_menu[ltrim($item_text, '-')] = $item_url;
                     }
                     // Get depth of new item.
                     preg_match('/^(\-*)/', $line, $match);
                     $itemdepth = strlen($match[1]);
-                    // new mwnu line
+                    // new menu line
                     $new_line = $item_text . "|" . $item_url .  "|" . $title . "|" . $item_languages . "\n";
                     // add menu line according to user role condition
                     if ($itemdepth === 0) {
@@ -212,6 +212,46 @@ class helper
                 }
             }
             $CFG->custommenuitems = $easycustmenu_text_output; // . $CFG->custommenuitems;
+        }
+
+        // 
+        $customusermenuitems = get_config('moodle', 'customusermenuitems');
+        if ($customusermenuitems) {
+            $customusermenuitems_output = "";
+            $lines = explode("\n", $customusermenuitems);
+            foreach ($lines as $linenumber => $line) {
+                $line = trim($line);
+                if (strlen($line) == 0) {
+                    continue;
+                }
+                $settings = explode('|', $line);
+                $item_text = $item_url = $item_user_role =  '';
+                foreach ($settings as $i => $setting) {
+                    $setting = trim($setting);
+                    if ($setting !== '') {
+                        switch ($i) {
+                            case 0: // prefix and Menu text.
+                                $item_text = $setting;
+                                break;
+                            case 1: // URL.
+                                $item_url = ($setting) ?: '#';
+                                break;
+                            case 2: // role.
+                                $item_user_role = $setting;
+                                break;
+                        }
+                    }
+                }
+                if ($item_text) {
+                    // new menu line
+                    $new_line = $item_text . "|" . $item_url . "\n";
+                    // add menu line according to user role condition
+                    if ($this->check_menu_line_role($item_user_role)) {
+                        $customusermenuitems_output .= $new_line;
+                    }
+                }
+            }
+            $CFG->customusermenuitems = $customusermenuitems_output;
         }
     }
 

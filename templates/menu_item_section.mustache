@@ -50,6 +50,7 @@
 {{#apply_condition}}
 <div class="condition-fields" style="display:none; flex-basis: 100%; padding-left: 24px;">
     <ul class="condition-wrapper">
+        {{#new_tab_condition}}
         <li class="condition">
             {{#str}} open_in_a_new_browser_window, local_easycustmenu {{/str}} 
             <label data-id="{{menu_item_num}}">
@@ -61,6 +62,7 @@
                 {{#str}} yes, core {{/str}}
             </label>
         </li>
+        {{/new_tab_condition}}
         {{#multi_lang}}
         <li class="condition">
             <label>
@@ -69,6 +71,7 @@
             <input type="input" name="language[]" class="form-control input-language"  placeholder="{{#str}} show_the_menu_when_language_placeholder, local_easycustmenu {{/str}}" value="{{languages}}">      
         </li>
         {{/multi_lang}}
+        {{#user_role_condition}}
         <li class="condition">
             <label for="user_rolw_{{menu_item_num}}">
                 {{#str}} show_the_menu_when_user_is, local_easycustmenu {{/str}} 
@@ -79,6 +82,7 @@
                 {{/condition_user_roles}}
             </select>
         </li>
+        {{/user_role_condition}}
     </ul>
 </div>
 {{/apply_condition}}
