@@ -341,15 +341,15 @@ class helper
             }
         }
         //
-        if (get_config('local_easycustmenu', 'menu_show_on_hover') == '1') {
-            $style_content .= '
-                ul.nav .nav-item:hover .dropdown-menu,
-                ul.nav .nav-item .dropdown-menu:hover{
-                    display: block;
-                    margin-top: -2px;
-                }
-            ';
-        }
+        // if (get_config('local_easycustmenu', 'menu_show_on_hover') == '1') {
+        //     $style_content .= '
+        //         ul.nav .nav-item:hover .dropdown-menu,
+        //         ul.nav .nav-item .dropdown-menu:hover{
+        //             display: block;
+        //             margin-top: -2px;
+        //         }
+        //     ';
+        // }
 
         // 
         if ($style_content) {

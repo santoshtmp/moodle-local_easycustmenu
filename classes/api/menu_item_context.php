@@ -80,6 +80,7 @@ class menu_item_context extends external_api
         $menu_type = $params['menu_type'];
         $menuitemnum = $params['menu_item_num'];
         $itemdepth = $params['itemdepth'];
+        $multi_lang = (count(helper::get_languages()) > 1) ? true : false;
         $pix = 24 * $itemdepth;
 
         $templatecontext = [
@@ -92,7 +93,7 @@ class menu_item_context extends external_api
             'apply_condition' => true,
             'user_role_condition' => true,
             'new_tab_condition' => ($menu_type == 'navmenu') ? true : false,
-            'multi_lang' => (count(helper::get_languages()) > 1) ? true : false,
+            'multi_lang' => ($menu_type == 'navmenu') ?  $multi_lang : false,
 
         ];
 

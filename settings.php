@@ -75,17 +75,17 @@ if ($hassiteconfig) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
-    // Create custom_menu_heading.
-    $name = 'local_easycustmenu/custom_menu_heading';
-    $title = get_string('setting_custom_menu_heading', 'local_easycustmenu');
-    $description = '';
-    $setting = new admin_setting_heading($name, $title, $description);
-    $settings->add($setting);
+    // // Create custom_menu_heading.
+    // $name = 'local_easycustmenu/custom_menu_heading';
+    // $title = get_string('setting_custom_menu_heading', 'local_easycustmenu');
+    // $description = '';
+    // $setting = new admin_setting_heading($name, $title, $description);
+    // $settings->add($setting);
 
-    $name = 'local_easycustmenu/menu_show_on_hover';
-    $title = get_string('setting_menu_show_on_hover', 'local_easycustmenu');
-    $description = get_string('setting_menu_show_on_hover_desc', 'local_easycustmenu');
-    $setting = new admin_setting_configcheckbox($name, $title, $description, '0');
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $settings->add($setting);
+    // $name = 'local_easycustmenu/menu_show_on_hover';
+    // $title = get_string('setting_menu_show_on_hover', 'local_easycustmenu');
+    // $description = get_string('setting_menu_show_on_hover_desc', 'local_easycustmenu');
+    // $setting = new admin_setting_configcheckbox($name, $title, $description, '0');
+    // $setting->set_updatedcallback('theme_reset_all_caches');
+    // $settings->add($setting);
 }

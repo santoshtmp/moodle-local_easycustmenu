@@ -150,7 +150,7 @@ class usermenu
             'menu_child' => false,
             'apply_condition' => true,
             'user_role_condition' => true,
-            'multi_lang' => (count(helper::get_languages()) > 1) ? true : false
+            'multi_lang' => false  //(count(helper::get_languages()) > 1) ? true : false
         ];
 
         $contents = $OUTPUT->render_from_template($templatename, $context);
