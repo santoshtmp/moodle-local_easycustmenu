@@ -17,12 +17,12 @@
 /**
  * Hook callbacks
  * https://moodledev.io/docs/4.5/apis/core/hooks
- *  
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
 
@@ -48,5 +48,5 @@ $callbacks = [
         'hook' => core\hook\output\before_footer_html_generation::class,
         'callback' => 'local_easycustmenu\hooks\hook_callbacks::before_footer_html_generation',
         'priority' => 0,
-    ]
+    ],
 ];

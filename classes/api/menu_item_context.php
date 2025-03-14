@@ -59,6 +59,7 @@ class menu_item_context extends external_api {
     }
 
     /**
+     * Retrieves context information for a menu item.
      * @param int $menuitemnum
      * @param int $itemdepth 1 default
      * @param string $menutype 'navmenu' default

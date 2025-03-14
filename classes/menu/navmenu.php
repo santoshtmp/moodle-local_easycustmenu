@@ -15,21 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
 namespace local_easycustmenu\menu;
 
-use cache;
 use local_easycustmenu\helper;
 use moodle_url;
 
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * class to handle navmenu admin action
@@ -39,28 +37,26 @@ defined('MOODLE_INTERNAL') || die();
  * @author     santoshtmp
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class navmenu
-{
+class navmenu {
 
     /**
-     * set_easycustmenu for POST Method
+     * Set easycustmenu for POST Method.
      */
-    public function set_easycustmenu()
-    {
+    public function set_easycustmenu() {
         $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
         if ($_POST) {
-            // Get the parameters
+            // Get the parameters.
             $label = optional_param_array('label', [], PARAM_TEXT);
             $link = optional_param_array('link', [], PARAM_URL);
-            $target_blank = optional_param_array('target_blank', [], PARAM_INT);
+            $targetblank = optional_param_array('target_blank', [], PARAM_INT);
             $language = optional_param_array('language', [], PARAM_TEXT);
-            $user_role = optional_param_array('user_role', [], PARAM_TEXT);
+            $userrole = optional_param_array('user_role', [], PARAM_TEXT);
             $itemdepth = optional_param_array('itemdepth', [], PARAM_INT);
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
 
-            // check sesskey
+            // Check sesskey.
             if ($sesskey == sesskey()) {
-                $custommenuitems_text = '';
+                $custommenuitemstext = '';
                 foreach ($label as $key => $value) {
                     if (empty($value) || $value == '') {
                         continue;
@@ -72,22 +68,28 @@ class navmenu
                             $prefix .= '-';
                         }
                     }
-                    // validate
+                    // Validate.
                     if (str_contains($value, '|') || str_contains($link[$key], '|') || str_contains($language[$key], '|')) {
-                        $message = "Something went wromg, <br> Input menu value contain '|' specific character. Which is not allowed.";
+                        $message = get_string('usermenu_msg', 'local_easycustmenu');
                         $messagetype = \core\output\notification::NOTIFY_WARNING;
                         redirect($url, $message, null, $messagetype);
                     }
-                    // prepare each line
-                    $each_line = $prefix . $value . "|" . $link[$key] .  "|" . "|" . $language[$key] . "|" . $user_role[$key] . "|" . $target_blank[$key] . "\n";
-                    $custommenuitems_text = $custommenuitems_text .  $each_line;
+                    // Prepare each line.
+                    $eachline = [
+                        $prefix . $value,
+                        $link[$key],
+                        "",
+                        $language[$key],
+                        $userrole[$key],
+                        $targetblank[$key],
+                    ];
+                    $custommenuitemstext = $custommenuitemstext .  implode("|", $eachline) . "\n";
                 }
-                // set custommenuitems_text
+                // Set custommenuitems_text.
                 try {
-                    set_config('custommenuitems', $custommenuitems_text, 'local_easycustmenu');
+                    set_config('custommenuitems', $custommenuitemstext, 'local_easycustmenu');
                     $message = "Menu save sucessfully ";
                     $messagetype = \core\output\notification::NOTIFY_INFO;
-                    // purge_all_caches();
                 } catch (\Throwable $th) {
                     $message = "Something went wromg";
                     $messagetype = \core\output\notification::NOTIFY_WARNING;
@@ -104,48 +106,46 @@ class navmenu
     }
 
     /**
-     * get_easycustmenu 
+     * get_easycustmenu
      * return the custum menu setting form template
-     * 
+     *
      */
-    public function get_easycustmenu_setting_section($json = false)
-    {
+    public function get_easycustmenu_setting_section($json = false) {
         global $OUTPUT;
         $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
-        $easycustmenu_values = [];
-        $core_custommenuitems = get_config('core', 'custommenuitems');
+        $easycustmenuvalues = [];
+        $corecustommenuitems = get_config('core', 'custommenuitems');
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');
         $lines = explode("\n", $custommenuitems);
-        // $menu_order = $menu_order_child_1 =  $menu_order_child_2 = -1;
-        $menu_item_num = 1;
+        $menuitemnum = 1;
         foreach ($lines as $linenumber => $line) {
             $line = trim($line);
             if (strlen($line) == 0) {
                 continue;
             }
             $settings = explode('|', $line);
-            $item_text = $item_url = $title = $item_languages = $item_user_role =  $item_target_blank = '';
+            $itemtext = $itemurl = $title = $itemlanguages = $itemuserrole = $itemtargetblank = '';
             foreach ($settings as $i => $setting) {
                 $setting = trim($setting);
                 if ($setting !== '') {
                     switch ($i) {
                         case 0: // Menu text.
-                            $item_text = ltrim($setting, '-');
+                            $itemtext = ltrim($setting, '-');
                             break;
                         case 1: // URL.
-                            $item_url = $setting;
+                            $itemurl = $setting;
                             break;
-                        case 2: // title.
+                        case 2: // Title.
                             $title = $setting;
                             break;
                         case 3: // Language.
-                            $item_languages = $setting;
+                            $itemlanguages = $setting;
                             break;
-                        case 4: // user_role.
-                            $item_user_role = $setting;
+                        case 4: // User role.
+                            $itemuserrole = $setting;
                             break;
-                        case 5: // item_target_blank.
-                            $item_target_blank = (int)$setting;
+                        case 5: // Item_target_blank.
+                            $itemtargetblank = (int)$setting;
                             break;
                     }
                 }
@@ -154,36 +154,35 @@ class navmenu
             preg_match('/^(\-*)/', $line, $match);
             $itemdepth = strlen($match[1]);
 
-            // arrange the menu values
+            // Arrange the menu values.
             $pix = 24 * ($itemdepth + 1);
             $values = [
-                'menu_item_num' => 'menu-' . $menu_item_num,
+                'menu_item_num' => 'menu-' . $menuitemnum,
                 'itemdepth' => $itemdepth + 1,
                 'itemdepth_left_move' => 'padding-left: ' . $pix . 'px;',
-                'label' => $item_text,
-                'link' => $item_url,
-                'target_blank' => $item_target_blank,
-                'languages' => $item_languages,
-                'condition_user_roles' => helper::get_condition_user_roles($item_user_role),
+                'label' => $itemtext,
+                'link' => $itemurl,
+                'target_blank' => $itemtargetblank,
+                'languages' => $itemlanguages,
+                'condition_user_roles' => helper::get_condition_user_roles($itemuserrole),
             ];
-            $easycustmenu_values[] = $values;
-            $menu_item_num++;
+            $easycustmenuvalues[] = $values;
+            $menuitemnum++;
         }
         if ($json === true) {
-            echo json_encode($easycustmenu_values);
+            echo json_encode($easycustmenuvalues);
             die;
         }
-
 
         $templatename = 'local_easycustmenu/menu_setting_collection';
         $context = [
             'menu_setting_form_action' => $url,
-            'values' => $easycustmenu_values,
+            'values' => $easycustmenuvalues,
             'apply_condition' => true,
             'user_role_condition' => true,
             'new_tab_condition' => true,
             'multi_lang' => (count(helper::get_languages()) > 1) ? true : false,
-            'core_custommenuitems' => $core_custommenuitems,
+            'core_custommenuitems' => $corecustommenuitems,
         ];
 
         $contents = $OUTPUT->render_from_template($templatename, $context);

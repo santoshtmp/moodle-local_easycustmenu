@@ -15,12 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     // Heading.
     $settings = new admin_settingpage('local_easycustmenu', get_string('pluginname', 'local_easycustmenu'));
-    // $ADMIN->add('localplugins', $settings);
     $ADMIN->add('appearance', $settings);
 
     // Create primary navigation heading.
@@ -50,7 +49,7 @@ if ($hassiteconfig) {
     $title = get_string('setting_show_ecm_core', 'local_easycustmenu');
     $description = get_string('setting_show_ecm_core_desc', 'local_easycustmenu');
     $default = 0;
-    $choices = array(0 => 'Hide', 1 => 'Show');
+    $choices = [0 => 'Hide', 1 => 'Show'];
     $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
     $settings->add($setting);
 
@@ -62,30 +61,17 @@ if ($hassiteconfig) {
 
     // Setting: Hide nodes in primary navigation.
     // Prepare hide nodes options.
-    $hidenodesoptions = array(
+    $hidenodesoptions = [
         'home' => get_string('home'),
         'myhome' => get_string('myhome'),
         'courses' => get_string('mycourses'),
-        'siteadminnode' => get_string('administrationsite')
-    );
+        'siteadminnode' => get_string('administrationsite'),
+    ];
     $name = 'local_easycustmenu/hide_primarynavigation';
     $title = get_string('hide_primarynavigation_title', 'local_easycustmenu');
     $description = get_string('hide_primarynavigation_description', 'local_easycustmenu');
-    $setting = new admin_setting_configmulticheckbox($name, $title, $description, array(), $hidenodesoptions);
+    $setting = new admin_setting_configmulticheckbox($name, $title, $description, [], $hidenodesoptions);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
-    // // Create custom_menu_heading.
-    // $name = 'local_easycustmenu/custom_menu_heading';
-    // $title = get_string('setting_custom_menu_heading', 'local_easycustmenu');
-    // $description = '';
-    // $setting = new admin_setting_heading($name, $title, $description);
-    // $settings->add($setting);
-
-    // $name = 'local_easycustmenu/menu_show_on_hover';
-    // $title = get_string('setting_menu_show_on_hover', 'local_easycustmenu');
-    // $description = get_string('setting_menu_show_on_hover_desc', 'local_easycustmenu');
-    // $setting = new admin_setting_configcheckbox($name, $title, $description, '0');
-    // $setting->set_updatedcallback('theme_reset_all_caches');
-    // $settings->add($setting);
 }

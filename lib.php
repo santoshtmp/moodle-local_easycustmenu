@@ -15,50 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
-
 use local_easycustmenu\helper;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * From moodle 4.4 callback are managed through callback hook => local_easycustmenu\hooks\hook_callbacks
  * https://moodledev.io/docs/4.5/apis/core/hooks
  * https://docs.moodle.org/dev/Output_callbacks#before_http_headers
  */
-function local_easycustmenu_before_http_headers()
-{
+function local_easycustmenu_before_http_headers() {
     $easycustmenu = new helper();
     $easycustmenu->check_custum_header_menu();
 }
-
-/**
- * 
- */
-// function local_easycustmenu_before_standard_html_head()
-// {
-// }
-
-/**
- * @return string
- */
-// function local_easycustmenu_render_navbar_output()
-// {
-// }
 
 /**
  * Callback allowing to add contetnt inside the region-main, in the very end
  *
  * @return string
  */
-function local_easycustmenu_before_footer()
-{
+function local_easycustmenu_before_footer() {
     return helper::before_footer_content();
 }

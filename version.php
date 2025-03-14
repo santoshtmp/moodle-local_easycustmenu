@@ -16,12 +16,12 @@
 
 /**
  * Version information for easycustmenu.
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
- * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu 
+ * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
 // This line protects the file from being accessed by a URL directly.
@@ -34,7 +34,7 @@ $plugin->component = 'local_easycustmenu';
 $plugin->release = '1.0.0';
 
 // This is the version of the plugin.
-$plugin->version = 2025012900;
+$plugin->version = 2025031500;
 
 // This is a stable release.
 $plugin->maturity = MATURITY_STABLE;

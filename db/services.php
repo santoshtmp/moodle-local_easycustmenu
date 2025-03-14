@@ -17,18 +17,20 @@
 /**
  *
  * @package    local_easycustmenu
+ * @copyright  2024 https://santoshmagar.com.np/
+ * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$functions = array(
-    'get_menu_item_context' => array(
+$functions = [
+    'get_menu_item_context' => [
         'classname' => 'local_easycustmenu\api\menu_item_context',
         'methodname' => 'menu_item_context',
         'description' => 'return get_menu_item_context section.',
         'type' => 'read',
-        'ajax' => true
-    ),
-
-);
+        'ajax' => true,
+    ],
+];

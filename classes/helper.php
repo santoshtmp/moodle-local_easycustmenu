@@ -15,19 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
 namespace local_easycustmenu;
 
 use moodle_url;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * class to handle local_easycustmenu helper action
@@ -37,41 +35,40 @@ defined('MOODLE_INTERNAL') || die();
  * @author     santoshtmp
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class helper
-{
+class helper {
 
     /**
      * check check_custum_header_menu
      */
-    public function check_custum_header_menu()
-    {
+    public function check_custum_header_menu() {
         global $PAGE;
         // ... hide primarynavigation if the data is present in hide_primarynavigation
         $theme = $PAGE->theme;
         $activate = (get_config('local_easycustmenu', 'activate')) ?: "";
         if ($activate) {
             $theme->removedprimarynavitems = explode(',', get_config('local_easycustmenu', 'hide_primarynavigation'));
-            $this->define_new_cfg_custommenuitems(); // define new custom menus
+            $this->define_new_cfg_custommenuitems();
         }
     }
 
 
     /**
-     * 
+     * Checks if the current user has a specific role.
+     * @param string $conditionuserrole
+     * @return bool
      */
-    public function check_menu_line_role($condition_user_role)
-    {
-        if ($condition_user_role == 'all') {
+    public function check_menu_line_role($conditionuserrole) {
+        if ($conditionuserrole == 'all') {
             return true;
-        } else if ($condition_user_role == 'guest') {
-            if (!isloggedin() or isguestuser()) {
+        } else if ($conditionuserrole == 'guest') {
+            if (!isloggedin() || isguestuser()) {
                 return true;
             }
-        } else if ($condition_user_role == 'auth') {
+        } else if ($conditionuserrole == 'auth') {
             if (isloggedin() && !isguestuser()) {
                 return true;
             }
-        } else if ($condition_user_role == 'admin') {
+        } else if ($conditionuserrole == 'admin') {
             if (is_siteadmin()) {
                 return true;
             }
@@ -80,10 +77,9 @@ class helper
     }
 
     /**
-     * 
+     * get languages
      */
-    public static function get_languages()
-    {
+    public static function get_languages() {
         $langs = get_string_manager()->get_list_of_translations();
         $i = 0;
         $languages = [];
@@ -96,31 +92,30 @@ class helper
     }
 
     /**
-     * 
+     * get condition user roles
      */
-    public static function get_condition_user_roles($role = '')
-    {
+    public static function get_condition_user_roles($role = '') {
 
         $roles = [
             [
                 'key' => 'all',
                 'value' => 'All users role',
-                'is_selected' => ($role == 'all') ? true : false
+                'is_selected' => ($role == 'all') ? true : false,
             ],
             [
                 'key' => 'guest',
                 'value' => 'Guest user role',
-                'is_selected' => ($role == 'guest') ? true : false
+                'is_selected' => ($role == 'guest') ? true : false,
             ],
             [
                 'key' => 'auth',
                 'value' => 'Login user role',
-                'is_selected' => ($role == 'auth') ? true : false
+                'is_selected' => ($role == 'auth') ? true : false,
             ],
             [
                 'key' => 'admin',
                 'value' => 'Admin user role',
-                'is_selected' => ($role == 'admin') ? true : false
+                'is_selected' => ($role == 'admin') ? true : false,
             ],
         ];
         return $roles;
@@ -129,16 +124,15 @@ class helper
     /**
      * check and define new custommenuitems according to custommenuitems
      */
-    public function define_new_cfg_custommenuitems()
-    {
+    public function define_new_cfg_custommenuitems() {
         global $CFG;
-        global $target_blank_on_menu;
-        $target_blank_on_menu = [];
-        // check and update custom menu
+        global $targetblankonmenu;
+        $targetblankonmenu = [];
+        // Check and update custom menu.
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');
         if ($custommenuitems) {
-            $easycustmenu_text_output = '';
-            $menu_depth_0_value = $menu_depth_1_value = $menu_depth_2_value = 0;
+            $easycustmenutextoutput = '';
+            $menudepth0value = $menudepth1value = $menudepth2value = 0;
             $lines = explode("\n", $custommenuitems);
             foreach ($lines as $linenumber => $line) {
                 $line = trim($line);
@@ -146,78 +140,77 @@ class helper
                     continue;
                 }
                 $settings = explode('|', $line);
-                $item_text = $item_url = $title = $item_languages = $item_user_role =  $item_target_blank = '';
+                $itemtext = $itemurl = $title = $itemlanguages = $itemuserrole = $itemtargetblank = '';
                 foreach ($settings as $i => $setting) {
                     $setting = trim($setting);
                     if ($setting !== '') {
                         switch ($i) {
-                            case 0: // prefix and Menu text.
-                                $item_text = $setting;
+                            case 0: // Prefix and Menu text.
+                                $itemtext = $setting;
                                 break;
                             case 1: // URL.
-                                $item_url = ($setting) ?: '#';
+                                $itemurl = ($setting) ?: '#';
                                 break;
-                            case 2: // title.
+                            case 2: // Title.
                                 $title = $setting;
                                 break;
                             case 3: // Language.
-                                $item_languages = $setting;
+                                $itemlanguages = $setting;
                                 break;
-                            case 4: // user_role.
-                                $item_user_role = $setting;
+                            case 4: // User role.
+                                $itemuserrole = $setting;
                                 break;
-                            case 5: // item_target_blank.
-                                $item_target_blank = (int)$setting;
+                            case 5: // Item_target_blank.
+                                $itemtargetblank = (int)$setting;
                                 break;
                         }
                     }
                 }
-                if ($item_text) {
-                    // check menu condition to open in new window for this line menu and then remove it from line menu data 
-                    if ($item_target_blank) {
-                        $target_blank_on_menu[ltrim($item_text, '-')] = $item_url;
+                if ($itemtext) {
+                    // Check menu condition to open in new window for this line menu and then remove it from line menu data .
+                    if ($itemtargetblank) {
+                        $targetblankonmenu[ltrim($itemtext, '-')] = $itemurl;
                     }
                     // Get depth of new item.
                     preg_match('/^(\-*)/', $line, $match);
                     $itemdepth = strlen($match[1]);
-                    // new menu line
-                    $new_line = $item_text . "|" . $item_url .  "|" . $title . "|" . $item_languages . "\n";
-                    // add menu line according to user role condition
+                    // New menu line.
+                    $newline = $itemtext . "|" . $itemurl .  "|" . $title . "|" . $itemlanguages . "\n";
+                    // Add menu line according to user role condition.
                     if ($itemdepth === 0) {
-                        if ($this->check_menu_line_role($item_user_role)) {
-                            $easycustmenu_text_output .= $new_line;
-                            $menu_depth_0_value = 1;
+                        if ($this->check_menu_line_role($itemuserrole)) {
+                            $easycustmenutextoutput .= $newline;
+                            $menudepth0value = 1;
                         } else {
-                            $menu_depth_0_value = 0;
+                            $menudepth0value = 0;
                         }
-                    } else if ($itemdepth === 1 &&  $menu_depth_0_value) {
-                        if ($this->check_menu_line_role($item_user_role)) {
-                            $easycustmenu_text_output .= $new_line;
-                            $menu_depth_1_value = 1;
+                    } else if ($itemdepth === 1 &&  $menudepth0value) {
+                        if ($this->check_menu_line_role($itemuserrole)) {
+                            $easycustmenutextoutput .= $newline;
+                            $menudepth1value = 1;
                         } else {
-                            $menu_depth_1_value = 0;
+                            $menudepth1value = 0;
                         }
-                    } else if ($itemdepth === 2 && $menu_depth_1_value) {
-                        if ($this->check_menu_line_role($item_user_role)) {
-                            $easycustmenu_text_output .= $new_line;
-                            $menu_depth_2_value = 1;
+                    } else if ($itemdepth === 2 && $menudepth1value) {
+                        if ($this->check_menu_line_role($itemuserrole)) {
+                            $easycustmenutextoutput .= $newline;
+                            $menudepth2value = 1;
                         } else {
-                            $menu_depth_2_value = 0;
+                            $menudepth2value = 0;
                         }
-                    } else if ($itemdepth === 3 && $menu_depth_2_value) {
-                        if ($this->check_menu_line_role($item_user_role)) {
-                            $easycustmenu_text_output .= $new_line;
+                    } else if ($itemdepth === 3 && $menudepth2value) {
+                        if ($this->check_menu_line_role($itemuserrole)) {
+                            $easycustmenutextoutput .= $newline;
                         }
                     }
                 }
             }
-            $CFG->custommenuitems = $easycustmenu_text_output; // . $CFG->custommenuitems;
+            $CFG->custommenuitems = $easycustmenutextoutput;
         }
 
-        // 
         $customusermenuitems = get_config('moodle', 'customusermenuitems');
         if ($customusermenuitems) {
-            $customusermenuitems_output = "";
+            $customusermenuitemsoutput = "";
             $lines = explode("\n", $customusermenuitems);
             foreach ($lines as $linenumber => $line) {
                 $line = trim($line);
@@ -225,33 +218,33 @@ class helper
                     continue;
                 }
                 $settings = explode('|', $line);
-                $item_text = $item_url = $item_user_role =  '';
+                $itemtext = $itemurl = $itemuserrole = '';
                 foreach ($settings as $i => $setting) {
                     $setting = trim($setting);
                     if ($setting !== '') {
                         switch ($i) {
-                            case 0: // prefix and Menu text.
-                                $item_text = $setting;
+                            case 0: // Prefix and Menu text.
+                                $itemtext = $setting;
                                 break;
                             case 1: // URL.
-                                $item_url = ($setting) ?: '#';
+                                $itemurl = ($setting) ?: '#';
                                 break;
-                            case 2: // role.
-                                $item_user_role = $setting;
+                            case 2: // Role.
+                                $itemuserrole = $setting;
                                 break;
                         }
                     }
                 }
-                if ($item_text) {
-                    // new menu line
-                    $new_line = $item_text . "|" . $item_url . "\n";
-                    // add menu line according to user role condition
-                    if ($this->check_menu_line_role($item_user_role)) {
-                        $customusermenuitems_output .= $new_line;
+                if ($itemtext) {
+                    // New menu line.
+                    $newline = $itemtext . "|" . $itemurl . "\n";
+                    // Add menu line according to user role condition.
+                    if ($this->check_menu_line_role($itemuserrole)) {
+                        $customusermenuitemsoutput .= $newline;
                     }
                 }
             }
-            $CFG->customusermenuitems = $customusermenuitems_output;
+            $CFG->customusermenuitems = $customusermenuitemsoutput;
         }
     }
 
@@ -259,8 +252,7 @@ class helper
      * menu_item_wrapper_section
      * @return string :: the menu_item_wrapper in the menu_item_wrapper function for browser
      */
-    public static function menu_item_wrapper_section($apply_condition = true)
-    {
+    public static function menu_item_wrapper_section($applycondition = true) {
         global $OUTPUT;
         $templatename = 'local_easycustmenu/menu_item_wrapper';
         $context = [
@@ -268,10 +260,9 @@ class helper
             'label' => '',
             'link' => '',
             'itemdepth' => '1',
-            'condition_user_roles' => helper::get_condition_user_roles(),
-            'apply_condition' => $apply_condition,
-            'multi_lang' => (count(helper::get_languages()) > 1) ? true : false
-
+            'condition_user_roles' => self::get_condition_user_roles(),
+            'apply_condition' => $applycondition,
+            'multi_lang' => (count(self::get_languages()) > 1) ? true : false,
         ];
         $contents = $OUTPUT->render_from_template($templatename, $context);
         $contents = trim(str_replace(["\r", "\n"], '', $contents));
@@ -280,55 +271,54 @@ class helper
 
 
     /**
-     * 
+     * before_footer_content
      */
-    public static function before_footer_content()
-    {
+    public static function before_footer_content() {
         $activate = (get_config('local_easycustmenu', 'activate')) ?: "";
         if (!$activate) {
             return;
         }
 
-        global $PAGE, $target_blank_on_menu, $OUTPUT;
+        global $PAGE, $targetblankonmenu, $OUTPUT;
         $content = '';
-        $script_content = $style_content = '';
-        $allow_page_type = [
+        $scriptcontent = $stylecontent = '';
+        $allowpagetype = [
             'admin-setting-themesettingsadvanced',
             'admin-setting-themesettings',
             'admin-setting-local_easycustmenu',
             'easycustmenu_navmenu_setting',
-            'easycustmenu_usermenu_setting'
+            'easycustmenu_usermenu_setting',
         ];
-        //
-        if ($PAGE->pagelayout === 'admin' && in_array($PAGE->pagetype, $allow_page_type) && is_siteadmin()) {
+
+        if ($PAGE->pagelayout === 'admin' && in_array($PAGE->pagetype, $allowpagetype) && is_siteadmin()) {
             if (
                 $PAGE->pagetype === 'admin-setting-local_easycustmenu' ||
                 $PAGE->pagetype == 'easycustmenu_navmenu_setting' ||
                 $PAGE->pagetype == 'easycustmenu_usermenu_setting'
             ) {
                 $url = $_SERVER['REQUEST_URI'];
-                $defined_urls = [
+                $definedurls = [
                     get_string('general_setting', 'local_easycustmenu') => "/admin/settings.php?section=local_easycustmenu",
                     get_string('header_nav_menu_setting', 'local_easycustmenu') => "/local/easycustmenu/pages/navmenu.php",
-                    get_string('user_menu_settinig', 'local_easycustmenu') => "/local/easycustmenu/pages/usermenu.php"
+                    get_string('user_menu_settinig', 'local_easycustmenu') => "/local/easycustmenu/pages/usermenu.php",
                 ];
                 $templatename = 'local_easycustmenu/easycustmenu_setting_header';
-                $template_context = [];
-                foreach ($defined_urls as $label => $value_url) {
-                    $single_menu = [
-                        'menu_active_class' => (str_contains($url, $value_url)) ? "active" : "",
-                        'menu_moodle_url' => new moodle_url($value_url),
-                        'menu_label' => $label
+                $templatecontext = [];
+                foreach ($definedurls as $label => $valueurl) {
+                    $singlemenu = [
+                        'menu_active_class' => (str_contains($url, $valueurl)) ? "active" : "",
+                        'menu_moodle_url' => new moodle_url($valueurl),
+                        'menu_label' => $label,
                     ];
-                    $template_context['single_menu'][] = $single_menu;
+                    $templatecontext['single_menu'][] = $singlemenu;
                 }
-                $plugin_header_content = $OUTPUT->render_from_template($templatename, $template_context);
-                $plugin_header_content = trim(str_replace(["\r", "\n"], '', $plugin_header_content));
-                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_plugin_setting_init', [$plugin_header_content]);
+                $pluginheadercontent = $OUTPUT->render_from_template($templatename, $templatecontext);
+                $pluginheadercontent = trim(str_replace(["\r", "\n"], '', $pluginheadercontent));
+                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_plugin_setting_init', [$pluginheadercontent]);
             } else {
-                $show_ecm_core = get_config('local_easycustmenu', 'show_ecm_core');
-                if ($show_ecm_core) {
-                    $string_array = [
+                $showecmcore = get_config('local_easycustmenu', 'show_ecm_core');
+                if ($showecmcore) {
+                    $stringarray = [
                         'show_menu_label' => get_string('show_menu_label', 'local_easycustmenu'),
                         'hide_menu_label' => get_string('hide_menu_label', 'local_easycustmenu'),
                         'manage_menu_label' => get_string('manage_menu_label', 'local_easycustmenu'),
@@ -336,30 +326,19 @@ class helper
                         'hide_menu_label_2' => get_string('hide_menu_label_2', 'local_easycustmenu'),
                         'manage_menu_label_2' => get_string('manage_menu_label_2', 'local_easycustmenu'),
                     ];
-                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_core_setting_init', [$string_array]);
+                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_core_setting_init', [$stringarray]);
                 }
             }
         }
-        //
-        // if (get_config('local_easycustmenu', 'menu_show_on_hover') == '1') {
-        //     $style_content .= '
-        //         ul.nav .nav-item:hover .dropdown-menu,
-        //         ul.nav .nav-item .dropdown-menu:hover{
-        //             display: block;
-        //             margin-top: -2px;
-        //         }
-        //     ';
-        // }
-
-        // 
-        if ($style_content) {
-            $content .= '<style>' . $style_content . '</style>';
+        // Check style and script.
+        if ($stylecontent) {
+            $content .= '<style>' . $stylecontent . '</style>';
         }
-        if ($script_content) {
-            $content .= '<script>' . $script_content . '</script>';
+        if ($scriptcontent) {
+            $content .= '<script>' . $scriptcontent . '</script>';
         }
-        if ($target_blank_on_menu) {
-            $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'target_blank_menu', [json_encode($target_blank_on_menu)]);
+        if ($targetblankonmenu) {
+            $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'target_blank_menu', [json_encode($targetblankonmenu)]);
         }
 
         return $content;

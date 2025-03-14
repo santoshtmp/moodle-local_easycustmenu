@@ -25,10 +25,9 @@
 
 namespace local_easycustmenu\hooks;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core\hook\navigation\primary_extend;
 use core\hook\output\before_http_headers;
+use core\hook\output\before_standard_head_html_generation;
 use local_easycustmenu\helper;
 
 /**
@@ -38,18 +37,15 @@ use local_easycustmenu\helper;
  * @copyright  santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class hook_callbacks
-{
+class hook_callbacks {
 
     /**
      * Callback allowing to add primary node
      *
      * @param \core\hook\navigation\primary_extend $hook
      */
-    public static function primary_navigation_extend(primary_extend $hook): void
-    {
-        // $get_primaryview = $hook->get_primaryview();
-        // $get_primaryview->add("Easy Menu", '/local/easycustmenu/pages/navmenu.php', navigation_node::TYPE_CUSTOM, null, 'easycustmenu');
+    public static function primary_navigation_extend(primary_extend $hook): void {
+        // Test.
     }
 
 
@@ -58,8 +54,7 @@ class hook_callbacks
      *
      * @param \core\hook\output\before_http_headers $hook
      */
-    public static function before_http_headers(before_http_headers $hook): void
-    {
+    public static function before_http_headers(before_http_headers $hook): void {
         global $CFG;
         if (during_initial_install() || isset($CFG->upgraderunning)) {
             // Do nothing during installation or upgrade.
@@ -74,8 +69,7 @@ class hook_callbacks
      *
      * @param \core\hook\output\before_standard_head_html_generation $hook
      */
-    public static function before_standard_head_html_generation(\core\hook\output\before_standard_head_html_generation $hook): void
-    {
+    public static function before_standard_head_html_generation(before_standard_head_html_generation $hook): void {
         global $CFG;
         if (during_initial_install() || isset($CFG->upgraderunning)) {
             // Do nothing during installation or upgrade.
@@ -88,8 +82,7 @@ class hook_callbacks
      *
      * @param \core\hook\output\before_footer_html_generation $hook
      */
-    public static function before_footer_html_generation(\core\hook\output\before_footer_html_generation $hook): void
-    {
+    public static function before_footer_html_generation(\core\hook\output\before_footer_html_generation $hook): void {
         global $CFG;
         if (during_initial_install() || isset($CFG->upgraderunning)) {
             // Do nothing during installation or upgrade.

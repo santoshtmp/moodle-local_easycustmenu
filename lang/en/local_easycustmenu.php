@@ -16,33 +16,33 @@
 
 /**
  * Language file.
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Easy Custom Menu';
-$string['pluginname_desc'] = 'Local plugin to easily customize moodle menus';
 $string['configtitle'] = 'Easy Custom Menu Settings';
-
-$string['setting_primarynav_heading'] = 'Primary navigation';
 $string['hide_primarynavigation_title'] = 'Hide primary navigation';
+$string['pluginname'] = 'Easy Custom Menu';
+
+$string['pluginname_desc'] = 'Local plugin to easily customize moodle menus';
 $string['hide_primarynavigation_description'] = 'You can hide default primary navigation with the select one or multiple values';
 
-$string['setting_general'] = "General";
+$string['setting_primarynav_heading'] = 'Primary navigation';
+
 $string['setting_activate'] = "Activate";
+$string['setting_general'] = "General";
 $string['setting_activate_desc'] = "Activate the easy custom menu feature.";
+$string['setting_show_ecm_core'] = "Show ECM in Default Custom Menu";
+
 $string['setting_custom_menu_heading'] = 'Custom Menu Settings';
 $string['setting_user_menu_heading'] = 'User Menu Settings';
-$string['setting_menu_show_on_hover'] = "Header nav menu show on hover";
-$string['setting_menu_show_on_hover_desc'] = 'Header primary menu child will be visible on hover without click on menu. By default menu need to be click to see the child menu. Ignore it, if this feature is alrady managed by current theme ';
-$string['setting_show_ecm_core'] = "Show ECM in Default Custom Menu";
 $string['setting_show_ecm_core_desc'] = 'This will hide or show Easy Custom Menu(ECM) link in default admin custom menu section';
 
 $string['general_setting'] = "General Setting";
@@ -55,6 +55,9 @@ $string['manage_menu_label'] = 'Manage Menu Through Easy Custom Menu';
 $string['show_menu_label_2'] = 'Show Default "User menu items" ';
 $string['hide_menu_label_2'] = 'Hide Default "User menu items" ';
 $string['manage_menu_label_2'] = "Manage User Menu Through Easy Custom Menu";
+
+$string['usermenu_msg'] = "Something went wromg, <br> input menu value contain '|' specific character. Which is not allowed.";
+
 
 $string['add_menu'] = "Add Menu";
 $string['save_menu'] = "Save Menu";

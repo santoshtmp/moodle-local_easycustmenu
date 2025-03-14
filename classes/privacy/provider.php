@@ -15,17 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
 namespace local_easycustmenu\privacy;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Privacy Subsystem for local_easycustmenu implementing null_provider.
@@ -33,8 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2024 https://santoshmagar.com.np/
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\null_provider
-{
+class provider implements \core_privacy\local\metadata\null_provider {
 
     /**
      * Get the language string identifier with the component's language
@@ -42,8 +39,7 @@ class provider implements \core_privacy\local\metadata\null_provider
      *
      * @return  string
      */
-    public static function get_reason(): string
-    {
+    public static function get_reason(): string {
         return 'privacy:metadata';
     }
 }

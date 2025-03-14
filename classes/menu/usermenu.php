@@ -15,20 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 
 namespace local_easycustmenu\menu;
 
 use local_easycustmenu\helper;
 use moodle_url;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * class to handle usermenu admin action
@@ -38,41 +36,37 @@ defined('MOODLE_INTERNAL') || die();
  * @author     santoshtmp
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class usermenu
-{
+class usermenu {
 
     /**
      * set_usertmenu for POST Method
      */
-    public function set_usertmenu()
-    {
+    public function set_usertmenu() {
         $url = new moodle_url('/local/easycustmenu/pages/usermenu.php');
         if ($_POST) {
             $label = optional_param_array('label', [], PARAM_TEXT);
             $link = optional_param_array('link', [], PARAM_URL);
-            $user_role = optional_param_array('user_role', [], PARAM_TEXT);
-
-            // $user_role = optional_param_array('user_role', [], PARAM_TEXT);
+            $userrole = optional_param_array('user_role', [], PARAM_TEXT);
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
             if ($sesskey == sesskey()) {
-                $custommenuitems_text = '';
+                $custommenuitemstext = '';
                 foreach ($label as $key => $value) {
                     if (empty($value) || $value == '') {
                         continue;
                     }
-                    // validate
+                    // Validate.
                     if (str_contains($value, '|') || str_contains($link[$key], '|')) {
-                        $message = "Something went wromg, <br> input menu value contain '|' specific character. Which is not allowed.";
+                        $message = get_string('usermenu_msg', 'local_easycustmenu');
                         $messagetype = \core\output\notification::NOTIFY_WARNING;
                         redirect($url, $message, null, $messagetype);
                     }
-                    $each_line = $value . "|" . $link[$key] . "|" . $user_role[$key] . "\n";
-                    $custommenuitems_text = $custommenuitems_text .  $each_line;
+                    $eachline = $value . "|" . $link[$key] . "|" . $userrole[$key] . "\n";
+                    $custommenuitemstext = $custommenuitemstext .  $eachline;
                 }
 
-                // set custommenuitems_text
+                // Set custommenuitems_text .
                 try {
-                    set_config('customusermenuitems', $custommenuitems_text);
+                    set_config('customusermenuitems', $custommenuitemstext);
                     $message = "User Menu save sucessfully ";
                     $messagetype = \core\output\notification::NOTIFY_INFO;
                 } catch (\Throwable $th) {
@@ -90,67 +84,66 @@ class usermenu
     }
 
     /**
-     * get_usermenu_setting_section 
+     * get_usermenu_setting_section
      * return the user menu setting form template
-     * 
+     *
      */
-    public function get_usermenu_setting_section($json = false)
-    {
+    public function get_usermenu_setting_section($json = false) {
         global $OUTPUT;
         $url = new moodle_url('/local/easycustmenu/pages/usermenu.php');
-        $easycustmenu_values = [];
+        $easycustmenuvalues = [];
         $custommenuitems = get_config('core', 'customusermenuitems');
         $lines = explode("\n", $custommenuitems);
-        $menu_order = 1;
-        $target_blank_value = 'target_blank_on';
+        $menuorder = 1;
+        $targetblankvalue = 'target_blank_on';
         foreach ($lines as $linenumber => $line) {
             $line = trim($line);
             if (strlen($line) == 0) {
                 continue;
             }
             $settings = explode('|', $line);
-            $item_text = $item_url = $item_user_role =  '';
+            $itemtext = $itemurl = $itemuserrole = '';
             foreach ($settings as $i => $setting) {
                 $setting = trim($setting);
                 if ($setting !== '') {
                     switch ($i) {
                         case 0: // Menu text.
-                            $item_text = ltrim($setting, '-');
+                            $itemtext = ltrim($setting, '-');
                             break;
                         case 1: // URL.
-                            $item_url = str_replace($target_blank_value, '', $setting);
+                            $itemurl = str_replace($targetblankvalue, '', $setting);
                             break;
-                        case 2: // user_role.
-                            $item_user_role = $setting;
+                        case 2: // User role.
+                            $itemuserrole = $setting;
                             break;
                     }
                 }
             }
 
-            // arrange the menu values
+            // Arrange the menu values.
             $values = [
                 'itemdepth' => 1,
-                'label' => $item_text,
-                'link' => $item_url,
-                'menu_item_num' => 'menu-' . $menu_order,
-                'condition_user_roles' => helper::get_condition_user_roles($item_user_role),
+                'label' => $itemtext,
+                'link' => $itemurl,
+                'menu_item_num' => 'menu-' . $menuorder,
+                'condition_user_roles' => helper::get_condition_user_roles($itemuserrole),
 
             ];
-            $easycustmenu_values[] = $values;
-            $menu_order++;
+            $easycustmenuvalues[] = $values;
+            $menuorder++;
         }
         if ($json === true) {
-            echo json_encode($easycustmenu_values);
+            echo json_encode($easycustmenuvalues);
             die;
         }
         $templatename = 'local_easycustmenu/menu_setting_collection';
         $context = [
             'menu_setting_form_action' => $url,
-            'values' => $easycustmenu_values,
+            'values' => $easycustmenuvalues,
             'menu_child' => false,
             'apply_condition' => true,
             'user_role_condition' => true,
-            'multi_lang' => false  //(count(helper::get_languages()) > 1) ? true : false
+            'multi_lang' => false,
         ];
 
         $contents = $OUTPUT->render_from_template($templatename, $context);
