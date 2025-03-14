@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace local_easycustmenu\api;
 
 use core_external\external_api;
@@ -23,22 +24,20 @@ use core_external\external_value;
 use local_easycustmenu\helper;
 
 /**
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
-class menu_item_context extends external_api
-{
+class menu_item_context extends external_api {
     /**
      * Get parameters.
      *
      * @return external_function_parameters
      */
-    public static function menu_item_context_parameters()
-    {
+    public static function menu_item_context_parameters() {
         return new external_function_parameters(
             [
                 'menu_item_num' => new external_value(
@@ -61,26 +60,25 @@ class menu_item_context extends external_api
 
     /**
      * @param int $menuitemnum
-     * @param int $itemdepth
-     * @param string $menu_type
+     * @param int $itemdepth 1 default
+     * @param string $menutype 'navmenu' default
      * @return array
      */
-    public static function menu_item_context($menuitemnum, $itemdepth = 1, $menu_type = 'navmenu')
-    {
+    public static function menu_item_context($menuitemnum, $itemdepth, $menutype) {
 
         $params = self::validate_parameters(
             self::menu_item_context_parameters(),
             [
                 'menu_item_num' => $menuitemnum,
                 'itemdepth' => $itemdepth,
-                'menu_type' => $menu_type
+                'menu_type' => $menutype,
             ]
         );
 
-        $menu_type = $params['menu_type'];
+        $menutype = $params['menu_type'];
         $menuitemnum = $params['menu_item_num'];
         $itemdepth = $params['itemdepth'];
-        $multi_lang = (count(helper::get_languages()) > 1) ? true : false;
+        $multilang = (count(helper::get_languages()) > 1) ? true : false;
         $pix = 24 * $itemdepth;
 
         $templatecontext = [
@@ -92,8 +90,8 @@ class menu_item_context extends external_api
             'condition_user_roles' => helper::get_condition_user_roles(),
             'apply_condition' => true,
             'user_role_condition' => true,
-            'new_tab_condition' => ($menu_type == 'navmenu') ? true : false,
-            'multi_lang' => ($menu_type == 'navmenu') ?  $multi_lang : false,
+            'new_tab_condition' => ($menutype == 'navmenu') ? true : false,
+            'multi_lang' => ($menutype == 'navmenu') ? $multilang : false,
 
         ];
 
@@ -111,8 +109,7 @@ class menu_item_context extends external_api
      *
      * @return external_single_structure
      */
-    public static function menu_item_context_returns()
-    {
+    public static function menu_item_context_returns() {
         return new external_single_structure(
             [
                 'status' => new external_value(PARAM_BOOL, 'status'),
