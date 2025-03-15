@@ -34,7 +34,7 @@ $context = \context_system::instance();
 
 // Prepare the page information.
 $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
-$pagetitle = 'Header Nav Menu Setting';
+$pagetitle = get_string('pagetitle_navmenu', 'local_easycustmenu');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
@@ -43,14 +43,15 @@ $PAGE->set_title($pagetitle);
 $PAGE->set_heading($pagetitle);
 $PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', ['navmenu']);
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/easycustmenu/style/nav-menu-setting.css'));
+$PAGE->add_body_class('page-easycustmenu');
 
 $navmenu = new navmenu();
 // Access checks.
 require_login(null, false);
 if (!has_capability('moodle/site:config', $context)) {
-    $contents = "You don't have permission to access this pages";
-    $contents .= "<br>";
-    $contents .= "<a href='/'> Return Back</a>";
+    $a = new stdClass();
+    $a->name = '/';
+    echo get_string('permission_access', 'local_easycustmenu', $a);
 } else {
     // For POST Method Save the data.
     $navmenu->set_easycustmenu();

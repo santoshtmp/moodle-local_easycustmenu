@@ -76,6 +76,11 @@ class menu_item_context extends external_api {
             ]
         );
 
+        // Check Context and Capability Validation.
+        $context = \context_system::instance();
+        self::validate_context($context);
+        require_capability('moodle/site:config', $context);
+
         $menutype = $params['menu_type'];
         $menuitemnum = $params['menu_item_num'];
         $itemdepth = $params['itemdepth'];

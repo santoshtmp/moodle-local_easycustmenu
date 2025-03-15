@@ -27,43 +27,49 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['add_contion_settings'] = 'Add condition settings';
+$string['add_menu'] = 'Add Menu';
+$string['admin_user'] = 'Admin user role';
+$string['all_users_role'] = 'All users role';
+$string['auth_login_user'] = 'Auth login user role';
 $string['configtitle'] = 'Easy Custom Menu Settings';
+$string['general_setting'] = 'General Setting';
+$string['guest_user_role'] = 'Guest user role';
+$string['header_nav_menu_setting'] = 'Header Nav Menu Setting';
+$string['hide'] = 'Hide';
+$string['hide_menu_label'] = 'Hide Default "Menu Items"';
+$string['hide_menu_label_2'] = 'Hide Default "User Menu Items"';
+$string['hide_primarynavigation_description'] = 'You can hide the default primary navigation by selecting one or multiple values.';
 $string['hide_primarynavigation_title'] = 'Hide primary navigation';
-$string['pluginname'] = 'Easy Custom Menu';
-
-$string['pluginname_desc'] = 'Local plugin to easily customize moodle menus';
-$string['hide_primarynavigation_description'] = 'You can hide default primary navigation with the select one or multiple values';
-
-$string['setting_primarynav_heading'] = 'Primary navigation';
-
-$string['setting_activate'] = "Activate";
-$string['setting_general'] = "General";
-$string['setting_activate_desc'] = "Activate the easy custom menu feature.";
-$string['setting_show_ecm_core'] = "Show ECM in Default Custom Menu";
-
-$string['setting_custom_menu_heading'] = 'Custom Menu Settings';
-$string['setting_user_menu_heading'] = 'User Menu Settings';
-$string['setting_show_ecm_core_desc'] = 'This will hide or show Easy Custom Menu(ECM) link in default admin custom menu section';
-
-$string['general_setting'] = "General Setting";
-$string['header_nav_menu_setting'] = "Header Nav Menu Setting";
-$string['user_menu_settinig'] = "User Menu Setting";
-
-$string['show_menu_label'] = 'Show Default "menu items" ';
-$string['hide_menu_label'] = 'Hide Default "menu items" ';
+$string['load_more_custommenuitems'] = 'Load Core Custom Menu Items';
 $string['manage_menu_label'] = 'Manage Menu Through Easy Custom Menu';
-$string['show_menu_label_2'] = 'Show Default "User menu items" ';
-$string['hide_menu_label_2'] = 'Hide Default "User menu items" ';
-$string['manage_menu_label_2'] = "Manage User Menu Through Easy Custom Menu";
-
-$string['usermenu_msg'] = "Something went wromg, <br> input menu value contain '|' specific character. Which is not allowed.";
-
-
-$string['add_menu'] = "Add Menu";
-$string['save_menu'] = "Save Menu";
-$string['load_more_custommenuitems'] = "Load core custommenuitems";
-$string['show_the_menu_when_user_is'] = "Show the menu when user is";
-$string['show_the_menu_when_language_is'] = "Show the menu when language is";
-$string['open_in_a_new_browser_window'] = "Open in a new browser window : ";
-$string['show_the_menu_when_language_placeholder'] = "language code Example: en, es, ne";
-$string['privacy:metadata'] = 'local easycustmenu plugin is to manage the site menu item orders and does not store any data itself.';
+$string['manage_menu_label_2'] = 'Manage User Menu Through Easy Custom Menu';
+$string['manage_other_core_menu'] = 'Manage Other Core "Custom menu items"';
+$string['open_in_a_new_browser_window'] = 'Open in a new browser window:';
+$string['pagetitle_navmenu'] = 'Header Nav Menu Setting';
+$string['pagetitle_usermenu'] = 'User Menu Setting';
+$string['permission_access'] = 'You don\'t have permission to access this pages. <br> <a href="{$a->url}">Return Back</a>';
+$string['pluginname'] = 'Easy Custom Menu';
+$string['pluginname_desc'] = 'Local plugin to easily customize Moodle menus';
+$string['privacy:metadata'] = 'The local easycustmenu plugin manages site menu item orders and does not store any data itself.';
+$string['remove_menu'] = 'Remove menu';
+$string['save_menu'] = 'Save Menu';
+$string['save_successfully'] = 'Saved successfully.';
+$string['sesskey_incorrect'] = 'Your session key is incorrect.<br> <a href="{$a->url}">Return Back</a>';
+$string['setting_activate'] = 'Activate';
+$string['setting_activate_desc'] = 'Activate the Easy Custom Menu feature.';
+$string['setting_custom_menu_heading'] = 'Custom Menu Settings';
+$string['setting_general'] = 'General';
+$string['setting_primarynav_heading'] = 'Primary Navigation';
+$string['setting_show_ecm_core'] = 'Show ECM in Default Custom Menu';
+$string['setting_show_ecm_core_desc'] = 'This will hide or show the Easy Custom Menu (ECM) link in the default admin custom menu section.';
+$string['setting_user_menu_heading'] = 'User Menu Settings';
+$string['show'] = 'Show';
+$string['show_menu_label'] = 'Show Default "Menu Items"';
+$string['show_menu_label_2'] = 'Show Default "User Menu Items"';
+$string['show_the_menu_when_language_is'] = 'Show the menu when language is';
+$string['show_the_menu_when_language_placeholder'] = 'Language code example: en, es, ne';
+$string['show_the_menu_when_user_is'] = 'Show the menu when user is';
+$string['something_wrong'] = 'Something went wrong.';
+$string['something_wrong_input'] = 'Something went wrong.<br> Input menu value contains "|" which is not allowed.';
+$string['user_menu_setting'] = 'User Menu Setting';

@@ -27,6 +27,7 @@ namespace local_easycustmenu\menu;
 
 use local_easycustmenu\helper;
 use moodle_url;
+use stdClass;
 
 /**
  * class to handle usermenu admin action
@@ -56,7 +57,7 @@ class usermenu {
                     }
                     // Validate.
                     if (str_contains($value, '|') || str_contains($link[$key], '|')) {
-                        $message = get_string('usermenu_msg', 'local_easycustmenu');
+                        $message = get_string('something_wrong_input', 'local_easycustmenu');
                         $messagetype = \core\output\notification::NOTIFY_WARNING;
                         redirect($url, $message, null, $messagetype);
                     }
@@ -67,17 +68,17 @@ class usermenu {
                 // Set custommenuitems_text .
                 try {
                     set_config('customusermenuitems', $custommenuitemstext);
-                    $message = "User Menu save sucessfully ";
+                    $message = get_string('save_successfully', 'local_easycustmenu');
                     $messagetype = \core\output\notification::NOTIFY_INFO;
                 } catch (\Throwable $th) {
-                    $message = "Something went wromg";
+                    $message = get_string('something_wrong', 'local_easycustmenu');
                     $messagetype = \core\output\notification::NOTIFY_WARNING;
                 }
                 redirect($url, $message, null, $messagetype);
             } else {
-                echo "Your key is incorrect";
-                echo "<br>";
-                echo "<a href='" . $url . "'> Return Back</a>";
+                $a = new stdClass();
+                $a->name = '"' . $url . '" ';
+                echo get_string('sesskey_incorrect', 'local_easycustmenu', $a);
                 die;
             }
         }

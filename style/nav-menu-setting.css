@@ -1,4 +1,6 @@
-.easycustmenu_setting_header {
+/* ------only apply to page with body class page-easycustmenu ---------- */
+
+.page-easycustmenu .easycustmenu_setting_header {
     padding: 0 24px;
 
     h2 {
@@ -6,45 +8,40 @@
     }
 }
 
-
-
-/* ---------------- */
-
-.menu-setting-content {
+.page-easycustmenu .menu-setting-content {
     margin: 24px 0;
 }
 
-.default-custom-menu-exist,
-.menu-setting-content form {
+.page-easycustmenu .menu-setting-content form {
     max-width: 950px;
     padding: 0 24px;
 }
 
-.action-add-menu {
+.page-easycustmenu .action-add-menu {
     display: flex;
     flex-wrap: wrap;
     margin: 12px
 }
 
-.action-add-menu .btn-add-menu {
+.page-easycustmenu .action-add-menu .btn-add-menu {
     margin: auto;
 }
 
-.menu .menu-item-wrapper:nth-child(odd) {
+.page-easycustmenu .menu .menu-item-wrapper:nth-child(odd) {
     background-color: #ebebeb;
 }
 
-.menu .menu-item-wrapper:nth-child(even) {
+.page-easycustmenu .menu .menu-item-wrapper:nth-child(even) {
     background-color: #e0e0e0;
 }
 
-.menu-item-wrapper {
+.page-easycustmenu .menu-item-wrapper {
     padding: 12px;
     display: flex;
     flex-wrap: wrap;
 }
 
-.menu-item {
+.page-easycustmenu .menu-item {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -54,26 +51,26 @@
     width: 83%;
 }
 
-.btn-collapse-exp.expand .icon:nth-child(2) {
+.page-easycustmenu .btn-collapse-exp.expand .icon:nth-child(2) {
     display: none;
 }
 
-.btn-collapse-exp.expand-off .icon:nth-child(1) {
+.page-easycustmenu .btn-collapse-exp.expand-off .icon:nth-child(1) {
     display: none;
 }
 
-.btn-action-wrapper {
+.page-easycustmenu .btn-action-wrapper {
     display: flex;
     flex-wrap: wrap;
     margin-left: auto;
 }
 
-.btn-add-condition.active::after {
+.page-easycustmenu .btn-add-condition.active::after {
     content: "\25BC";
     font-size: 9px;
 }
 
-.condition-fields {
+.page-easycustmenu .condition-fields {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
@@ -81,7 +78,7 @@
     width: 100%;
 }
 
-.condition-wrapper {
+.page-easycustmenu .condition-wrapper {
     margin-bottom: 12px;
     padding-bottom: 12px;
     border-bottom: solid 1px darkgray;

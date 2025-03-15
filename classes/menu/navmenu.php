@@ -27,7 +27,7 @@ namespace local_easycustmenu\menu;
 
 use local_easycustmenu\helper;
 use moodle_url;
-
+use stdClass;
 
 /**
  * class to handle navmenu admin action
@@ -43,7 +43,8 @@ class navmenu {
      * Set easycustmenu for POST Method.
      */
     public function set_easycustmenu() {
-        $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
+        global $CFG;
+        $url = $CFG->wwwroot . '/local/easycustmenu/pages/navmenu.php';
         if ($_POST) {
             // Get the parameters.
             $label = optional_param_array('label', [], PARAM_TEXT);
@@ -69,8 +70,12 @@ class navmenu {
                         }
                     }
                     // Validate.
+                    $link[$key] = isset($link[$key]) ? $link[$key] : '';
+                    $language[$key] = isset($language[$key]) ? $language[$key] : '';
+                    $userrole[$key] = isset($userrole[$key]) ? $userrole[$key] : '';
+                    $targetblank[$key] = isset($targetblank[$key]) ? $targetblank[$key] : '';
                     if (str_contains($value, '|') || str_contains($link[$key], '|') || str_contains($language[$key], '|')) {
-                        $message = get_string('usermenu_msg', 'local_easycustmenu');
+                        $message = get_string('something_wrong_input', 'local_easycustmenu');
                         $messagetype = \core\output\notification::NOTIFY_WARNING;
                         redirect($url, $message, null, $messagetype);
                     }
@@ -88,18 +93,18 @@ class navmenu {
                 // Set custommenuitems_text.
                 try {
                     set_config('custommenuitems', $custommenuitemstext, 'local_easycustmenu');
-                    $message = "Menu save sucessfully ";
+                    $message = get_string('save_successfully', 'local_easycustmenu');
                     $messagetype = \core\output\notification::NOTIFY_INFO;
                 } catch (\Throwable $th) {
-                    $message = "Something went wromg";
+                    $message = get_string('something_wrong', 'local_easycustmenu');
                     $messagetype = \core\output\notification::NOTIFY_WARNING;
                 }
 
                 redirect($url, $message, null, $messagetype);
             } else {
-                echo "Your key is incorrect";
-                echo "<br>";
-                echo "<a href='" . $url . "'> Return Back</a>";
+                $a = new stdClass();
+                $a->name = '"' . $url . '" ';
+                echo get_string('sesskey_incorrect', 'local_easycustmenu', $a);
                 die;
             }
         }
@@ -111,8 +116,8 @@ class navmenu {
      *
      */
     public function get_easycustmenu_setting_section($json = false) {
-        global $OUTPUT;
-        $url = new moodle_url('/local/easycustmenu/pages/navmenu.php');
+        global $OUTPUT,  $CFG;
+        $url = $CFG->wwwroot . '/local/easycustmenu/pages/navmenu.php';
         $easycustmenuvalues = [];
         $corecustommenuitems = get_config('core', 'custommenuitems');
         $custommenuitems = get_config('local_easycustmenu', 'custommenuitems');

@@ -49,7 +49,10 @@ if ($hassiteconfig) {
     $title = get_string('setting_show_ecm_core', 'local_easycustmenu');
     $description = get_string('setting_show_ecm_core_desc', 'local_easycustmenu');
     $default = 0;
-    $choices = [0 => 'Hide', 1 => 'Show'];
+    $choices = [
+        0 => get_string('hide', 'local_easycustmenu'),
+        1 => get_string('show', 'local_easycustmenu'),
+    ];
     $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
     $settings->add($setting);
 
@@ -73,5 +76,4 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configmulticheckbox($name, $title, $description, [], $hidenodesoptions);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
-
 }

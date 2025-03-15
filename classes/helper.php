@@ -99,22 +99,22 @@ class helper {
         $roles = [
             [
                 'key' => 'all',
-                'value' => 'All users role',
+                'value' => get_string('all_users_role', 'local_easycustmenu'),
                 'is_selected' => ($role == 'all') ? true : false,
             ],
             [
                 'key' => 'guest',
-                'value' => 'Guest user role',
+                'value' => get_string('guest_user_role', 'local_easycustmenu'),
                 'is_selected' => ($role == 'guest') ? true : false,
             ],
             [
                 'key' => 'auth',
-                'value' => 'Login user role',
+                'value' => get_string('auth_login_user', 'local_easycustmenu'),
                 'is_selected' => ($role == 'auth') ? true : false,
             ],
             [
                 'key' => 'admin',
-                'value' => 'Admin user role',
+                'value' => get_string('admin_user', 'local_easycustmenu'),
                 'is_selected' => ($role == 'admin') ? true : false,
             ],
         ];
@@ -300,7 +300,7 @@ class helper {
                 $definedurls = [
                     get_string('general_setting', 'local_easycustmenu') => "/admin/settings.php?section=local_easycustmenu",
                     get_string('header_nav_menu_setting', 'local_easycustmenu') => "/local/easycustmenu/pages/navmenu.php",
-                    get_string('user_menu_settinig', 'local_easycustmenu') => "/local/easycustmenu/pages/usermenu.php",
+                    get_string('user_menu_setting', 'local_easycustmenu') => "/local/easycustmenu/pages/usermenu.php",
                 ];
                 $templatename = 'local_easycustmenu/easycustmenu_setting_header';
                 $templatecontext = [];
