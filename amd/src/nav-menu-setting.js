@@ -127,4 +127,48 @@ export const init = (menu_type = 'navmenu') => {
         }
     });
 
+    /**
+   * invalid character
+   */
+    document.querySelector('form.easycustmenu-form').addEventListener('submit', function (e) {
+        const oldError = document.getElementById('form-validation-error');
+        if (oldError) { oldError.remove(); }
+
+        let valid = true;
+        const labels = document.querySelectorAll('input[name="label[]"]');
+        const links = document.querySelectorAll('input[name="link[]"]');
+
+        labels.forEach((input, index) => {
+            if (input.value.includes('|')) {
+                input.style.border = '1px solid red';
+                window.console.log(`invalid character at label ${index + 1}`);
+                valid = false;
+            } else {
+                input.style.border = '';
+            }
+        });
+
+        links.forEach((input, index) => {
+            if (input.value.includes('|')) {
+                input.style.border = '1px solid red';
+                window.console.log(`invalid character at link ${index + 1}`);
+                valid = false;
+            } else {
+                input.style.border = '';
+            }
+        });
+
+        if (!valid) {
+            e.preventDefault(); // stop form submission
+
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'form-validation-error';
+            errorDiv.style.color = 'red';
+            errorDiv.style.marginTop = '1rem';
+            errorDiv.innerHTML = `<p><strong>Validation Error:</strong> contains an invalid character "|".</p>`;
+
+            // Append at the end of the form
+            this.appendChild(errorDiv);
+        }
+    });
 };
