@@ -4,7 +4,7 @@
 
 * initial release
 
-### Version 1.1.0
+### Version 1.1.0 (2025063000)
 
 * Invalid character form validation
-* Add system user roles to menu condition roles
+* Added system user roles to menu condition roles
