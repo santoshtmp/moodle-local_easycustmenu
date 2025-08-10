@@ -8,3 +8,8 @@
 
 * Invalid character form validation
 * Added system user roles to menu condition roles
+
+### Version 2.0.0
+
+* Add more condition roles and the context level
+* Creadte seperate table to store easycustmenu settings

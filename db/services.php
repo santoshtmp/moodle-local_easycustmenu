@@ -33,4 +33,13 @@ $functions = [
         'type' => 'read',
         'ajax' => true,
     ],
+    'local_easycustmenu_save_menu_order' => [
+        'classname'   => 'local_easycustmenu\external\save_menu_order',
+        'methodname'  => 'execute',
+        'classpath'   => '',
+        'description' => 'Save menu reorder data',
+        'type'        => 'write',
+        'ajax'        => true,
+        'loginrequired' => true,
+    ]
 ];

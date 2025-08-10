@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/easycustmenu/db" VERSION="20250720" COMMENT="XMLDB file for Moodle local/easycustmenu">
+    <TABLES>
+        <TABLE NAME="local_easycustmenu" COMMENT="Stores local easy custom menu settings">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
+                <FIELD NAME="menu_type" TYPE="char" LENGTH="50" NOTNULL="true" COMMENT="Menu type: nav_menu or user_menu" />
+                <FIELD NAME="menu_label" TYPE="char" LENGTH="225" NOTNULL="true" COMMENT="Display label for the menu" />
+                <FIELD NAME="menu_link" TYPE="char" LENGTH="225" NOTNULL="true" COMMENT="URL or path for the menu" />
+                <FIELD NAME="context_level" TYPE="int" LENGTH="4" NOTNULL="true" COMMENT="Context level for the menu (site, course, etc.)" />
+                <FIELD NAME="parent" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Parent menu ID, 0 = root" />
+                <FIELD NAME="depth" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" COMMENT="Depth level of menu item, 0 = root" />
+                <FIELD NAME="menu_order" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Menu item order within the same depth" />
+                <FIELD NAME="condition_courses" TYPE="char" LENGTH="100" NOTNULL="true" COMMENT="Assigned courses id(s), e.g., 2,3,4,5,6,7; if empty or 0, accessible in all courses" />
+                <FIELD NAME="condition_lang" TYPE="char" LENGTH="100" NOTNULL="true" COMMENT="Assigned language code(s), e.g., ne,en; if empty, accessible in all languages" />
+                <FIELD NAME="condition_roleid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Role ID allowed to access; 0 means everyone" />
+                <FIELD NAME="other_condition" TYPE="text" NOTNULL="false" COMMENT="Additional conditions in JSON format" />
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Unix time when record was created" />
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Unix time when record was last modified" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+            </KEYS>
+        </TABLE>
+    </TABLES>
+</XMLDB>
