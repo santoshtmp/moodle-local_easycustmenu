@@ -73,3 +73,35 @@ $string['show_the_menu_when_user_is'] = 'Show the menu when user is';
 $string['something_wrong'] = 'Something went wrong.';
 $string['something_wrong_input'] = 'Something went wrong.<br> Input menu value contains "|" which is not allowed.';
 $string['user_menu_setting'] = 'User Menu Setting';
+
+// Edit form strings.
+$string['add_page_title'] = $string['pluginname'] . ' - ' . 'Add Item';
+$string['edit_page_title'] = $string['pluginname'] . ' - ' . 'Edit Item';
+$string['delete_page_title'] = $string['pluginname'] . ' - ' . 'Delete Item';
+$string['delete_conform_heading'] = 'Delete Menu Item?';
+$string['delete_conform_text'] = 'Are you sure you want to delete "{$a->menu_label}"?';
+$string['edit'] = 'Edit';
+$string['delete'] = 'Delete';
+$string['invalidtypeparam'] = 'Check type param';
+$string['invalidactionparam'] = 'Check action param';
+$string['invalideditaccess'] = 'Not allowed to edit menu, you need admin access.';
+$string['invalidsesskey'] = 'Your session key is missing or invalid.';
+$string['navmenu'] = 'Nav Menu Item';
+$string['usermenu'] = 'User Menu Item';
+$string['menu_item'] = 'Menu Item';
+$string['menu_type'] = 'Menu Type';
+$string['label'] = 'Label';
+$string['link'] = 'Link';
+$string['context_level'] = 'Context Level';
+$string['selectcourses'] = 'Select Courses';
+$string['alllanguages'] = 'All Languages';
+$string['condition_lang'] = 'Condition Language';
+$string['condition_role'] = 'Condition Role';
+$string['everyone'] = 'Everyone';
+$string['label_error'] = 'Menu Label "{$a->menu_label}" alrady exist.';
+$string['menu_added'] = 'Menu item "{$a->menu_label}" sucessfully added.';
+$string['menu_updated'] = 'Menu item "{$a->menu_label}" sucessfully updated.';
+$string['menu_delete'] = 'Menu item "{$a->menu_label}" sucessfully deleted.';
+$string['menu_error_delete'] = 'Error on Menu item delete.';
+$string['save_order'] = 'Save Re-Order';
+
