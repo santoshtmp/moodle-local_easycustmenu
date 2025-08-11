@@ -263,9 +263,8 @@ class easycustmenu_handler {
 
         $menus = easycustmenu_handler::get_menu_items($type, 10);
         $tableid = $type . '-table';
-        $PAGE->requires->js_call_amd('local_easycustmenu/reorder', 'init', [$tableid]);
+        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menu_item_reorder', [$tableid]);
         $PAGE->requires->js_call_amd('local_easycustmenu/conformdelete', 'init');
-
 
         $contents = '';
         $contents .= html_writer::start_tag('table', ['id' => $tableid, 'class' => 'generaltable']);
