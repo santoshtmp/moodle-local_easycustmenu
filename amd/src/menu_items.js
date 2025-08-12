@@ -104,7 +104,7 @@ function get_reorder_items() {
     let depthStack = {}; // Stores the last seen ID for each depth level
     $(elementSelector + ' tr').each(function (index) {
         let id = parseInt($(this).attr('data-id'));
-        let depth = parseInt($(this).attr('data-depth'));
+        let depth = parseInt($(this).attr('data-depth')) || 0;
 
         // Store the last seen item at this depth
         depthStack[depth] = id;
@@ -113,6 +113,8 @@ function get_reorder_items() {
         let parent = 0;
         if (depth > 0) {
             parent = depthStack[depth - 1] || 0;
+        } else {
+            depthStack = {};
         }
 
         $(this).attr('data-parent', parent);
@@ -145,17 +147,7 @@ export const menu_item_reorder = (tableid) => {
             targetListSelector: null,
             moveHandlerSelector: moveHandlerSelector,
             isHorizontal: false,
-            autoScroll: true,
-            canMove: (element) => {
-                // Disable drag for first tr with depth 0
-                let depth = parseInt(element.attr('data-depth')) || 0;
-                let isFirst = element.is($(elementSelector + ' tr').first());
-                if (depth === 0 && isFirst) {
-                    return false; // disable drag
-                }
-                return true; // enable drag for others
-            }
-
+            autoScroll: true
         }
     );
 
