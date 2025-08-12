@@ -82,11 +82,10 @@ $PAGE->set_pagelayout('admin'); // admin , standard , ...
 $PAGE->set_pagetype('easycustmenu_navmenu_setting');
 $PAGE->set_title($page_title);
 $PAGE->set_heading($page_title);
-$PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', ['navmenu']);
+// $PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', ['navmenu']);
 $PAGE->requires->css(new moodle_url('/local/easycustmenu/style/nav-menu-setting.css'));
 $PAGE->add_body_class('page-easycustmenu');
 
-// die;
 /**
  * FORM actions
  */

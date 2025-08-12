@@ -104,4 +104,4 @@ $string['menu_updated'] = 'Menu item "{$a->menu_label}" sucessfully updated.';
 $string['menu_delete'] = 'Menu item "{$a->menu_label}" sucessfully deleted.';
 $string['menu_error_delete'] = 'Error on Menu item delete.';
 $string['save_order'] = 'Save Re-Order';
-
+$string['invalidmenudepth'] = 'Invalid menu depth detected! Please adjust highlighted rows.';
