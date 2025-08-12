@@ -259,12 +259,15 @@ class easycustmenu_handler {
      * @return string
      */
     public static function get_menu_items_table($type) {
-        global $PAGE;
+        global $PAGE, $OUTPUT;
 
         $menus = easycustmenu_handler::get_menu_items($type, 10);
         $tableid = $type . '-table';
         $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menu_item_reorder', [$tableid]);
         $PAGE->requires->js_call_amd('local_easycustmenu/conformdelete', 'init');
+
+        $child_indentation = $OUTPUT->pix_icon('child_indentation', 'child-indentation', 'local_easycustmenu', ['class' => 'child-icon indentation']);
+        $child_arrow = $OUTPUT->pix_icon('child_arrow', 'child-arrow-icon', 'local_easycustmenu', ['class' => 'child-icon child-arrow']);
 
         $contents = '';
         $contents .= html_writer::start_tag('table', ['id' => $tableid, 'class' => 'generaltable']);
@@ -324,11 +327,19 @@ class easycustmenu_handler {
                     'data-menu_label' => $menu->menu_label
                 ]
             );
+            $child_indentation_icon = '';
+            if ($menu->depth) {
+                for ($i = 0; $i < (int)$menu->depth - 1; $i++) {
+                    $child_indentation_icon .= $child_indentation;
+                }
+                $child_indentation_icon .= $child_arrow;
+            }
+
             $contents .= html_writer::tag(
                 'td',
                 html_writer::tag(
                     'span',
-                    html_writer::tag('span', '', ['class' => 'indentation', 'style' => "display: inline-block; width:" . (30 * (int)$menu->depth) . "px "]) .
+                    html_writer::tag('span', $child_indentation_icon, ['class' => 'child-icon-wrapper']) .
                         html_writer::tag('i', '', ['class' => 'icon fa fa-arrows-up-down-left-right fa-fw', 'role' => "img"]),
                     ['class' => 'float-start drag-handle', "data-drag-type" => "move"]
                 ) .
@@ -362,7 +373,16 @@ class easycustmenu_handler {
                 'style' => 'display: none;'
             ]
         );
-        
+        $contents .= html_writer::tag(
+            'div',
+            html_writer::tag('div', $child_indentation, ['id' => 'child_indentation', 'style' => 'display: none;']) .
+                html_writer::tag('div', $child_arrow, ['id' => 'child_arrow', 'style' => 'display: none;']),
+            [
+                'id' => 'depth-reusable-icon',
+                'style' => 'display: none;'
+            ]
+        );
+
         return $contents;
     }
 

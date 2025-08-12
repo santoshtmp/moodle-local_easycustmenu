@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * AMD module
+ * AMD ES6 module
  *
  * @copyright  2025 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
@@ -38,18 +38,18 @@ let moveHandlerSelector = '[data-drag-type=move]';
  * To check menu items siglings tr depths
  */
 async function check_invalid_depth() {
-    let prevDepth = 0;
     let invalidRows = [];
     $(elementSelector + ' tr').removeClass('invalid-depth').css('background-color', '');
     $('#menu_depth_error').remove();
 
     // check on each tr
     $(elementSelector + ' tr').each(function () {
-        let depth = parseInt($(this).attr('data-depth'));
-        if (Math.abs(depth - prevDepth) > 1) {
+        let depth = parseInt($(this).attr('data-depth')) || 0;
+        let parent_id = parseInt($(this).attr('data-parent'));
+        let parent_depth = $(elementSelector + ' tr[data-id="' + parent_id + '"]').attr('data-depth') || 0;
+        if (Math.abs(depth - parseInt(parent_depth)) > 1) {
             invalidRows.push($(this));
         }
-        prevDepth = depth;
     });
 
     // check invalid length
@@ -83,7 +83,7 @@ async function ajax_save_menu_items(reorder_items) {
     return await Ajax.call([request])[0]
         .done(function (response) {
             if (response.status) {
-                window.console.log('Menu order saved successfully.');
+                // window.console.log('Menu order saved successfully.');
                 $('#save_menu_reorder').hide();
             } else {
                 window.console.log('Error saving menu order:', response.message);
@@ -135,6 +135,8 @@ function get_reorder_items() {
 export const menu_item_reorder = (tableid) => {
     //
     elementSelector = '#' + tableid + ' tbody[data-action="reorder"]';
+    let child_arrow = document.querySelector('#depth-reusable-icon #child_arrow').innerHTML;
+    let child_indentation = document.querySelector('#depth-reusable-icon #child_indentation').innerHTML;
 
     // Initialise SortableList for drag-and-drop.
     new SortableList(
@@ -213,28 +215,22 @@ export const menu_item_reorder = (tableid) => {
             }
         }
 
-        // Update element depth and indentation only if depth changed
+        // Update element depth and child-icon only if depth changed
         if (new_itemDepth !== itemDepth) {
             element.attr('data-depth', new_itemDepth);
-            let indentation = element.find('.indentation');
-            indentation.css({
-                'width': (30 * new_itemDepth) + 'px'
-            });
-        }
-        //
-        setTimeout(async () => {
-            let reorder_items = get_reorder_items();
-            Object.values(reorder_items).forEach(function (item) {
-                let tr = $(elementSelector + ' tr[data-id="' + item.id + '"]');
-                if (tr) {
-                    tr.attr('data-depth', item.depth);
-                    tr.attr('data-parent', item.parent);
-                    tr.attr('data-menu_order', item.menu_order);
+            let child_indentation_icon = '';
+            if (new_itemDepth) {
+                for (let index = 0; index < new_itemDepth - 1; index++) {
+                    child_indentation_icon += child_indentation;
                 }
-            });
-            // check invalid depth
-            await check_invalid_depth();
-        }, 1000);
+                child_indentation_icon += child_arrow;
+            }
+            let indentation = element.find('.child-icon-wrapper');
+            if (indentation) {
+                indentation.html(child_indentation_icon);
+            }
+
+        }
 
         // Show save button after reordering
         $('#save_menu_reorder').show();
@@ -243,20 +239,27 @@ export const menu_item_reorder = (tableid) => {
 
     // save the order of menu items
     $('#save_menu_reorder').on('click', async function () {
-        // check invalid depth
-        let invalid_depth = await check_invalid_depth();
-        if (invalid_depth) {
-            return;
-        }
         // Disable to prevent multiple clicks
         $(this).prop('disabled', true);
         //
         let reorder_items = get_reorder_items();
+        Object.values(reorder_items).forEach(function (item) {
+            let tr = $(elementSelector + ' tr[data-id="' + item.id + '"]');
+            if (tr) {
+                tr.attr('data-depth', item.depth);
+                tr.attr('data-parent', item.parent);
+                tr.attr('data-menu_order', item.menu_order);
+            }
+        });
+        // check invalid depth
+        let invalid_depth = await check_invalid_depth();
+        if (invalid_depth) {
+            $(this).prop('disabled', false);
+            return;
+        }
         // save the menu items
         await ajax_save_menu_items(reorder_items);
 
     });
 
 };
-
-
