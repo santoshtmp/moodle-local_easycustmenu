@@ -63,7 +63,6 @@ class easycustmenu_form extends \moodleform {
         $contextoptions = easycustmenu_handler::get_menu_context_level();
         $mform->addElement('select', 'context_level', get_string('context_level', 'local_easycustmenu'), $contextoptions);
         $mform->setType('context_level', PARAM_INT);
-        $mform->addRule('context_level', null, 'required', null, 'client');
 
         // condition_courses Get courses list (only show when context_level == 50)
         $options = [
@@ -93,6 +92,18 @@ class easycustmenu_form extends \moodleform {
         ] + $roles;
         $mform->addElement('select', 'condition_roleid', get_string('condition_role', 'local_easycustmenu'), $roles);
         $mform->setType('condition_roleid', PARAM_INT);
+
+        // tool tio title
+        $mform->addElement('text', 'menu_label_tip_title', get_string('label_tooltip_title', 'local_easycustmenu'), ['size' => 50]);
+        $mform->setType('menu_label_tip_title', PARAM_TEXT);
+
+        // Open in new tab target blank
+        $radioarray = [];
+        $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('yes'), 1);
+        $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('no'), 0);
+        $mform->addGroup($radioarray, 'link_target_group', get_string('link_target_option', 'local_easycustmenu'), [' '], false);
+        $mform->setDefault('link_target', 0);
+
 
         // Hidden fields for action and ID.
         $mform->addElement('hidden', 'menu_type');
