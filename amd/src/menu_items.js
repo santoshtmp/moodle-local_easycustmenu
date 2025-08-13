@@ -102,21 +102,20 @@ async function ajax_save_menu_items(reorder_items) {
 function get_reorder_items() {
     let reorder_items = {};
     let depthStack = {}; // Stores the last seen ID for each depth level
+    let parent = 0;
     $(elementSelector + ' tr').each(function (index) {
         let id = parseInt($(this).attr('data-id'));
         let depth = parseInt($(this).attr('data-depth')) || 0;
-
-        // Store the last seen item at this depth
-        depthStack[depth] = id;
-
         // Determine parent
-        let parent = 0;
         if (depth > 0) {
             parent = depthStack[depth - 1] || 0;
         } else {
             depthStack = {};
+            parent = 0;
         }
-
+        // Store the last seen item at this depth
+        depthStack[depth] = id;
+        //
         $(this).attr('data-parent', parent);
         reorder_items[id] = {
             menu_order: index,

@@ -28,6 +28,7 @@ namespace local_easycustmenu\hooks;
 use core\hook\navigation\primary_extend;
 use core\hook\output\before_http_headers;
 use core\hook\output\before_standard_head_html_generation;
+use local_easycustmenu\handler\easycustmenu_handler;
 use local_easycustmenu\helper;
 
 /**
@@ -62,6 +63,7 @@ class hook_callbacks {
         }
         $easycustmenu = new helper();
         $easycustmenu->check_custum_header_menu();
+        easycustmenu_handler::define_config_menuitems();
     }
 
     /**

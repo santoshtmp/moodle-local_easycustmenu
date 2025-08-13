@@ -71,7 +71,9 @@ class save_menu_order extends external_api {
             $transaction = $DB->start_delegated_transaction();
 
             foreach ($params['items'] as $item) {
-                // Example: Update your custom menu table
+                if (!$item['id']) {
+                    continue;
+                }
                 $DB->update_record('local_easycustmenu', (object)[
                     'id' => $item['id'],
                     'menu_order' => $item['menu_order'],
