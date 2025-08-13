@@ -39,7 +39,7 @@ class easycustmenu_form extends \moodleform {
      * Form definition.
      */
     public function definition() {
-        global $DB;
+        global $DB, $PAGE;
 
         $mform = $this->_form;
         $type = $this->_customdata['type'];
@@ -76,8 +76,13 @@ class easycustmenu_form extends \moodleform {
         // condition_lang.
         $languages = get_string_manager()->get_list_of_translations();
         if (count($languages) > 1) {
-            $languages = array_merge(['' => get_string('alllanguages', 'local_easycustmenu')], $languages);
-            $mform->addElement('select', 'condition_lang', get_string('condition_lang', 'local_easycustmenu'), $languages);
+            $mform->addElement(
+                'autocomplete',
+                'condition_lang',
+                get_string('condition_lang', 'local_easycustmenu'),
+                $languages,       // choices
+                ['multiple' => true, 'noselectionstring' => get_string('alllanguages', 'local_easycustmenu')]
+            );
             $mform->setType('condition_lang', PARAM_TEXT);
         } else {
             $mform->addElement('hidden', 'condition_lang', '');
@@ -104,6 +109,33 @@ class easycustmenu_form extends \moodleform {
         $mform->addGroup($radioarray, 'link_target_group', get_string('link_target_option', 'local_easycustmenu'), [' '], false);
         $mform->setDefault('link_target', 0);
 
+        // 
+        if ($type == 'navmenu') {
+            $menus = easycustmenu_handler::get_menu_items($type);
+            $menu_parent = [];
+            foreach ($menus as $key => $menu) {
+                $depth = '';
+                for ($i = 0; $i < $menu->depth; $i++) {
+                    $depth .= '-';
+                }
+                $menu_parent[$menu->id] = $depth . ' ' . $menu->menu_label;
+            }
+            $mform->addElement(
+                'select',
+                'parent',
+                get_string('menu_parent', 'local_easycustmenu'),
+                $menu_parent
+            );
+            $mform->setType('parent', PARAM_INT);
+            $mform->setDefault('parent', 0);
+        } else {
+            // parent
+            $mform->addElement('hidden', 'parent');
+            $mform->setType('parent', PARAM_INT);
+            $mform->setDefault('parent', 0);
+        }
+
+
 
         // Hidden fields for action and ID.
         $mform->addElement('hidden', 'menu_type');
@@ -113,6 +145,15 @@ class easycustmenu_form extends \moodleform {
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', 0);
+
+        // depth
+        $mform->addElement('hidden', 'depth');
+        $mform->setType('depth', PARAM_INT);
+        $mform->setDefault('depth', 0);
+        // menu_order
+        $mform->addElement('hidden', 'menu_order');
+        $mform->setType('menu_order', PARAM_INT);
+        $mform->setDefault('menu_order', 0);
         // action
         $mform->addElement('hidden', 'action');
         $mform->setType('action', PARAM_TEXT);

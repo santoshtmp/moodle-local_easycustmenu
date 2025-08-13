@@ -124,7 +124,7 @@ if ($action) {
     $contents .= $easycustmenu_form->render();
     $contents .= '</div>';
 } else {
-    $contents = easycustmenu_handler::get_menu_items_table($type);
+    $contents = easycustmenu_handler::get_menu_items_table($type, $page_path);
 }
 /**
  * ========================================================
@@ -140,12 +140,5 @@ if ($action) {
  */
 echo $OUTPUT->header();
 echo html_writer::tag('h3', $page_title . ' - ' . $type);
-$editurl = new moodle_url($page_path, [
-    'type' => $type,
-    'action' => 'edit',
-    'id' => 0,
-    'sesskey' => sesskey()
-]);
-echo html_writer::link($editurl, get_string('add'));
 echo $contents;
 echo $OUTPUT->footer();

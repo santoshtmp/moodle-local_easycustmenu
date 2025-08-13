@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['add_contion_settings'] = 'Add condition settings';
 $string['add_menu'] = 'Add Menu';
+$string['add_menu_item'] = 'Add menu item';
 $string['admin_user'] = 'Admin user role';
 $string['all_users_role'] = 'All users role';
 $string['auth_login_user'] = 'Auth login user role';
@@ -108,3 +109,5 @@ $string['menu_delete'] = 'Menu item "{$a->menu_label}" sucessfully deleted.';
 $string['menu_error_delete'] = 'Error on Menu item delete.';
 $string['save_order'] = 'Save Re-Order';
 $string['invalidmenudepth'] = 'Invalid menu depth detected! Please adjust highlighted rows.';
+$string['menu_parent'] = 'Menu parent';
+

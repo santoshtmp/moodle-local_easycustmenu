@@ -32,6 +32,7 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    //  It must be included from a Moodle page.
 }
 
+use core\context_helper;
 use core\output\action_menu;
 use core\output\html_writer;
 use core\output\pix_icon;
@@ -73,6 +74,9 @@ class easycustmenu_handler {
         ];
     }
 
+
+
+
     /**
      * Save Data
      * @param object $data
@@ -82,28 +86,33 @@ class easycustmenu_handler {
         try {
             global $DB;
             $status = false;
+
             // 
-            $maxorder = $DB->get_field_sql(
-                "SELECT MAX(menu_order) FROM {local_easycustmenu} WHERE menu_type = :menu_type",
-                ['menu_type' => $mform_data->menu_type]
-            );
-            if ($maxorder === false || $maxorder === null) {
-                $maxorder = 0;
+            if (!$mform_data->menu_order) {
+                $menu_order = $DB->get_field_sql(
+                    "SELECT MAX(menu_order) FROM {local_easycustmenu} WHERE menu_type = :menu_type",
+                    ['menu_type' => $mform_data->menu_type]
+                );
+                if ($menu_order === false || $menu_order === null) {
+                    $menu_order = 0;
+                } else {
+                    $menu_order++;
+                }
             } else {
-                $maxorder++;
+                $menu_order = $mform_data->menu_order;
             }
             // Process the data
             $data = new stdClass();
             $data->id = isset($mform_data->id) ? $mform_data->id : 0;
             $data->menu_type = $mform_data->menu_type;
             $data->context_level = $mform_data->context_level;
-            $data->parent = 0;
-            $data->depth = 0;
-            $data->menu_order = $maxorder;
+            $data->parent = $mform_data->parent;
+            $data->depth = $mform_data->depth;
+            $data->menu_order = $menu_order;
             $data->menu_label = $mform_data->menu_label;
             $data->menu_link = $mform_data->menu_link;
             $data->condition_courses = ($mform_data->context_level == 50) ? implode(',', $mform_data->courses ?? []) : '';
-            $data->condition_lang = $mform_data->condition_lang;
+            $data->condition_lang = implode(',', $mform_data->condition_lang);
             $data->condition_roleid = $mform_data->condition_roleid;
             $data->other_condition = '';
             $data->timemodified = time();
@@ -185,6 +194,9 @@ class easycustmenu_handler {
                 $entry = new stdClass();
                 $entry->id = $id;
                 $entry->action = 'edit';
+                $entry->parent = $data->parent;
+                $entry->depth = $data->depth;
+                $entry->menu_order = $data->menu_order;
                 $entry->menu_type = $data->menu_type;
                 $entry->context_level = $data->context_level;
                 $entry->menu_label = $data->menu_label;
@@ -207,36 +219,42 @@ class easycustmenu_handler {
     /**
      * Get menu items by type.
      *
-     * @param string $type
+     * @param string $type navmenu or usermenu
+     * @param int $context_level 10 or 50
+     * @param int $courseid
+     * @param array $roleids
+     * @param string $lang
      * @return array
      */
-    public static function get_menu_items(
-        $type = 'navmenu',
-        $context_level = 10,
-        $courseid = ''
-    ) {
+    public static function get_menu_items($type = 'navmenu', $context_level = 0, $courseid = 0, $roleids = [], $lang = '') {
 
-        global $DB, $CFG;
+        global $DB;
 
         // sql parameters and where condition 
         $where_condition_apply = '';
-
         $sql_params = [
             'menu_type' => $type,
         ];
-
         $where_condition = [
             'ecm.menu_type = :menu_type',
         ];
-
-
-        // $sql_params['context_level'] = $context_level;
-        // $where_condition[] = 'ecm.context_level = :context_level';
-
-        // $context = context_system::instance(); // or context_course::instance($courseid), etc.
-        // $currentcontextlevel = $context->contextlevel;
-
-
+        // 
+        if ($context_level) {
+            $sql_params['context_level'] = $context_level;
+            $where_condition[] = ($context_level == '50') ? '(ecm.context_level = :context_level OR ecm.context_level = 10)' : 'ecm.context_level = :context_level';
+        }
+        if ($courseid && $context_level == '50') {
+            $sql_params['courseid'] = $courseid;
+            $where_condition[] = "(ecm.condition_courses = '' OR FIND_IN_SET(:courseid, ecm.condition_courses) > 0 )";
+        }
+        if ($roleids) {
+            $where_condition[] = "(ecm.condition_roleid = '' OR ecm.condition_roleid IN ( " . implode(',', $roleids) . "))";
+        }
+        if ($lang) {
+            $sql_params['lang'] = $lang;
+            $where_condition[] = "(ecm.condition_lang = '' OR FIND_IN_SET(:lang, ecm.condition_lang) > 0 )";
+        }
+        // 
         if (count($where_condition) > 0) {
             $where_condition_apply = "WHERE " . implode(" AND ", $where_condition);
         }
@@ -258,19 +276,28 @@ class easycustmenu_handler {
      * @param string $type
      * @return string
      */
-    public static function get_menu_items_table($type) {
+    public static function get_menu_items_table($type, $page_path) {
         global $PAGE, $OUTPUT;
-
-        $menus = easycustmenu_handler::get_menu_items($type, 10);
-        $tableid = $type . '-table';
-        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menu_item_reorder', [$tableid]);
+        $contextoptions = easycustmenu_handler::get_menu_context_level();
+        $menus = self::get_menu_items($type);
+        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menu_item_reorder', [$type . '-table']);
         $PAGE->requires->js_call_amd('local_easycustmenu/conformdelete', 'init');
-
         $child_indentation = $OUTPUT->pix_icon('child_indentation', 'child-indentation', 'local_easycustmenu', ['class' => 'child-icon indentation']);
         $child_arrow = $OUTPUT->pix_icon('child_arrow', 'child-arrow-icon', 'local_easycustmenu', ['class' => 'child-icon child-arrow']);
-
+        // content prepare
         $contents = '';
-        $contents .= html_writer::start_tag('table', ['id' => $tableid, 'class' => 'generaltable']);
+        $contents .= html_writer::start_tag('div', ['class' => $type . '-type-wrapper mt-4 mb-4']);
+        $contents .= html_writer::link(
+            new moodle_url($page_path, [
+                'type' => $type,
+                'action' => 'edit',
+                'id' => 0,
+                'sesskey' => sesskey()
+            ]),
+            get_string('add_menu_item', 'local_easycustmenu'),
+            ['class' => 'btn btn-primary add-menu']
+        );
+        $contents .= html_writer::start_tag('table', ['id' => $type . '-table', 'class' => 'generaltable']);
         $contents .= html_writer::start_tag('thead');
         $contents .= html_writer::tag(
             'tr',
@@ -279,10 +306,7 @@ class easycustmenu_handler {
                 html_writer::tag('th', 'Action')
         );
         $contents .= html_writer::end_tag('thead');
-
         $contents .= html_writer::start_tag('tbody', ['data-type' => $type, 'data-action' => 'reorder']);
-        $contextoptions = easycustmenu_handler::get_menu_context_level();
-
         foreach ($menus as $menu) {
             // action menu
             $core_renderer = $PAGE->get_renderer('core');
@@ -382,9 +406,134 @@ class easycustmenu_handler {
                 'style' => 'display: none;'
             ]
         );
+        $contents .= html_writer::end_tag('div');
 
         return $contents;
     }
+
+
+    /**
+     * Get the current menu condition.
+     *
+     * Rules for context object and its level:
+     * - 50 if inside a real course (course id > 1)
+     * - 10 for system context or front page (course id = 1)
+     *
+     * @return array {
+     *     context       => context, // Moodle context object
+     *     contextlevel  => int,     // 50 or 10
+     *     courseid      => int,     // 0 for front page or system
+     *     roleids       => array,   // role IDs, with -1 for site admin
+     *     lang          => string   // current language code
+     * }
+     */
+    public static function get_current_menu_condition() {
+        global $PAGE, $COURSE, $USER;
+        // Defaults.
+        $context = \context_system::instance();
+        $contextlevel   = CONTEXT_SYSTEM;
+        $courseid = 0;
+        $roleids = [];
+        try {
+            if (!empty($COURSE->id) && $COURSE->id > 1) {
+                if ($PAGE->context->contextlevel === CONTEXT_COURSE or $PAGE->context->contextlevel === CONTEXT_MODULE) {
+                    $context  = \context_course::instance($COURSE->id);
+                    $contextlevel    = CONTEXT_COURSE;
+                    $courseid = $COURSE->id;
+                }
+            }
+            // Get user roles in this context.
+            $roleids = [];
+            if (is_siteadmin($USER->id)) {
+                $roleids[] = '-1';
+            }
+            $assignedroles = get_user_roles($context, $USER->id, false);
+            foreach ($assignedroles as $role) {
+                $roleids[] = $role->roleid;
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        // 
+        return [
+            'context'  => $context,
+            'contextlevel' => $contextlevel,
+            'courseid' => $courseid,
+            'roleids' => $roleids,
+            'lang' => current_language()
+        ];
+    }
+
+    /**
+     * check and define menu items according to easycustmenu
+     */
+    public static function define_config_menuitems() {
+        global $CFG;
+
+        $current_menu_condition = self::get_current_menu_condition();
+        $contextlevel = $current_menu_condition['contextlevel'];
+        $courseid = $current_menu_condition['courseid'];
+        $roleids = $current_menu_condition['roleids'];
+        $lang = $current_menu_condition['lang'];
+        $navmenu = self::get_menu_items('navmenu', $contextlevel, $courseid, $roleids, $lang);
+        $custommenuitems = '';
+        if ($navmenu) {
+            foreach ($navmenu as $key => $menu) {
+                $itemtext = $menu->menu_label;
+                $itemurl = $menu->menu_link;
+                $title = isset($menu->other_condition['menu_title']) ? $menu->other_condition['menu_title'] : '';
+                $itemlanguages = $menu->condition_lang;
+                $depth = $menu->depth;
+                $itemdepth = '';
+                for ($i = 0; $i < $depth; $i++) {
+                    $itemdepth .= '-';
+                }
+                $custommenuitems .= $itemdepth . $itemtext . "|" . $itemurl .  "|" . $title . "|" . $itemlanguages . "\n";
+            }
+            $CFG->custommenuitems = $custommenuitems;
+        }
+
+
+        // $customusermenuitems = get_config('moodle', 'customusermenuitems');
+        // if ($customusermenuitems) {
+        //     $customusermenuitemsoutput = "";
+        //     $lines = explode("\n", $customusermenuitems);
+        //     foreach ($lines as $linenumber => $line) {
+        //         $line = trim($line);
+        //         if (strlen($line) == 0) {
+        //             continue;
+        //         }
+        //         $settings = explode('|', $line);
+        //         $itemtext = $itemurl = $itemuserrole = '';
+        //         foreach ($settings as $i => $setting) {
+        //             $setting = trim($setting);
+        //             if ($setting !== '') {
+        //                 switch ($i) {
+        //                     case 0: // Prefix and Menu text.
+        //                         $itemtext = $setting;
+        //                         break;
+        //                     case 1: // URL.
+        //                         $itemurl = ($setting) ?: '#';
+        //                         break;
+        //                     case 2: // Role.
+        //                         $itemuserrole = $setting;
+        //                         break;
+        //                 }
+        //             }
+        //         }
+        //         if ($itemtext) {
+        //             // New menu line.
+        //             $newline = $itemtext . "|" . $itemurl . "\n";
+        //             // Add menu line according to user role condition.
+        //             if ($this->check_menu_line_role($itemuserrole)) {
+        //                 $customusermenuitemsoutput .= $newline;
+        //             }
+        //         }
+        //     }
+        //     $CFG->customusermenuitems = $customusermenuitemsoutput;
+        // }
+    }
+
 
 
     /**
