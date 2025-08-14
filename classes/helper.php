@@ -57,7 +57,7 @@ class helper {
      * @param string $conditionuserrole
      * @return bool
      */
-    public function check_menu_line_role($conditionuserrole, $user_id = '') {
+    public function check_menu_line_role($conditionuserrole) {
         if ($conditionuserrole == 'all') {
             return true;
         } else if ($conditionuserrole == 'guest') {
@@ -71,23 +71,6 @@ class helper {
         } else if ($conditionuserrole == 'admin') {
             if (is_siteadmin()) {
                 return true;
-            }
-        } else {
-            if ($conditionuserrole) {
-                global $USER;
-                $systemcontext = \context_system::instance();
-                $user_id = ($user_id) ?: $USER->id;
-                $roles = get_user_roles($systemcontext, $user_id, true);
-                $present = false;
-                foreach ($roles as $role) {
-                    if ($role->shortname == $conditionuserrole) {
-                        $present = true;
-                        break;
-                    }
-                }
-                if ($present) {
-                    return true;
-                }
             }
         }
         return false;
@@ -120,59 +103,21 @@ class helper {
                 'is_selected' => ($role == 'all') ? true : false,
             ],
             [
-                'key' => 'admin',
-                'value' => get_string('admin_user', 'local_easycustmenu'),
-                'is_selected' => ($role == 'admin') ? true : false,
+                'key' => 'guest',
+                'value' => get_string('guest_user_role', 'local_easycustmenu'),
+                'is_selected' => ($role == 'guest') ? true : false,
             ],
             [
                 'key' => 'auth',
                 'value' => get_string('auth_login_user', 'local_easycustmenu'),
                 'is_selected' => ($role == 'auth') ? true : false,
             ],
-
+            [
+                'key' => 'admin',
+                'value' => get_string('admin_user', 'local_easycustmenu'),
+                'is_selected' => ($role == 'admin') ? true : false,
+            ],
         ];
-
-        $user_roles = \local_easycustmenu\helper::get_user_roles_info([10]);
-        foreach ($user_roles as $key => $user_role) {
-            $roles[] = [
-                'key' => $user_role->shortname,
-                'value' => ($user_role->name) ?: $user_role->shortname,
-                'is_selected' => ($role == $user_role->shortname) ? true : false
-            ];
-        }
-        return $roles;
-    }
-
-    /**
-     * 
-     */
-    public static function get_user_roles_info($context = []) {
-        global $DB;
-        $roles = $DB->get_records('role');
-        foreach ($roles as &$role) {
-            $contextlevels = get_role_contextlevels($role->id);
-            if ($role->shortname == 'guest') {
-                continue;
-            }
-
-            // if (!empty($contextlevels)) {
-            //     foreach ($contextlevels as $level) {
-            //         $contextname = \core\context_helper::get_level_name($level);
-            //     }
-            // }
-
-            if ($context) {
-                $has_in_contextlevels = !empty(array_intersect($context, $contextlevels));
-                if ($has_in_contextlevels) {
-                    $role->contextlevels = $contextlevels;
-                } else {
-                    $role = null;
-                }
-            } else {
-                $role->contextlevels = $contextlevels;
-            }
-        }
-        $roles = array_filter($roles);
         return $roles;
     }
 
