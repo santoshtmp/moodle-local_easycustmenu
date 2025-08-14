@@ -24,21 +24,21 @@
  */
 
 use core\exception\moodle_exception;
-use core\output\action_menu;
 use core\output\html_writer;
-use core\output\pix_icon;
 use local_easycustmenu\form\easycustmenu_form;
 use local_easycustmenu\handler\easycustmenu_handler;
 
+// Get require config file.
 require_once(__DIR__ . '/../../config.php');
+defined('MOODLE_INTERNAL') || die();
 
-// Get Params.
+// Get parameters.
 $type = required_param('type', PARAM_ALPHANUMEXT); // navmenu, usermenu, etc.
 $action = optional_param('action', '', PARAM_ALPHA);
 $id = optional_param('id', 0, PARAM_INT);
 $context = \context_system::instance();
 
-// Validate.
+// Access checks and validate.
 require_login(null, false);
 $allowedtypes = easycustmenu_handler::get_menu_type();
 if (!array_key_exists($type, $allowedtypes)) {
@@ -50,9 +50,8 @@ if (!has_capability('moodle/site:config', $context)) {
 if ($action && !in_array($action, ['edit', 'delete'])) {
     throw new moodle_exception('invalidactionparam', 'local_easycustmenu');
 }
-/**
- * Prepare the page information.
- */
+
+// Prepare the page information. 
 $page_path = '/local/easycustmenu/edit.php';
 $url_param = ['type' => $type];
 if ($action) {
@@ -73,25 +72,18 @@ if ($action == 'add') {
     $page_title = get_string('pluginname', 'local_easycustmenu');
 }
 
-/**
- * Page setup
- */
+// setup page information.
 $PAGE->set_context($context);
 $PAGE->set_url($url);
-$PAGE->set_pagelayout('admin'); // admin , standard , ...
+$PAGE->set_pagelayout('admin');
 $PAGE->set_pagetype('easycustmenu_navmenu_setting');
 $PAGE->set_title($page_title);
 $PAGE->set_heading($page_title);
-// $PAGE->requires->js_call_amd('local_easycustmenu/nav-menu-setting', 'init', ['navmenu']);
 $PAGE->requires->css(new moodle_url('/local/easycustmenu/style/nav-menu-setting.css'));
 $PAGE->add_body_class('page-easycustmenu');
 
-/**
- * FORM actions
- */
-// $easycustmenu_form = new easycustmenu_form();
+// Menu form actions or content to display.
 if ($action) {
-
     $easycustmenu_form = new easycustmenu_form($redirect_url, [
         'type' => $type,
         'action' => $action
@@ -124,21 +116,12 @@ if ($action) {
     $contents .= $easycustmenu_form->render();
     $contents .= '</div>';
 } else {
-    $contents = easycustmenu_handler::get_menu_items_table($type, $page_path);
+    $contents = '';
+    $contents .= easycustmenu_handler::get_header_tab_part($page_path);
+    $contents .= easycustmenu_handler::get_menu_items_table($type, $page_path);
 }
-/**
- * ========================================================
- *     Get the data and display
- * ========================================================
- */
 
-
-/**
- * ========================================================
- * -------------------  Output Content  -------------------
- * ========================================================
- */
+// Output Content.
 echo $OUTPUT->header();
-echo html_writer::tag('h3', $page_title . ' - ' . $type);
 echo $contents;
 echo $OUTPUT->footer();
