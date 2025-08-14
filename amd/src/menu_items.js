@@ -83,8 +83,9 @@ async function ajax_save_menu_items(reorder_items) {
     return await Ajax.call([request])[0]
         .done(function (response) {
             if (response.status) {
+                window.location.reload();
                 // window.console.log('Menu order saved successfully.');
-                $('#save_menu_reorder').hide();
+                // $('#save_menu_reorder').hide();
             } else {
                 window.console.log('Error saving menu order:', response.message);
             }
@@ -182,47 +183,48 @@ export const menu_item_reorder = (tableid) => {
 
     // Handle drag-and-drop depth changes.
     $(elementSelector).on(SortableList.EVENTS.DROP, async function (evt, info) {
-        let element = info.element;
-        let end_x = info.endX;
-        let start_x = info.startX;
-        let positionChanged = info.positionChanged;
-        let itemDepth = parseInt(element.attr('data-depth')) || 0;
-        let new_itemDepth = itemDepth;
-        let prevElement = element.prev();
-        let prevElementDepth = parseInt(prevElement.attr('data-depth')) || 0;
+        if (tableid == 'navmenu') {
+            let element = info.element;
+            let end_x = info.endX;
+            let start_x = info.startX;
+            let positionChanged = info.positionChanged;
+            let itemDepth = parseInt(element.attr('data-depth')) || 0;
+            let new_itemDepth = itemDepth;
+            let prevElement = element.prev();
+            let prevElementDepth = parseInt(prevElement.attr('data-depth')) || 0;
 
-        // Only adjust depth for significant horizontal movement
-        if (positionChanged) {
-            let elementIndex = $(elementSelector + ' tr').index(element);
-            let targetNextElementDepth = parseInt(info.targetNextElement.attr('data-depth')) || 0;
-            new_itemDepth = (elementIndex == 0) ? 0 : Math.max(prevElementDepth, targetNextElementDepth);
-        } else {
-            if (prevElement.length) {
-                if (end_x > start_x + 30) {
-                    new_itemDepth = Math.min(itemDepth + 1, prevElementDepth + 1);
-                } else if (end_x < start_x - 30) {
-                    new_itemDepth = Math.max(0, itemDepth - 1);
+            // Only adjust depth for significant horizontal movement
+            if (positionChanged) {
+                let elementIndex = $(elementSelector + ' tr').index(element);
+                let targetNextElementDepth = parseInt(info.targetNextElement.attr('data-depth')) || 0;
+                new_itemDepth = (elementIndex == 0) ? 0 : Math.max(prevElementDepth, targetNextElementDepth);
+            } else {
+                if (prevElement.length) {
+                    if (end_x > start_x + 30) {
+                        new_itemDepth = Math.min(itemDepth + 1, prevElementDepth + 1);
+                    } else if (end_x < start_x - 30) {
+                        new_itemDepth = Math.max(0, itemDepth - 1);
+                    }
                 }
             }
-        }
 
-        // Update element depth and child-icon only if depth changed
-        if (new_itemDepth !== itemDepth) {
-            element.attr('data-depth', new_itemDepth);
-            let child_indentation_icon = '';
-            if (new_itemDepth) {
-                for (let index = 0; index < new_itemDepth - 1; index++) {
-                    child_indentation_icon += child_indentation;
+            // Update element depth and child-icon only if depth changed
+            if (new_itemDepth !== itemDepth) {
+                element.attr('data-depth', new_itemDepth);
+                let child_indentation_icon = '';
+                if (new_itemDepth) {
+                    for (let index = 0; index < new_itemDepth - 1; index++) {
+                        child_indentation_icon += child_indentation;
+                    }
+                    child_indentation_icon += child_arrow;
                 }
-                child_indentation_icon += child_arrow;
-            }
-            let indentation = element.find('.child-icon-wrapper');
-            if (indentation) {
-                indentation.html(child_indentation_icon);
-            }
+                let indentation = element.find('.child-icon-wrapper');
+                if (indentation) {
+                    indentation.html(child_indentation_icon);
+                }
 
+            }
         }
-
         // Show save button after reordering
         $('#save_menu_reorder').show();
 

@@ -44,6 +44,10 @@ class easycustmenu_form extends \moodleform {
         $mform = $this->_form;
         $type = $this->_customdata['type'];
         $action = $this->_customdata['action'];
+        $id = optional_param('id', 0, PARAM_INT);
+        $current_menu = $DB->get_record(easycustmenu_handler::$menu_table, ['id' => $id]);
+
+
 
         // faq header
         $mform->addElement('header', 'generalsettings', get_string('menu_item', 'local_easycustmenu'));
@@ -98,22 +102,34 @@ class easycustmenu_form extends \moodleform {
         $mform->addElement('select', 'condition_roleid', get_string('condition_role', 'local_easycustmenu'), $roles);
         $mform->setType('condition_roleid', PARAM_INT);
 
-        // tool tio title
-        $mform->addElement('text', 'menu_label_tip_title', get_string('label_tooltip_title', 'local_easycustmenu'), ['size' => 50]);
-        $mform->setType('menu_label_tip_title', PARAM_TEXT);
+        if ($type == 'navmenu') {
+            // tool tio title
+            $mform->addElement('text', 'label_tooltip_title', get_string('label_tooltip_title', 'local_easycustmenu'), ['size' => 50]);
+            $mform->setType('label_tooltip_title', PARAM_TEXT);
 
-        // Open in new tab target blank
-        $radioarray = [];
-        $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('yes'), 1);
-        $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('no'), 0);
-        $mform->addGroup($radioarray, 'link_target_group', get_string('link_target_option', 'local_easycustmenu'), [' '], false);
-        $mform->setDefault('link_target', 0);
+            // Open in new tab target blank
+            $radioarray = [];
+            $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('yes'), 1);
+            $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('no'), 0);
+            $mform->addGroup($radioarray, 'link_target_group', get_string('link_target_option', 'local_easycustmenu'), [' '], false);
+            $mform->setDefault('link_target', 0);
+        } else {
+            // $mform->addElement('hidden', 'parent');
+            // $mform->setType('parent', PARAM_INT);
+            // $mform->setDefault('parent', 0);
+        }
 
         // 
         if ($type == 'navmenu') {
             $menus = easycustmenu_handler::get_menu_items($type);
-            $menu_parent = [];
+            $menu_parent = [0 => get_string('top')];
             foreach ($menus as $key => $menu) {
+                if ($menu->id == $id) {
+                    continue;
+                }
+                if ($menu->depth > $current_menu->depth) {
+                    continue;
+                }
                 $depth = '';
                 for ($i = 0; $i < $menu->depth; $i++) {
                     $depth .= '-';
@@ -135,9 +151,12 @@ class easycustmenu_form extends \moodleform {
             $mform->setDefault('parent', 0);
         }
 
+        // depth
+        $mform->addElement('hidden', 'depth');
+        $mform->setType('depth', PARAM_INT);
+        $mform->setDefault('depth', 0);
 
-
-        // Hidden fields for action and ID.
+        // menu_type.
         $mform->addElement('hidden', 'menu_type');
         $mform->setType('menu_type', PARAM_TEXT);
         $mform->setDefault('menu_type', $type);
@@ -146,10 +165,6 @@ class easycustmenu_form extends \moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', 0);
 
-        // depth
-        $mform->addElement('hidden', 'depth');
-        $mform->setType('depth', PARAM_INT);
-        $mform->setDefault('depth', 0);
         // menu_order
         $mform->addElement('hidden', 'menu_order');
         $mform->setType('menu_order', PARAM_INT);
