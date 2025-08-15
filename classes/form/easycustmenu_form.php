@@ -47,11 +47,8 @@ class easycustmenu_form extends \moodleform {
         $id = optional_param('id', 0, PARAM_INT);
         $current_menu = $DB->get_record(easycustmenu_handler::$menu_table, ['id' => $id]);
 
-
-
-        // faq header
+        // header
         $mform->addElement('header', 'generalsettings', get_string('menu_item', 'local_easycustmenu'));
-        // $mform->addElement('html', '<h3>Menu Add</h3>');
 
         // menu_label
         $mform->addElement('text', 'menu_label', get_string('label', 'local_easycustmenu'), ['size' => 50]);
@@ -93,13 +90,15 @@ class easycustmenu_form extends \moodleform {
             $mform->setType('condition_lang', PARAM_TEXT);
         }
 
-        // condition_roleid.
-        $roles = $DB->get_records_menu('role', null, 'sortorder ASC', 'id, name');
-        $roles = [
-            '0' => get_string('everyone', 'local_easycustmenu'),
-            '-1' => get_string('admin_user', 'local_easycustmenu'),
-        ] + $roles;
-        $mform->addElement('select', 'condition_roleid', get_string('condition_role', 'local_easycustmenu'), $roles);
+
+        // Prepare role data grouped by context level.
+        $rolesbycontext = self::roleoptions_bycontextlevels($contextoptions);
+        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'context_role_filter', [$rolesbycontext]);
+        $role_options = [];
+        foreach ($rolesbycontext[$current_menu->context_level ?? CONTEXT_SYSTEM] as $key => $value) {
+            $role_options[$value['value']] = $value['label'];
+        }
+        $mform->addElement('select', 'condition_roleid', get_string('condition_role', 'local_easycustmenu'), $role_options);
         $mform->setType('condition_roleid', PARAM_INT);
 
         if ($type == 'navmenu') {
@@ -113,12 +112,7 @@ class easycustmenu_form extends \moodleform {
             $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('no'), 0);
             $mform->addGroup($radioarray, 'link_target_group', get_string('link_target_option', 'local_easycustmenu'), [' '], false);
             $mform->setDefault('link_target', 0);
-        } else {
-            // $mform->addElement('hidden', 'parent');
-            // $mform->setType('parent', PARAM_INT);
-            // $mform->setDefault('parent', 0);
         }
-
         // 
         if ($type == 'navmenu') {
             $menus = easycustmenu_handler::get_menu_items($type);
@@ -175,6 +169,35 @@ class easycustmenu_form extends \moodleform {
         $mform->setDefault('action', $action);
 
         $this->add_action_buttons();
+    }
+
+
+    /**
+     * @param array $contextoptions
+     */
+    public static function roleoptions_bycontextlevels($contextoptions) {
+        $rolesbycontext = [];
+        foreach ($contextoptions as $ctxvalue => $ctxlabel) {
+            $roles = easycustmenu_handler::get_context_roles($ctxvalue);
+            $roleopts = [
+                [
+                    'value' => 0,
+                    'label'  => get_string('everyone', 'local_easycustmenu'),
+                ],
+                [
+                    'value' => '-1',
+                    'label'  => get_string('admin'),
+                ],
+            ];
+            foreach ($roles as $role) {
+                $roleopts[] = [
+                    'value' => $role->id,
+                    'label' => role_get_name($role),
+                ];
+            }
+            $rolesbycontext[$ctxvalue] = $roleopts;
+        }
+        return $rolesbycontext;
     }
 
     /**

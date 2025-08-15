@@ -135,7 +135,7 @@ class easycustmenu_handler {
         if ($condition_roleid == 0) {
             $role_name = get_string('everyone', 'local_easycustmenu');
         } else if ($condition_roleid == '-1') {
-            $role_name = get_string('admin_user', 'local_easycustmenu');
+            $role_name = get_string('admin');
         } else {
             $role = $DB->get_record('role', ['id' => $condition_roleid]);
             if ($role) {
@@ -143,6 +143,33 @@ class easycustmenu_handler {
             }
         }
         return $role_name;
+    }
+
+    /**
+     * Get role base on menu context
+     */
+    public static function get_context_roles($contextlevel) {
+        global $DB;
+        if (!empty($contextlevel)) {
+            if ($contextlevel == CONTEXT_SYSTEM) {
+               $sql = "SELECT r.*
+                        FROM {role} r
+                        LEFT JOIN {role_context_levels} rcl ON r.id = rcl.roleid
+                        WHERE rcl.contextlevel = :contextlevel OR rcl.roleid IS NULL
+                        ORDER BY r.sortorder ASC";
+
+                return $DB->get_records_sql($sql, ['contextlevel' => $contextlevel]);
+
+            } else {
+                $sql = "SELECT r.*
+                  FROM {role} r
+                  JOIN {role_context_levels} rcl ON r.id = rcl.roleid
+                 WHERE rcl.contextlevel = :contextlevel";
+                return $DB->get_records_sql($sql, ['contextlevel' => $contextlevel]);
+            }
+        }
+
+        return $DB->get_records('role');
     }
 
     /**
@@ -190,6 +217,7 @@ class easycustmenu_handler {
         }
     }
 
+    // ------------------------------------------------------------------------------------------
 
     /**
      * Save Data
@@ -562,7 +590,7 @@ class easycustmenu_handler {
     public static function get_header_tab_part($page_path) {
         global $OUTPUT;
         $type = required_param('type', PARAM_ALPHANUMEXT); // navmenu, usermenu, etc.
-        $section = required_param('section', PARAM_ALPHANUMEXT);
+        $section = optional_param('section', '', PARAM_ALPHANUMEXT);
         $templatename = 'local_easycustmenu/easycustmenu_setting_header';
         $templatecontext = [];
         $templatecontext['single_menu'] = [

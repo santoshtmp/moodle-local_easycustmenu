@@ -183,7 +183,7 @@ export const menu_item_reorder = (tableid) => {
 
     // Handle drag-and-drop depth changes.
     $(elementSelector).on(SortableList.EVENTS.DROP, async function (evt, info) {
-        if (tableid == 'navmenu') {
+        if (tableid == 'navmenu-table') {
             let element = info.element;
             let end_x = info.endX;
             let start_x = info.startX;
@@ -255,4 +255,35 @@ export const menu_item_reorder = (tableid) => {
 
     });
 
+};
+
+
+/**
+ *
+ * @param {*} rolesByContext
+ * @returns
+ */
+export const context_role_filter = (rolesByContext) => {
+    const contextSelect = document.querySelector('select[name="context_level"]');
+    const roleSelect = document.querySelector('select[name="condition_roleid"]');
+
+    if (!contextSelect || !roleSelect) {
+        return;
+    }
+
+    contextSelect.addEventListener('change', () => {
+        const ctxValue = contextSelect.value;
+        const roleList = rolesByContext[ctxValue] || [];
+        const previouslySelected = roleSelect.value;
+        roleSelect.innerHTML = '';
+        roleList.forEach(({ value, label }) => {
+            const opt = document.createElement('option');
+            opt.value = value;
+            opt.textContent = label;
+            if (value === previouslySelected) {
+                opt.selected = true;
+            }
+            roleSelect.appendChild(opt);
+        });
+    });
 };
