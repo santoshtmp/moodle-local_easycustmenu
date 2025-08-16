@@ -77,12 +77,11 @@ class easycustmenu_handler {
                     $menu_order++;
                 }
             } else {
-                $menu_order = $mform_data->menu_order;
+                $menu_order = $mform_data->menu_order ?? 0;
             }
             // Determine depth
             $depth = 0;
-            // if ($mform_data->depth == 0 && $mform_data->parent) {
-            if (($mform_data->depth ?? 0) == 0 && !empty($mform_data->parent)) {
+            if (($mform_data->depth ?? 0) == 0 && !empty($mform_data->parent) && $menu_type == 'navmenu') {
                 $parent_data = $DB->get_record(self::$menu_table, ['id' => $mform_data->parent]);
                 if ($parent_data) {
                     $depth = (int)$parent_data->depth + 1;
