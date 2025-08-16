@@ -77,7 +77,7 @@ class easycustmenu_handler {
                     $menu_order++;
                 }
             } else {
-                $menu_order = $mform_data->menu_order;
+                $menu_order = $mform_data->menu_order ?? 0;
             }
             // Determine depth
             $depth = 0;
