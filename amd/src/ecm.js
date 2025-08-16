@@ -21,52 +21,45 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
-// import $ from 'jquery';
-
-
-/**
- *
- * @param {*} target_blank_menu
- */
-export const target_blank_menu = (target_blank_menu) => {
-    if (target_blank_menu) {
-        let target_blank_on_menu = JSON.parse(target_blank_menu);
-        Object.entries(target_blank_on_menu).forEach(([key, value]) => {
-            let label = `${key}`;
-            let link = `${value}`;
-            if (link) {
-                let menu_item = document.querySelectorAll("nav ul li a[href$='" + link + "']");
-                menu_item.forEach(item => {
-                    if (item.textContent.trim() == label) {
-                        item.setAttribute("target", "_blank");
-                    }
-                });
-            }
-        });
-    }
-};
+import Templates from 'core/templates';
 
 /**
  *
- * @param {*} plugin_header_content
+ * @param {*} templatecontext
  */
-export const admin_plugin_setting_init = (plugin_header_content) => {
+export const admin_plugin_setting_init = (templatecontext) => {
     /**
     * adjust the setting section
     */
     let beforeDiv = "";
-    beforeDiv = document.querySelector("#menu_setting_collection .ecm-header");
-    if (beforeDiv) {
-        beforeDiv.outerHTML = plugin_header_content;
-    } else {
-        beforeDiv = document.querySelector("#page-admin-setting-local_easycustmenu #adminsettings .settingsform > h2");
-        if (beforeDiv) {
-            beforeDiv.outerHTML = plugin_header_content;
-        }
-    }
-
+    Templates.render('local_easycustmenu/easycustmenu_setting_header', templatecontext)
+        .then(function (html) {
+            beforeDiv = document.querySelector("#menu_setting_collection .ecm-header");
+            if (beforeDiv) {
+                beforeDiv.outerHTML = html;
+            } else {
+                beforeDiv = document.querySelector("#page-admin-setting-local_easycustmenu #adminsettings .settingsform > h2");
+                if (beforeDiv) {
+                    beforeDiv.outerHTML = html;
+                }
+            }
+        });
 };
 
+/**
+ *
+ * @param {*} link
+ * @param {*} label
+ * @param {*} css_class
+ * @returns
+ */
+function get_ecm_btn(link, label, css_class = '') {
+    let btn = '<a href="' + link + '" class="btn btn-secondary btn-manage-ecm ';
+    btn += css_class + ' " style="margin:8px;">' + label + '</a>';
+    btn = new DOMParser().parseFromString(btn, 'text/html');
+    return btn.querySelector('a.btn-manage-ecm');
+
+}
 
 /**
  *
@@ -74,26 +67,12 @@ export const admin_plugin_setting_init = (plugin_header_content) => {
  */
 export const admin_core_setting_init = (string_array) => {
 
-    window.console.log(string_array);
-    /**
-     *
-     * @param {*} link
-     * @param {*} label
-     * @param {*} css_class
-     * @returns
-     */
-    function get_ecm_btn(link, label, css_class = '') {
-        let btn = '<a href="' + link + '" class="btn btn-secondary btn-manage-ecm ';
-        btn += css_class + ' " style="margin:8px;">' + label + '</a>';
-        btn = new DOMParser().parseFromString(btn, 'text/html');
-        return btn.querySelector('a.btn-manage-ecm');
-
-    }
-
+    let navmenu_link = "/local/easycustmenu/edit.php?type=navmenu";
+    let usermenu_link = "/local/easycustmenu/edit.php?type=usermenu";
     /**
     * core custommenuitems
     */
-    let btn_ecm_custommenuitems = get_ecm_btn("/local/easycustmenu/pages/navmenu.php", string_array['manage_menu_label']);
+    let btn_ecm_custommenuitems = get_ecm_btn(navmenu_link, string_array['manage_menu_label']);
     var show_menu_label = string_array['show_menu_label']; //'Show Default "Custom menu items" ';
     var hide_menu_label = string_array['hide_menu_label']; //'Hide Default "Custom menu items" ';
     let btn_hide_show_custommenuitems = get_ecm_btn('#', show_menu_label, 'show_hide_custommenuitems show_menu');
@@ -126,9 +105,8 @@ export const admin_core_setting_init = (string_array) => {
         });
     }
 
-
     /** core customusermenuitems */
-    let btn_ecm_customusermenuitems = get_ecm_btn("/local/easycustmenu/pages/usermenu.php", string_array['manage_menu_label_2']);
+    let btn_ecm_customusermenuitems = get_ecm_btn(usermenu_link, string_array['manage_menu_label_2']);
     var show_menu_label_2 = string_array['show_menu_label_2'];
     var hide_menu_label_2 = string_array['hide_menu_label_2'];
     let btn_hide_show_customusermenuitems = get_ecm_btn('#', show_menu_label_2, 'show_hide_customusermenuitems show_menu');

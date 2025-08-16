@@ -32,7 +32,7 @@ function xmldb_local_easycustmenu_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    $new_version = 2025063002;
+    $new_version = 2025081700;
     if ($oldversion < $new_version) {
 
         // Define table local_easycustmenu to be created.
@@ -47,7 +47,7 @@ function xmldb_local_easycustmenu_upgrade($oldversion) {
         $table->add_field('parent', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('depth', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('menu_order', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('condition_courses', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('condition_courses', XMLDB_TYPE_CHAR, '150', null, XMLDB_NOTNULL, null, null);
         $table->add_field('condition_lang', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null);
         $table->add_field('condition_roleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('other_condition', XMLDB_TYPE_TEXT, null, null, null, null, null);
@@ -173,7 +173,7 @@ function local_easycustmenu_convert_data_into_new_format() {
                 $stack[$depth] = &$parent['children'][count($parent['children']) - 1];
             }
         }
-        save_menu_data($new_navmenu_tree, 0);
+        local_easycustmenu_save_menu_data($new_navmenu_tree, 0);
         unset_config('custommenuitems', 'local_easycustmenu');
     }
     // user menu
@@ -256,7 +256,7 @@ function local_easycustmenu_convert_data_into_new_format() {
                 $stack[$depth] = &$parent['children'][count($parent['children']) - 1];
             }
         }
-        save_menu_data($new_usermenu_tree, 0);
+        local_easycustmenu_save_menu_data($new_usermenu_tree, 0);
     }
 }
 
@@ -294,7 +294,7 @@ function local_easycustmenu_save_menu_data($new_navmenu_tree, $parent_id = 0) {
             $menu_id = $DB->insert_record(easycustmenu_handler::$menu_table, $data);
             if ($menu['children'] && count($menu['children']) > 0) {
                 $child_menu_tree = $menu['children'];
-                save_menu_data($child_menu_tree, $menu_id);
+                local_easycustmenu_save_menu_data($child_menu_tree, $menu_id);
             }
         }
     } catch (\Throwable $th) {

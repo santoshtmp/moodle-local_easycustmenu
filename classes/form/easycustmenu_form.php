@@ -32,23 +32,21 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class easycustmenu_form extends \moodleform {
 
-    // table name
-    protected static $menu_table = 'local_easycustmenu';
-
     /**
      * Form definition.
      */
     public function definition() {
-        global $DB, $PAGE;
+        global $PAGE;
 
         $mform = $this->_form;
         $type = $this->_customdata['type'];
         $action = $this->_customdata['action'];
-        $id = optional_param('id', 0, PARAM_INT);
-        $current_menu = $DB->get_record(easycustmenu_handler::$menu_table, ['id' => $id]);
+        $id = $this->_customdata['id'];
+        $current_menu = easycustmenu_handler::get_ecm_menu_by_id($id);
+        $menu_item_title = ($id) ? 'edit_menu_item' : 'add_menu_item';
 
         // header
-        $mform->addElement('header', 'generalsettings', get_string('menu_item', 'local_easycustmenu'));
+        $mform->addElement('header', 'generalsettings', get_string($menu_item_title, 'local_easycustmenu'));
 
         // menu_label
         $mform->addElement('text', 'menu_label', get_string('label', 'local_easycustmenu'), ['size' => 50]);
@@ -61,14 +59,14 @@ class easycustmenu_form extends \moodleform {
         $mform->addRule('menu_link', null, 'required', null, 'client');
 
         // context_level
-        $contextoptions = easycustmenu_handler::get_menu_context_level();
+        $contextoptions = \local_easycustmenu\helper::get_ecm_context_level();
         $mform->addElement('select', 'context_level', get_string('context_level', 'local_easycustmenu'), $contextoptions);
         $mform->setType('context_level', PARAM_INT);
 
         // condition_courses Get courses list (only show when context_level == 50)
         $options = [
             'multiple' => true,
-            'noselectionstring' => get_string('selectcourses', 'local_easycustmenu'),
+            'noselectionstring' => get_string('allcourses', 'local_easycustmenu'),
         ];
         $mform->addElement('course', 'condition_courses', get_string('course'), $options);
         $mform->hideIf('condition_courses', 'context_level', 'neq', 50);
@@ -110,12 +108,12 @@ class easycustmenu_form extends \moodleform {
             $radioarray = [];
             $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('yes'), 1);
             $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('no'), 0);
-            $mform->addGroup($radioarray, 'link_target_group', get_string('link_target_option', 'local_easycustmenu'), [' '], false);
+            $mform->addGroup($radioarray, 'link_target_group', get_string('open_in_a_new_browser_tab', 'local_easycustmenu'), [' '], false);
             $mform->setDefault('link_target', 0);
         }
         // 
         if ($type == 'navmenu') {
-            $menus = easycustmenu_handler::get_menu_items($type);
+            $menus = easycustmenu_handler::get_ecm_menu_items($type);
             $menu_parent = [0 => get_string('top')];
             foreach ($menus as $key => $menu) {
                 if ($menu->id == $id) {
@@ -133,7 +131,7 @@ class easycustmenu_form extends \moodleform {
             $mform->addElement(
                 'select',
                 'parent',
-                get_string('menu_parent', 'local_easycustmenu'),
+                get_string('parent', 'local_easycustmenu'),
                 $menu_parent
             );
             $mform->setType('parent', PARAM_INT);
@@ -178,7 +176,7 @@ class easycustmenu_form extends \moodleform {
     public static function roleoptions_bycontextlevels($contextoptions) {
         $rolesbycontext = [];
         foreach ($contextoptions as $ctxvalue => $ctxlabel) {
-            $roles = easycustmenu_handler::get_context_roles($ctxvalue);
+            $roles = \local_easycustmenu\helper::get_ecm_context_roles($ctxvalue);
             $roleopts = [
                 [
                     'value' => 0,
@@ -208,19 +206,25 @@ class easycustmenu_form extends \moodleform {
      * @return array Array of errors, empty if no errors.
      */
     function validation($data, $files) {
-        global $CFG, $DB;
+        global $DB;
 
         $errors = parent::validation($data, $files);
 
         // Add field validation check for duplicate menu label.
         if ($data['menu_label']) {
-            $data_menu_label = trim($data['menu_label']);
-            if ($existing = $DB->get_record(self::$menu_table, array('menu_label' => $data_menu_label))) {
-                if (!$data['id'] || $existing->id != $data['id']) {
-                    $a = new stdClass();
-                    $a->menu_label = trim($data['menu_label']);
-                    $errors['menu_label'] =  get_string('label_error', 'local_easycustmenu', $a);
-                }
+            $normalized_label = \core_text::strtolower(trim($data['menu_label']));
+
+            $sql = "SELECT id FROM {local_easycustmenu} 
+            WHERE LOWER(menu_label) = :label";
+            $params = ['label' => $normalized_label];
+
+            $existing = $DB->get_record_sql($sql, $params);
+
+            // If a record exists and it's not the current editing record
+            if ($existing && (empty($data['id']) || $existing->id != $data['id'])) {
+                $a = new stdClass();
+                $a->menu_label = trim($data['menu_label']);
+                $errors['menu_label'] = get_string('label_error', 'local_easycustmenu', $a);
             }
         }
 

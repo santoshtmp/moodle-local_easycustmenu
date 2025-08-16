@@ -66,6 +66,7 @@ class save_menu_order extends external_api {
 
         $context = \context_system::instance();
         self::validate_context($context);
+        require_capability('moodle/site:config', $context);
 
         try {
             $transaction = $DB->start_delegated_transaction();
@@ -74,12 +75,14 @@ class save_menu_order extends external_api {
                 if (!$item['id']) {
                     continue;
                 }
-                $DB->update_record('local_easycustmenu', (object)[
-                    'id' => $item['id'],
-                    'menu_order' => $item['menu_order'],
-                    'depth' => $item['depth'],
-                    'parent' => $item['parent'],
-                ]);
+                if ($DB->record_exists('local_easycustmenu', ['id' => $item['id']])) {
+                    $DB->update_record('local_easycustmenu', (object)[
+                        'id' => $item['id'],
+                        'menu_order' => $item['menu_order'],
+                        'depth' => $item['depth'],
+                        'parent' => $item['parent'],
+                    ]);
+                }
             }
 
             $transaction->allow_commit();
