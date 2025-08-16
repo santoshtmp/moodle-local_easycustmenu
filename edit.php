@@ -27,6 +27,7 @@ use core\exception\moodle_exception;
 use core\output\html_writer;
 use local_easycustmenu\form\easycustmenu_form;
 use local_easycustmenu\handler\easycustmenu_handler;
+use local_easycustmenu\helper;
 
 // Get require config file.
 require_once(__DIR__ . '/../../config.php');
@@ -40,7 +41,7 @@ $context = \context_system::instance();
 
 // Access checks and validate.
 require_login(null, false);
-$allowedtypes = easycustmenu_handler::get_menu_type();
+$allowedtypes = helper::get_menu_type();
 if (!array_key_exists($type, $allowedtypes)) {
     throw new moodle_exception('invalidtypeparam', 'local_easycustmenu');
 }
@@ -86,7 +87,8 @@ $PAGE->add_body_class('page-easycustmenu');
 if ($action) {
     $easycustmenu_form = new easycustmenu_form($redirect_url, [
         'type' => $type,
-        'action' => $action
+        'action' => $action,
+        'id' => $id
     ]);
 
     if ($easycustmenu_form->is_cancelled()) {
@@ -117,11 +119,14 @@ if ($action) {
     $contents .= '</div>';
 } else {
     $contents = '';
-    $contents .= easycustmenu_handler::get_header_tab_part($page_path);
-    $contents .= easycustmenu_handler::get_menu_items_table($type, $page_path);
+    $contents .= easycustmenu_handler::get_ecm_menu_items_table($type, $page_path);
 }
 
 // Output Content.
 echo $OUTPUT->header();
+echo $OUTPUT->render_from_template(
+    "local_easycustmenu/easycustmenu_setting_header",
+    \local_easycustmenu\helper::get_ecm_header_templatecontext()
+);
 echo $contents;
 echo $OUTPUT->footer();

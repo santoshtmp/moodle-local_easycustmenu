@@ -1,90 +1,9 @@
 /* ------only apply to page with body class page-easycustmenu ---------- */
 
-.page-easycustmenu .easycustmenu_setting_header {
-    padding: 0 24px;
-
-    h2 {
-        margin-bottom: .5rem;
-    }
+.page-easycustmenu .easycustmenu_setting_header h2 {
+    margin-bottom: .5rem;
 }
 
-.page-easycustmenu .menu-setting-content {
-    margin: 24px 0;
-}
-
-.page-easycustmenu .menu-setting-content form {
-    max-width: 950px;
-    padding: 0 24px;
-}
-
-.page-easycustmenu .action-add-menu {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 12px
-}
-
-.page-easycustmenu .action-add-menu .btn-add-menu {
-    margin: auto;
-}
-
-.page-easycustmenu .menu .menu-item-wrapper:nth-child(odd) {
-    background-color: #ebebeb;
-}
-
-.page-easycustmenu .menu .menu-item-wrapper:nth-child(even) {
-    background-color: #e0e0e0;
-}
-
-.page-easycustmenu .menu-item-wrapper {
-    padding: 12px;
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.page-easycustmenu .menu-item {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    gap: 6px;
-    margin: 12px;
-    margin-left: 0;
-    width: 83%;
-}
-
-.page-easycustmenu .btn-collapse-exp.expand .icon:nth-child(2) {
-    display: none;
-}
-
-.page-easycustmenu .btn-collapse-exp.expand-off .icon:nth-child(1) {
-    display: none;
-}
-
-.page-easycustmenu .btn-action-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    margin-left: auto;
-}
-
-.page-easycustmenu .btn-add-condition.active::after {
-    content: "\25BC";
-    font-size: 9px;
-}
-
-.page-easycustmenu .condition-fields {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    gap: 3px;
-    width: 100%;
-}
-
-.page-easycustmenu .condition-wrapper {
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-    border-bottom: solid 1px darkgray;
-}
-
-/* ---- */
 .page-easycustmenu table.generaltable tr .child-icon {
     width: 24px;
     height: 24px;

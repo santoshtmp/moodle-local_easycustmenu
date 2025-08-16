@@ -33,7 +33,6 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 use core\output\action_menu;
-use core\output\html_writer;
 use core\output\pix_icon;
 use moodle_url;
 use stdClass;
@@ -47,177 +46,7 @@ use stdClass;
  */
 class easycustmenu_handler {
     // table name
-    public static $menu_table = 'local_easycustmenu';
-
-    /**
-     * Get menu types.
-     *
-     * @return array
-     */
-    public static function get_menu_type() {
-        return [
-            'navmenu' => get_string('navmenu', 'local_easycustmenu'),
-            'usermenu' => get_string('usermenu', 'local_easycustmenu'),
-        ];
-    }
-
-    /**
-     * Get menu context levels.
-     *
-     * @return array
-     */
-    public static function get_menu_context_level() {
-        return [
-            10 => get_string('site'),
-            50 => get_string('course')
-        ];
-    }
-
-    /**
-     * Get the current menu condition.
-     *
-     * Rules for context object and its level:
-     * - 50 if inside a real course (course id > 1)
-     * - 10 for system context or front page (course id = 1)
-     *
-     * @return array {
-     *     context       => context, // Moodle context object
-     *     contextlevel  => int,     // 50 or 10
-     *     courseid      => int,     // 0 for front page or system
-     *     roleids       => array,   // role IDs, with -1 for site admin
-     *     lang          => string   // current language code
-     * }
-     */
-    public static function get_current_menu_condition() {
-        global $PAGE, $COURSE, $USER;
-        // Defaults.
-        $context = \context_system::instance();
-        $contextlevel   = CONTEXT_SYSTEM;
-        $courseid = 0;
-        $roleids = [];
-        try {
-            if (!empty($COURSE->id) && $COURSE->id > 1) {
-                if ($PAGE->context->contextlevel === CONTEXT_COURSE or $PAGE->context->contextlevel === CONTEXT_MODULE) {
-                    $context  = \context_course::instance($COURSE->id);
-                    $contextlevel    = CONTEXT_COURSE;
-                    $courseid = $COURSE->id;
-                }
-            }
-            // Get user roles in this context.
-            $roleids = [];
-            if (is_siteadmin($USER->id)) {
-                $roleids[] = '-1';
-            }
-            $assignedroles = get_user_roles($context, $USER->id, false);
-            foreach ($assignedroles as $role) {
-                $roleids[] = $role->roleid;
-            }
-        } catch (\Throwable $th) {
-            //throw $th;
-        }
-        // 
-        return [
-            'context'  => $context,
-            'contextlevel' => $contextlevel,
-            'courseid' => $courseid,
-            'roleids' => $roleids,
-            'lang' => current_language()
-        ];
-    }
-
-    /**
-     * Get menu condition role name
-     */
-    public static function get_menu_role_name($condition_roleid) {
-
-        global $DB;
-        $role_name = '';
-        if ($condition_roleid == 0) {
-            $role_name = get_string('everyone', 'local_easycustmenu');
-        } else if ($condition_roleid == '-1') {
-            $role_name = get_string('admin');
-        } else {
-            $role = $DB->get_record('role', ['id' => $condition_roleid]);
-            if ($role) {
-                $role_name = role_get_name($role);
-            }
-        }
-        return $role_name;
-    }
-
-    /**
-     * Get role base on menu context
-     */
-    public static function get_context_roles($contextlevel) {
-        global $DB;
-        if (!empty($contextlevel)) {
-            if ($contextlevel == CONTEXT_SYSTEM) {
-               $sql = "SELECT r.*
-                        FROM {role} r
-                        LEFT JOIN {role_context_levels} rcl ON r.id = rcl.roleid
-                        WHERE rcl.contextlevel = :contextlevel OR rcl.roleid IS NULL
-                        ORDER BY r.sortorder ASC";
-
-                return $DB->get_records_sql($sql, ['contextlevel' => $contextlevel]);
-
-            } else {
-                $sql = "SELECT r.*
-                  FROM {role} r
-                  JOIN {role_context_levels} rcl ON r.id = rcl.roleid
-                 WHERE rcl.contextlevel = :contextlevel";
-                return $DB->get_records_sql($sql, ['contextlevel' => $contextlevel]);
-            }
-        }
-
-        return $DB->get_records('role');
-    }
-
-    /**
-     * check and define menu items according to easycustmenu
-     */
-    public static function define_config_menuitems() {
-        global $CFG;
-        //
-        $current_menu_condition = self::get_current_menu_condition();
-        $contextlevel = $current_menu_condition['contextlevel'];
-        $courseid = $current_menu_condition['courseid'];
-        $roleids = $current_menu_condition['roleids'];
-        $lang = $current_menu_condition['lang'];
-
-        // 
-        $custommenuitems = '';
-        $navmenu = self::get_menu_items('navmenu', $contextlevel, $courseid, $roleids, $lang);
-        if ($navmenu) {
-            foreach ($navmenu as $key => $menu) {
-                $other_condition = ($menu->other_condition) ? json_decode($menu->other_condition, true) : [];
-                $itemtext = $menu->menu_label;
-                $itemurl = $menu->menu_link;
-                $title = isset($other_condition['label_tooltip_title']) ? $other_condition['label_tooltip_title'] : '';
-                $itemlanguages = $menu->condition_lang;
-                $depth = $menu->depth;
-                $itemdepth = '';
-                for ($i = 0; $i < $depth; $i++) {
-                    $itemdepth .= '-';
-                }
-                $custommenuitems .= $itemdepth . $itemtext . "|" . $itemurl .  "|" . $title . "|" . $itemlanguages . "\n";
-            }
-            $CFG->custommenuitems = $custommenuitems;
-        }
-
-        // 
-        $customusermenuitemsoutput = "";
-        $usermenu = self::get_menu_items('usermenu', $contextlevel, $courseid, $roleids, $lang);
-        if ($usermenu) {
-            foreach ($usermenu as $key => $menu) {
-                $itemtext = $menu->menu_label;
-                $itemurl = $menu->menu_link;
-                $customusermenuitemsoutput .= $itemtext . "|" . $itemurl . "\n";
-            }
-            $CFG->customusermenuitems = $customusermenuitemsoutput;
-        }
-    }
-
-    // ------------------------------------------------------------------------------------------
+    protected static $menu_table = 'local_easycustmenu';
 
     /**
      * Save Data
@@ -228,11 +57,19 @@ class easycustmenu_handler {
         try {
             global $DB;
             $status = false;
-            // 
+            // Validate required fields
+            $menu_label = isset($mform_data->menu_label) ? $mform_data->menu_label : '';
+            $menu_link = isset($mform_data->menu_link) ? $mform_data->menu_link : '';
+            if (!$menu_label || !$menu_link) {
+                $message = get_string('menu_error_submit', 'local_easycustmenu');
+                redirect($return_url, $message);
+            }
+            $menu_type = isset($mform_data->menu_type) ? $mform_data->menu_type : 'navmenu';
+            // Determine menu order
             if (!$mform_data->id && !$mform_data->menu_order) {
                 $menu_order = $DB->get_field_sql(
                     "SELECT MAX(menu_order) FROM {local_easycustmenu} WHERE menu_type = :menu_type",
-                    ['menu_type' => $mform_data->menu_type]
+                    ['menu_type' => $menu_type]
                 );
                 if ($menu_order === false || $menu_order === null) {
                     $menu_order = 0;
@@ -242,16 +79,16 @@ class easycustmenu_handler {
             } else {
                 $menu_order = $mform_data->menu_order;
             }
-            //
-            if ($mform_data->parent) {
+            // Determine depth
+            $depth = 0;
+            // if ($mform_data->depth == 0 && $mform_data->parent) {
+            if (($mform_data->depth ?? 0) == 0 && !empty($mform_data->parent)) {
                 $parent_data = $DB->get_record(self::$menu_table, ['id' => $mform_data->parent]);
                 if ($parent_data) {
-                    $mform_data->depth = (int)$parent_data->depth + 1;
+                    $depth = (int)$parent_data->depth + 1;
                 }
-            } else {
-                $mform_data->depth = 0;
             }
-            // 
+            // Prepare other conditions
             $other_condition = [
                 'label_tooltip_title' => isset($mform_data->label_tooltip_title) ? $mform_data->label_tooltip_title : '',
                 'link_target' => isset($mform_data->link_target) ? $mform_data->link_target : 0,
@@ -259,31 +96,32 @@ class easycustmenu_handler {
             // Process the data
             $data = new stdClass();
             $data->id = isset($mform_data->id) ? $mform_data->id : 0;
-            $data->menu_type = $mform_data->menu_type;
-            $data->context_level = $mform_data->context_level;
-            $data->parent = $mform_data->parent;
-            $data->depth = $mform_data->depth;
+            $data->menu_type = $menu_type;
+            $data->context_level = isset($mform_data->context_level) ? $mform_data->context_level : CONTEXT_SYSTEM;
+            $data->parent = isset($mform_data->parent) ? $mform_data->parent : 0;
+            $data->depth = $depth;
             $data->menu_order = $menu_order;
-            $data->menu_label = $mform_data->menu_label;
-            $data->menu_link = $mform_data->menu_link;
+            $data->menu_label = $menu_label;
+            $data->menu_link = $menu_link;
             $data->condition_courses = ($mform_data->context_level == 50) ? implode(',', $mform_data->condition_courses ?? []) : '';
-            $data->condition_lang = ($mform_data->condition_lang) ? implode(',', $mform_data->condition_lang ?? []) : '';
-            $data->condition_roleid = $mform_data->condition_roleid;
+            $data->condition_lang = isset($mform_data->condition_lang) ? implode(',', $mform_data->condition_lang ?? []) : '';
+            $data->condition_roleid = isset($mform_data->condition_roleid) ? $mform_data->condition_roleid : 0;
             $data->other_condition = json_encode($other_condition);
             $data->timemodified = time();
 
-            // 
-            if ($data->id && ($mform_data->action == 'edit')) {
-                $data_exists = $DB->record_exists(self::$menu_table, ['id' =>  $data->id]);
-                if ($data_exists) {
+            // Insert or update
+            if (!empty($data->id) && ($mform_data->action ?? '') === 'edit') {
+                if ($DB->record_exists(self::$menu_table, ['id' => $data->id])) {
                     $status =  $DB->update_record(self::$menu_table, $data);
                     if ($status) {
                         $a = new stdClass();
                         $a->menu_label = '"' . $data->menu_label . '" ';
                         $message = get_string('menu_updated', 'local_easycustmenu', $a);
                     }
+                    $return_url = $update_return_url;
+                } else {
+                    $message = get_string('menu_update_id_missing', 'local_easycustmenu');
                 }
-                $return_url = $update_return_url;
             } else {
                 $data->timecreated = time();
                 $status = $DB->insert_record(self::$menu_table, $data);
@@ -308,6 +146,10 @@ class easycustmenu_handler {
     public static function delete_data($id, $return_url) {
         try {
             global $DB;
+            if (!$id) {
+                $message =  get_string('menu_delete_missing', 'local_easycustmenu');
+                redirect($return_url, $message);
+            }
             $data = $DB->get_record(self::$menu_table, ['id' => $id]);
             if ($data) {
                 $delete =  $DB->delete_records(self::$menu_table, ['id' => $data->id]);
@@ -337,7 +179,7 @@ class easycustmenu_handler {
     public static function edit_form($mform, $id, $return_url) {
 
         try {
-            global $DB, $CFG;
+            global $DB;
             if (!$id) {
                 return $mform;
             }
@@ -397,7 +239,7 @@ class easycustmenu_handler {
      * @param string $lang
      * @return array
      */
-    public static function get_menu_items($type = 'navmenu', $context_level = 0, $courseid = 0, $roleids = [], $lang = '') {
+    public static function get_ecm_menu_items($type = 'navmenu', $context_level = 0, $courseid = 0, $roleids = [], $lang = '') {
 
         global $DB;
 
@@ -443,65 +285,56 @@ class easycustmenu_handler {
     }
 
     /**
+     * Get menu item by id
+     * @param int $id
+     */
+    public static function get_ecm_menu_by_id($id) {
+        global $DB;
+        if (!$id) {
+            return null;
+        }
+        return $DB->get_record(self::$menu_table, ['id' => $id]);
+    }
+
+    /**
      * Get menu items table.
      *
      * @param string $type
      * @return string
      */
-    public static function get_menu_items_table($type, $page_path) {
+    public static function get_ecm_menu_items_table($type, $page_path) {
         global $PAGE, $OUTPUT;
-        $contextoptions = easycustmenu_handler::get_menu_context_level();
-        $menus = self::get_menu_items($type);
+
+        $contextoptions = \local_easycustmenu\helper::get_ecm_context_level();
+        $menus = self::get_ecm_menu_items($type);
+
+        // Load JS
         $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menu_item_reorder', [$type . '-table']);
         $PAGE->requires->js_call_amd('local_easycustmenu/conformdelete', 'init');
+
         $child_indentation = $OUTPUT->pix_icon('child_indentation', 'child-indentation', 'local_easycustmenu', ['class' => 'child-icon indentation']);
         $child_arrow = $OUTPUT->pix_icon('child_arrow', 'child-arrow-icon', 'local_easycustmenu', ['class' => 'child-icon child-arrow']);
-        // content prepare
-        $contents = '';
-        $contents .= html_writer::start_tag('div', ['class' => $type . '-type-wrapper mt-4 mb-4']);
-        $contents .= html_writer::link(
-            new moodle_url($page_path, [
-                'type' => $type,
-                'action' => 'edit',
-                'id' => 0,
-                'sesskey' => sesskey()
-            ]),
-            get_string('add_menu_item', 'local_easycustmenu'),
-            ['class' => 'btn btn-primary add-menu']
-        );
-        $contents .= html_writer::start_tag('table', ['id' => $type . '-table', 'class' => 'generaltable']);
-        $contents .= html_writer::start_tag('thead');
-        $contents .= html_writer::tag(
-            'tr',
-            html_writer::tag('th', get_string('label', 'local_easycustmenu')) .
-                html_writer::tag('th', get_string('context')) .
-                html_writer::tag('th', get_string('role')) .
-                html_writer::tag('th', get_string('action'))
-        );
-        $contents .= html_writer::end_tag('thead');
-        $contents .= html_writer::start_tag('tbody', ['data-type' => $type, 'data-action' => 'reorder']);
+        $core_renderer = $PAGE->get_renderer('core');
+
+        // Prepare menus for template
+        $$menu_items = [];
         foreach ($menus as $menu) {
-            // action menu
-            $core_renderer = $PAGE->get_renderer('core');
+            // Action menu
             $action_menu = new action_menu();
             $action_menu->set_kebab_trigger('Action', $core_renderer);
             $action_menu->set_additional_classes('fields-actions');
-            $action_url_param = [
-                'type' => $type,
-                'id' => $menu->id,
-                'sesskey' => sesskey()
-            ];
+            $action_url_param = ['type' => $type, 'id' => $menu->id, 'sesskey' => sesskey()];
+
             $action_menu->add(new \action_menu_link(
-                new moodle_url('', ['action' => 'edit'] + $action_url_param),
+                new moodle_url($page_path, ['action' => 'edit'] + $action_url_param),
                 new pix_icon('i/edit', 'edit'),
                 get_string('edit', 'local_easycustmenu'),
                 false,
-                [
-                    'data-id' => $menu->id,
-                ]
+                ['data-id' => $menu->id]
             ));
+
             $action_menu->add(new \action_menu_link(
-                new moodle_url('', ['action' => 'delete'] +  $action_url_param),
+                new moodle_url($page_path, ['action' => 'delete'] + $action_url_param),
                 new pix_icon('i/delete', 'delete'),
                 get_string('delete', 'local_easycustmenu'),
                 false,
@@ -512,6 +345,8 @@ class easycustmenu_handler {
                     'data-heading' => get_string('delete_conform_heading', 'local_easycustmenu')
                 ]
             ));
+
+            // Child indentation
             $child_indentation_icon = '';
             if ($menu->depth) {
                 for ($i = 0; $i < (int)$menu->depth - 1; $i++) {
@@ -519,100 +354,31 @@ class easycustmenu_handler {
                 }
                 $child_indentation_icon .= $child_arrow;
             }
-            // output the menu item row
-            $contents .= html_writer::start_tag(
-                'tr',
-                [
-                    'data-id' => $menu->id,
-                    'data-depth' => (int)$menu->depth,
-                    'data-parent' => (int)$menu->parent,
-                    'data-menu_order' => (int)$menu->menu_order,
-                    'data-menu_label' => $menu->menu_label
-                ]
-            );
 
-            $contents .= html_writer::tag(
-                'td',
-                html_writer::tag(
-                    'span',
-                    html_writer::tag('span', $child_indentation_icon, ['class' => 'child-icon-wrapper']) .
-                        html_writer::tag('i', '', ['class' => 'icon fa fa-arrows-up-down-left-right fa-fw', 'role' => "img"]),
-                    ['class' => 'float-start drag-handle', "data-drag-type" => "move"]
-                ) .
-                    html_writer::tag(
-                        'span',
-                        format_string($menu->menu_label),
-                        ['class' => 'menu-label']
-                    )
-            );
-            $contents .= html_writer::tag(
-                'td',
-                html_writer::tag(
-                    'span',
-                    format_string($contextoptions[$menu->context_level]),
-                    ['class' => 'menu-context']
-                )
-            );
-            $contents .= html_writer::tag('td', self::get_menu_role_name($menu->condition_roleid));
-            $contents .= html_writer::tag('td', $core_renderer->render($action_menu));
-            $contents .= html_writer::end_tag('tr');
+            // menu item row
+            $menu_items[] = [
+                'id' => $menu->id,
+                'depth' => $menu->depth,
+                'parent' => $menu->parent,
+                'menu_order' => $menu->menu_order,
+                'menu_label' => format_string($menu->menu_label),
+                'context' => format_string($contextoptions[$menu->context_level]),
+                'role_name' => \local_easycustmenu\helper::get_menu_role_name($menu->condition_roleid),
+                'action_menu' => $core_renderer->render($action_menu),
+                'child_indentation_icon' => $child_indentation_icon,
+            ];
         }
 
-        $contents .= html_writer::end_tag('tbody');
-        $contents .= html_writer::end_tag('table');
-        $contents .= html_writer::tag(
-            'button',
-            get_string('save_order', 'local_easycustmenu'),
-            [
-                'id' => 'save_menu_reorder',
-                'class' => 'btn btn-primary mt-3',
-                'type' => 'button',
-                'style' => 'display: none;'
-            ]
-        );
-        $contents .= html_writer::tag(
-            'div',
-            html_writer::tag('div', $child_indentation, ['id' => 'child_indentation', 'style' => 'display: none;']) .
-                html_writer::tag('div', $child_arrow, ['id' => 'child_arrow', 'style' => 'display: none;']),
-            [
-                'id' => 'depth-reusable-icon',
-                'style' => 'display: none;'
-            ]
-        );
-        $contents .= html_writer::end_tag('div');
-
-        return $contents;
-    }
-
-    /**
-     * 
-     */
-    public static function get_header_tab_part($page_path) {
-        global $OUTPUT;
-        $type = required_param('type', PARAM_ALPHANUMEXT); // navmenu, usermenu, etc.
-        $section = optional_param('section', '', PARAM_ALPHANUMEXT);
-        $templatename = 'local_easycustmenu/easycustmenu_setting_header';
-        $templatecontext = [];
-        $templatecontext['single_menu'] = [
-            [
-                'menu_active_class' => ($section == 'local_easycustmenu') ? 'active' : '',
-                'menu_moodle_url' => new moodle_url('/admin/settings.php', ['section' => 'local_easycustmenu']),
-                'menu_label' => get_string('general_setting', 'local_easycustmenu'),
-            ],
-            [
-                'menu_active_class' => ($type == 'navmenu') ? "active" : "",
-                'menu_moodle_url' => new moodle_url($page_path, ['type' => 'navmenu']),
-                'menu_label' => get_string('header_nav_menu_setting', 'local_easycustmenu'),
-            ],
-            [
-                'menu_active_class' => ($type == 'usermenu') ? "active" : "",
-                'menu_moodle_url' => new moodle_url($page_path, ['type' => 'usermenu']),
-                'menu_label' => get_string('user_menu_setting', 'local_easycustmenu'),
-            ],
+        $templatecontext = [
+            'type' => $type,
+            'menu_items' => $menu_items,
+            'add_menu_url' => new \moodle_url($page_path, ['type' => $type, 'action' => 'edit', 'id' => 0, 'sesskey' => sesskey()]),
+            'child_indentation' => $child_indentation,
+            'child_arrow' => $child_arrow
         ];
-        return $OUTPUT->render_from_template($templatename, $templatecontext);
-    }
 
+        return $OUTPUT->render_from_template('local_easycustmenu/menu_items_table', $templatecontext);
+    }
 
     /**
      * ==== END =====

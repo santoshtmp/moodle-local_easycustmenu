@@ -137,8 +137,8 @@ function get_reorder_items() {
 export const menu_item_reorder = (tableid) => {
     //
     elementSelector = '#' + tableid + ' tbody[data-action="reorder"]';
-    let child_arrow = document.querySelector('#depth-reusable-icon #child_arrow').innerHTML;
-    let child_indentation = document.querySelector('#depth-reusable-icon #child_indentation').innerHTML;
+    let child_arrow = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_arrow').innerHTML;
+    let child_indentation = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_indentation').innerHTML;
 
     // Initialise SortableList for drag-and-drop.
     new SortableList(
