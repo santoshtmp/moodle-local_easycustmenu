@@ -21,12 +21,12 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
-use dml_exception;
 
 /**
- *
+ * Provides the local_easycustmenu_save_menu_order external function.
+ * 
  * @package    local_easycustmenu
- * @copyright  2024 https://santoshmagar.com.np/
+ * @copyright  2025 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *

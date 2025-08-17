@@ -24,7 +24,6 @@
  */
 
 use core\exception\moodle_exception;
-use core\output\html_writer;
 use local_easycustmenu\form\easycustmenu_form;
 use local_easycustmenu\handler\easycustmenu_handler;
 use local_easycustmenu\helper;
@@ -63,9 +62,9 @@ if ($id) {
 }
 $url = new moodle_url($page_path, $url_param);
 $redirect_url = new moodle_url($page_path, ['type' => $type]);
-if ($action == 'add') {
+if ($action == 'edit' && $id == 0) {
     $page_title = get_string('add_page_title', 'local_easycustmenu');
-} else if ($action == 'edit') {
+} else if ($action == 'edit' && $id > 0) {
     $page_title = get_string('edit_page_title', 'local_easycustmenu');
 } else if ($action == 'delete') {
     $page_title = get_string('delete_page_title', 'local_easycustmenu');

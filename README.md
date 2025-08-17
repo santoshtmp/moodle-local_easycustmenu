@@ -1,12 +1,16 @@
 ## Easy Custom Menu Plugin 
-1. Easy Custom Menu Plugin help to improve the user experience to manage the custom and user menu. 
-2. It help to hide the default primary menu which are: Home, Dashboard, My courses, Site administration.
-3. Manage the site custom menu with condition.
-4. Condition can be applied as: 
-    Role base condition.
-    Context base condition as site or course, course also include activities i.e mod pages.
-    Language base condition.
-5. Open in a new browser tab.
+1. The **Easy Custom Menu** plugin improves the user experience by providing flexible control over custom nav and user menus.  
+2. Hide the default primary menus:
+   - Home  
+   - Dashboard  
+   - My courses  
+   - Site administration  
+3. Manage custom menus with flexible conditions.
+4. Conditions can be applied based on:
+   - **Role** – Display menus according to user roles.  
+   - **Context** – Show menus site-wide or within specific courses (including activities such as modules or pages).  
+   - **Language** – Display menus depending on the user’s language preference.  
+5. Option to open menu items in a **new browser tab**.
 
 
 ## Installation
