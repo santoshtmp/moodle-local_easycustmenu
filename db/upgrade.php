@@ -37,7 +37,7 @@ function xmldb_local_easycustmenu_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    $newversion = 2025081703;
+    $newversion = 2025081705;
     if ($oldversion < $newversion) {
 
         // Define table local_easycustmenu to be created.
