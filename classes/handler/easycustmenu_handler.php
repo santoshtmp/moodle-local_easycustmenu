@@ -32,8 +32,8 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    //  It must be included from a Moodle page.
 }
 
-use core\output\action_menu;
-use core\output\pix_icon;
+use action_menu;
+use pix_icon;
 use moodle_url;
 use stdClass;
 
