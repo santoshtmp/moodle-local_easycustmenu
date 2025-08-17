@@ -218,8 +218,12 @@ class easycustmenu_form extends \moodleform {
             $normalized_label = \core_text::strtolower(trim($data['menu_label']));
 
             $sql = "SELECT id FROM {local_easycustmenu} 
-            WHERE LOWER(menu_label) = :label";
-            $params = ['label' => $normalized_label];
+                    WHERE LOWER(menu_label) = :label AND menu_type = :menu_type
+                ";
+            $params = [
+                'label' => $normalized_label,
+                'menu_type' => $data['menu_type'] ?? 'navmenu'
+            ];
 
             $existing = $DB->get_record_sql($sql, $params);
 
