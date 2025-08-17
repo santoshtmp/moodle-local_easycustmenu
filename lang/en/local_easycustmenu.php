@@ -82,8 +82,6 @@ $string['invalidmenudepth'] = 'Invalid menu depth detected! Please adjust highli
 $string['menu_parent'] = 'Menu parent';
 $string['show_through_site'] = 'Show site-wide';
 $string['show_in_course'] = 'Show within course';
-
-// settings 
 $string['setting_activate'] = 'Activate';
 $string['setting_activate_desc'] = 'Activate the Easy Custom Menu feature.';
 $string['setting_general'] = 'General';

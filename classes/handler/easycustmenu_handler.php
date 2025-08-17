@@ -24,13 +24,7 @@
  *
  */
 
-
-
 namespace local_easycustmenu\handler;
-
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');    //  It must be included from a Moodle page.
-}
 
 use action_menu;
 use pix_icon;
@@ -39,97 +33,97 @@ use stdClass;
 
 /**
  * class handle easycustmenu data
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2025 santoshtmp <https://santoshmagar.com.np/>
  * @author     santoshtmp
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 class easycustmenu_handler {
-    // table name
-    protected static $menu_table = 'local_easycustmenu';
+    /** @var string Database table name */
+    protected static $menutable = 'local_easycustmenu';
 
     /**
      * Save Data
      * @param object $data
-     * @param string $return_url
+     * @param string $returnurl
      */
-    public static function save_data($mform_data, $return_url, $update_return_url) {
+    public static function save_data($mformdata, $returnurl, $updatereturnurl) {
         try {
             global $DB;
             $status = false;
-            // Validate required fields
-            $menu_label = isset($mform_data->menu_label) ? $mform_data->menu_label : '';
-            $menu_link = isset($mform_data->menu_link) ? $mform_data->menu_link : '';
-            if (!$menu_label || !$menu_link) {
+            // Validate required fields.
+            $menulabel = isset($mformdata->menu_label) ? $mformdata->menu_label : '';
+            $menulink = isset($mformdata->menu_link) ? $mformdata->menu_link : '';
+            if (!$menulabel || !$menulink) {
                 $message = get_string('menu_error_submit', 'local_easycustmenu');
-                redirect($return_url, $message);
+                redirect($returnurl, $message);
             }
-            $menu_type = isset($mform_data->menu_type) ? $mform_data->menu_type : 'navmenu';
-            // Determine menu order
-            if (!$mform_data->id && !$mform_data->menu_order) {
-                $menu_order = $DB->get_field_sql(
+            $menutype = isset($mformdata->menu_type) ? $mformdata->menu_type : 'navmenu';
+            // Determine menu order.
+            if (!$mformdata->id && !$mformdata->menu_order) {
+                $menuorder = $DB->get_field_sql(
                     "SELECT MAX(menu_order) FROM {local_easycustmenu} WHERE menu_type = :menu_type",
-                    ['menu_type' => $menu_type]
+                    ['menu_type' => $menutype]
                 );
-                if ($menu_order === false || $menu_order === null) {
-                    $menu_order = 0;
+                if ($menuorder === false || $menuorder === null) {
+                    $menuorder = 0;
                 } else {
-                    $menu_order++;
+                    $menuorder++;
                 }
             } else {
-                $menu_order = $mform_data->menu_order ?? 0;
+                $menuorder = $mformdata->menu_order ?? 0;
             }
-            // Determine depth
+            // Determine depth.
             $depth = 0;
-            if (!empty($mform_data->parent) && $menu_type == 'navmenu') {
-                $parent_data = $DB->get_record(self::$menu_table, ['id' => $mform_data->parent]);
-                if ($parent_data) {
-                    $depth = (int)$parent_data->depth + 1;
+            if (!empty($mformdata->parent) && $menutype == 'navmenu') {
+                $parentdata = $DB->get_record(self::$menutable, ['id' => $mformdata->parent]);
+                if ($parentdata) {
+                    $depth = (int)$parentdata->depth + 1;
                 }
             }
-            // Prepare other conditions
-            $other_condition = [
-                'label_tooltip_title' => isset($mform_data->label_tooltip_title) ? $mform_data->label_tooltip_title : '',
-                'link_target' => isset($mform_data->link_target) ? $mform_data->link_target : 0,
+            // Prepare other conditions.
+            $othercondition = [
+                'label_tooltip_title' => isset($mformdata->label_tooltip_title) ? $mformdata->label_tooltip_title : '',
+                'link_target' => isset($mformdata->link_target) ? $mformdata->link_target : 0,
             ];
-            // Process the data
+            // Process the data.
             $data = new stdClass();
-            $data->id = isset($mform_data->id) ? $mform_data->id : 0;
-            $data->menu_type = $menu_type;
-            $data->context_level = isset($mform_data->context_level) ? $mform_data->context_level : CONTEXT_SYSTEM;
-            $data->parent = isset($mform_data->parent) ? $mform_data->parent : 0;
+            $data->id = isset($mformdata->id) ? $mformdata->id : 0;
+            $data->menu_type = $menutype;
+            $data->context_level = isset($mformdata->context_level) ? $mformdata->context_level : CONTEXT_SYSTEM;
+            $data->parent = isset($mformdata->parent) ? $mformdata->parent : 0;
             $data->depth = $depth;
-            $data->menu_order = $menu_order;
-            $data->menu_label = $menu_label;
-            $data->menu_link = $menu_link;
-            $data->condition_courses = ($mform_data->context_level == 50) ? implode(',', $mform_data->condition_courses ?? []) : '';
-            $data->condition_lang = isset($mform_data->condition_lang) ? implode(',', $mform_data->condition_lang ?? []) : '';
-            $data->condition_roleid = isset($mform_data->condition_roleid) ? $mform_data->condition_roleid : 0;
-            $data->other_condition = json_encode($other_condition);
+            $data->menu_order = $menuorder;
+            $data->menu_label = $menulabel;
+            $data->menu_link = $menulink;
+            $data->condition_courses = ($mformdata->context_level == 50) ? implode(',', $mformdata->condition_courses ?? []) : '';
+            $data->condition_lang = isset($mformdata->condition_lang) ? implode(',', $mformdata->condition_lang ?? []) : '';
+            $data->condition_roleid = isset($mformdata->condition_roleid) ? $mformdata->condition_roleid : 0;
+            $data->other_condition = json_encode($othercondition);
             $data->timemodified = time();
 
-            // Insert or update
-            if (!empty($data->id) && ($mform_data->action ?? '') === 'edit') {
-                if ($DB->record_exists(self::$menu_table, ['id' => $data->id])) {
-                    $status =  $DB->update_record(self::$menu_table, $data);
+            // Insert or update.
+            if (!empty($data->id) && ($mformdata->action ?? '') === 'edit') {
+                if ($DB->record_exists(self::$menutable, ['id' => $data->id])) {
+                    $status = $DB->update_record(self::$menutable, $data);
                     if ($status) {
                         $a = new stdClass();
                         $a->menu_label = '"' . $data->menu_label . '" ';
                         $message = get_string('menu_updated', 'local_easycustmenu', $a);
                     }
-                    $return_url = $update_return_url;
+                    $returnurl = $updatereturnurl;
                 } else {
                     $message = get_string('menu_update_id_missing', 'local_easycustmenu');
                 }
             } else {
                 $data->timecreated = time();
-                $status = $DB->insert_record(self::$menu_table, $data);
+                $status = $DB->insert_record(self::$menutable, $data);
                 if ($status) {
                     $a = new stdClass();
                     $a->menu_label = $data->menu_label;
-                    $message =  get_string('menu_added', 'local_easycustmenu', $a);
+                    $message = get_string('menu_added', 'local_easycustmenu', $a);
                 }
             }
         } catch (\Throwable $th) {
@@ -137,39 +131,39 @@ class easycustmenu_handler {
             $message .= "\n :: " . $th->getMessage();
         }
 
-        redirect($return_url, $message);
+        redirect($returnurl, $message);
     }
 
     /**
      * Delete Data
      * @param int $id
      */
-    public static function delete_data($id, $return_url) {
+    public static function delete_data($id, $returnurl) {
         try {
             global $DB;
             if (!$id) {
-                $message =  get_string('menu_delete_missing', 'local_easycustmenu');
-                redirect($return_url, $message);
+                $message = get_string('menu_delete_missing', 'local_easycustmenu');
+                redirect($returnurl, $message);
             }
-            $data = $DB->get_record(self::$menu_table, ['id' => $id]);
+            $data = $DB->get_record(self::$menutable, ['id' => $id]);
             if ($data) {
-                $delete =  $DB->delete_records(self::$menu_table, ['id' => $data->id]);
+                $delete = $DB->delete_records(self::$menutable, ['id' => $data->id]);
                 if ($delete) {
                     $a = new stdClass();
                     $a->menu_label = $data->menu_label;
-                    $message =  get_string('menu_delete', 'local_easycustmenu', $a);
+                    $message = get_string('menu_delete', 'local_easycustmenu', $a);
                 } else {
-                    $message =  get_string('menu_error_delete', 'local_easycustmenu');
+                    $message = get_string('menu_error_delete', 'local_easycustmenu');
                 }
             } else {
-                $message =  get_string('menu_delete_missing', 'local_easycustmenu');
+                $message = get_string('menu_delete_missing', 'local_easycustmenu');
             }
         } catch (\Throwable $th) {
             $message = get_string('menu_error_delete', 'local_easycustmenu');
             $message .= "\n" . $th->getMessage();
         }
 
-        redirect($return_url, $message);
+        redirect($returnurl, $message);
     }
 
     /**
@@ -177,16 +171,16 @@ class easycustmenu_handler {
      * @param object $mform
      * @param int $id
      */
-    public static function edit_form($mform, $id, $return_url) {
+    public static function edit_form($mform, $id, $returnurl) {
 
         try {
             global $DB;
             if (!$id) {
                 return $mform;
             }
-            $data = $DB->get_record(self::$menu_table, ['id' => $id]);
+            $data = $DB->get_record(self::$menutable, ['id' => $id]);
             if ($data) {
-                $other_condition = ($data->other_condition) ? json_decode($data->other_condition, true) : [];
+                $othercondition = ($data->other_condition) ? json_decode($data->other_condition, true) : [];
                 $entry = new stdClass();
                 $entry->id = $id;
                 $entry->action = 'edit';
@@ -200,97 +194,91 @@ class easycustmenu_handler {
                 $entry->condition_courses = ($data->condition_courses) ? explode(',', $data->condition_courses) : [];
                 $entry->condition_lang = $data->condition_lang;
                 $entry->condition_roleid = $data->condition_roleid;
-                $entry->label_tooltip_title = isset($other_condition['label_tooltip_title']) ? $other_condition['label_tooltip_title'] : '';
-                $entry->link_target = isset($other_condition['link_target']) ? $other_condition['link_target'] : 0;
+                $entry->label_tooltip_title = $othercondition['label_tooltip_title'] ?? '';
+                $entry->link_target = isset($othercondition['link_target']) ? $othercondition['link_target'] : 0;
                 $mform->set_data($entry);
                 return $mform;
             } else {
                 $message = get_string('data_missing', 'local_easycustmenu');
             }
         } catch (\Throwable $th) {
-            //throw $th;
             $message = $th->getMessage();
         }
-        redirect($return_url, $message);
+        redirect($returnurl, $message);
     }
 
     /**
      * sort_menu_tree
-     * @param array|object $menu_items
+     * @param array|object $menuitems
      * @param int $parent
      */
-    protected static function sort_menu_tree($menu_items, $parent = 0) {
-        $sorted_items = [];
-        foreach ($menu_items as $item) {
+    protected static function sort_menu_tree($menuitems, $parent = 0) {
+        $sorteditems = [];
+        foreach ($menuitems as $item) {
             if ($item->parent == $parent) {
-                $sorted_items[] = $item;
-                $sorted_items = array_merge($sorted_items, self::sort_menu_tree($menu_items, $item->id));
+                $sorteditems[] = $item;
+                $sorteditems = array_merge($sorteditems, self::sort_menu_tree($menuitems, $item->id));
             }
         }
-        return $sorted_items;
+        return $sorteditems;
     }
 
     /**
      * Get menu items by type.
      *
      * @param string $type navmenu or usermenu
-     * @param int $context_level 10 or 50
+     * @param int $contextlevel 10 or 50
      * @param int $courseid
      * @param array $roleids
      * @param string $lang
      * @return array
      */
-    public static function get_ecm_menu_items($type = 'navmenu', $context_level = 0, $courseid = 0, $roleids = [], $lang = '') {
+    public static function get_ecm_menu_items($type = 'navmenu', $contextlevel = 0, $courseid = 0, $roleids = [], $lang = '') {
 
         global $DB;
-        // check if table exist
+        // Check if table exist.
         if (!$DB->get_manager()->table_exists('local_easycustmenu')) {
-            return ;
+            return;
         }
-        // sql parameters and where condition 
-        $where_condition_apply = '';
-        $sql_params = [
+        // SQL parameters and where condition.
+        $whereconditionapply = '';
+        $sqlparams = [
             'menu_type' => $type,
         ];
-        $where_condition = [
+        $wherecondition = [
             'ecm.menu_type = :menu_type',
         ];
-        // 
-        if ($context_level) {
-            $sql_params['context_level'] = $context_level;
-            if ($context_level == '50') {
-                $sql_params['context_level_system'] = 10;
-                $where_condition[] = '(ecm.context_level = :context_level OR ecm.context_level = :context_level_system)';
+        if ($contextlevel) {
+            $sqlparams['context_level'] = $contextlevel;
+            if ($contextlevel == '50') {
+                $sqlparams['context_level_system'] = 10;
+                $wherecondition[] = '(ecm.context_level = :context_level OR ecm.context_level = :context_level_system)';
             } else {
-                $where_condition[] = 'ecm.context_level = :context_level';
+                $wherecondition[] = 'ecm.context_level = :context_level';
             }
         }
-        if ($courseid && $context_level == '50') {
-            $sql_params['courseid'] = $courseid;
-            $where_condition[] = "(ecm.condition_courses = '' OR FIND_IN_SET(:courseid, ecm.condition_courses) > 0 )";
+        if ($courseid && $contextlevel == '50') {
+            $sqlparams['courseid'] = $courseid;
+            $wherecondition[] = "(ecm.condition_courses = '' OR FIND_IN_SET(:courseid, ecm.condition_courses) > 0 )";
         }
         if ($roleids) {
-            $where_condition[] = "(ecm.condition_roleid = '' OR ecm.condition_roleid IN ( " . implode(',', $roleids) . "))";
+            $wherecondition[] = "(ecm.condition_roleid = '' OR ecm.condition_roleid IN ( " . implode(',', $roleids) . "))";
         }
         if ($lang) {
-            $sql_params['lang'] = $lang;
-            $where_condition[] = "(ecm.condition_lang = '' OR FIND_IN_SET(:lang, ecm.condition_lang) > 0 )";
+            $sqlparams['lang'] = $lang;
+            $wherecondition[] = "(ecm.condition_lang = '' OR FIND_IN_SET(:lang, ecm.condition_lang) > 0 )";
         }
-        // 
-        if (count($where_condition) > 0) {
-            $where_condition_apply = "WHERE " . implode(" AND ", $where_condition);
+        // Where condition.
+        if (count($wherecondition) > 0) {
+            $whereconditionapply = "WHERE " . implode(" AND ", $wherecondition);
         }
-        // sql query
-        $sql_query = 'SELECT *        
-            FROM {local_easycustmenu} AS ecm ' .
-            $where_condition_apply . '
-            ORDER BY ecm.menu_order ASC
-        ';
-        // execute sql query
-        $menu_records = $DB->get_records_sql($sql_query, $sql_params);
-        $menu_items = self::sort_menu_tree($menu_records);
+        // SQL query.
+        $sqlquery = 'SELECT * FROM {local_easycustmenu} ecm ' . $whereconditionapply . ' ORDER BY ecm.menu_order ASC';
+        // Execute sql query.
+        $menurecords = $DB->get_records_sql($sqlquery, $sqlparams);
+        $menuitems = self::sort_menu_tree($menurecords);
 
-        return $menu_items;
+        return $menuitems;
     }
 
     /**
@@ -302,7 +290,7 @@ class easycustmenu_handler {
         if (!$id) {
             return null;
         }
-        return $DB->get_record(self::$menu_table, ['id' => $id]);
+        return $DB->get_record(self::$menutable, ['id' => $id]);
     }
 
     /**
@@ -311,39 +299,49 @@ class easycustmenu_handler {
      * @param string $type
      * @return string
      */
-    public static function get_ecm_menu_items_table($type, $page_path) {
+    public static function get_ecm_menu_items_table($type, $pagepath) {
         global $PAGE, $OUTPUT;
 
         $contextoptions = \local_easycustmenu\helper::get_ecm_context_level();
         $menus = self::get_ecm_menu_items($type);
 
-        // Load JS
+        // Load JS.
         $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menu_item_reorder', [$type . '-table']);
         $PAGE->requires->js_call_amd('local_easycustmenu/conformdelete', 'init');
 
-        $child_indentation = $OUTPUT->pix_icon('child_indentation', 'child-indentation', 'local_easycustmenu', ['class' => 'child-icon indentation']);
-        $child_arrow = $OUTPUT->pix_icon('child_arrow', 'child-arrow-icon', 'local_easycustmenu', ['class' => 'child-icon child-arrow']);
-        $core_renderer = $PAGE->get_renderer('core');
+        $childindentation = $OUTPUT->pix_icon(
+            'child_indentation',
+            'child-indentation',
+            'local_easycustmenu',
+            ['class' => 'child-icon indentation']
+        );
+        $childarrow = $OUTPUT->pix_icon(
+            'child_arrow',
+            'child-arrow-icon',
+            'local_easycustmenu',
+            ['class' => 'child-icon child-arrow']
+        );
+        $corerenderer = $PAGE->get_renderer('core');
 
-        // Prepare menus for template
-        $menu_items = [];
+        // Prepare menus for template.
+        $menuitems = [];
         foreach ($menus as $menu) {
-            // Action menu
-            $action_menu = new action_menu();
-            $action_menu->set_kebab_trigger('Action', $core_renderer);
-            $action_menu->set_additional_classes('fields-actions');
-            $action_url_param = ['type' => $type, 'id' => $menu->id, 'sesskey' => sesskey()];
+            // Action menu.
+            $actionmenu = new action_menu();
+            $actionmenu->set_kebab_trigger('Action', $corerenderer);
+            $actionmenu->set_additional_classes('fields-actions');
+            $actionurlparam = ['type' => $type, 'id' => $menu->id, 'sesskey' => sesskey()];
 
-            $action_menu->add(new \action_menu_link(
-                new moodle_url($page_path, ['action' => 'edit'] + $action_url_param),
+            $actionmenu->add(new \action_menu_link(
+                new moodle_url($pagepath, ['action' => 'edit'] + $actionurlparam),
                 new pix_icon('i/edit', 'edit'),
                 get_string('edit', 'local_easycustmenu'),
                 false,
                 ['data-id' => $menu->id]
             ));
 
-            $action_menu->add(new \action_menu_link(
-                new moodle_url($page_path, ['action' => 'delete'] + $action_url_param),
+            $actionmenu->add(new \action_menu_link(
+                new moodle_url($pagepath, ['action' => 'delete'] + $actionurlparam),
                 new pix_icon('i/delete', 'delete'),
                 get_string('delete', 'local_easycustmenu'),
                 false,
@@ -351,21 +349,21 @@ class easycustmenu_handler {
                     'class' => 'text-danger delete-action',
                     'data-id' => $menu->id,
                     'data-title' => format_string($menu->menu_label),
-                    'data-heading' => get_string('delete_conform_heading', 'local_easycustmenu')
+                    'data-heading' => get_string('delete_conform_heading', 'local_easycustmenu'),
                 ]
             ));
 
-            // Child indentation
-            $child_indentation_icon = '';
+            // Child indentation.
+            $childindentationicon = '';
             if ($menu->depth) {
                 for ($i = 0; $i < (int)$menu->depth - 1; $i++) {
-                    $child_indentation_icon .= $child_indentation;
+                    $childindentationicon .= $childindentation;
                 }
-                $child_indentation_icon .= $child_arrow;
+                $childindentationicon .= $childarrow;
             }
 
-            // menu item row
-            $menu_items[] = [
+            // Menu item row.
+            $menuitems[] = [
                 'id' => $menu->id,
                 'depth' => $menu->depth,
                 'parent' => $menu->parent,
@@ -374,23 +372,21 @@ class easycustmenu_handler {
                 'menu_link' => $menu->menu_link,
                 'context' => format_string($contextoptions[$menu->context_level]),
                 'role_name' => \local_easycustmenu\helper::get_menu_role_name($menu->condition_roleid),
-                'action_menu' => $core_renderer->render($action_menu),
-                'child_indentation_icon' => $child_indentation_icon,
+                'action_menu' => $corerenderer->render($actionmenu),
+                'child_indentation_icon' => $childindentationicon,
             ];
         }
 
         $templatecontext = [
             'type' => $type,
-            'menu_items' => $menu_items,
-            'add_menu_url' => new \moodle_url($page_path, ['type' => $type, 'action' => 'edit', 'id' => 0, 'sesskey' => sesskey()]),
-            'child_indentation' => $child_indentation,
-            'child_arrow' => $child_arrow
+            'menu_items' => $menuitems,
+            'add_menu_url' => new \moodle_url($pagepath, ['type' => $type, 'action' => 'edit', 'id' => 0, 'sesskey' => sesskey()]),
+            'child_indentation' => $childindentation,
+            'child_arrow' => $childarrow,
         ];
 
         return $OUTPUT->render_from_template('local_easycustmenu/menu_items_table', $templatecontext);
     }
 
-    /**
-     * ==== END =====
-     */
+    // END.
 }

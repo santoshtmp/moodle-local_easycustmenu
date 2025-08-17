@@ -35,7 +35,7 @@ use moodle_url;
  * @copyright  2024 santoshtmp <https://santoshmagar.com.np/>
  * @author     santoshtmp
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  */
 class helper {
 
@@ -72,8 +72,8 @@ class helper {
      */
     public static function get_ecm_context_level() {
         return [
-            10 => get_string('show_through_site','local_easycustmenu'),
-            50 => get_string('show_in_course','local_easycustmenu')
+            10 => get_string('show_through_site', 'local_easycustmenu'),
+            50 => get_string('show_in_course', 'local_easycustmenu'),
         ];
     }
 
@@ -84,11 +84,14 @@ class helper {
         global $DB;
         if (!empty($contextlevel)) {
             if ($contextlevel == CONTEXT_SYSTEM) {
+
                 $sql = "SELECT r.*
-                        FROM {role} r
-                        LEFT JOIN {role_context_levels} rcl ON r.id = rcl.roleid
-                        WHERE (rcl.contextlevel = :contextlevel OR rcl.roleid IS NULL) AND (r.archetype IS NULL OR r.archetype <> :frontpage_archetype)
-                        ORDER BY r.sortorder ASC";
+                    FROM {role} r
+                    LEFT JOIN {role_context_levels} rcl ON r.id = rcl.roleid
+                    WHERE (rcl.contextlevel = :contextlevel OR rcl.roleid IS NULL)
+                    AND (r.archetype IS NULL OR r.archetype <> :frontpage_archetype)
+                    ORDER BY r.sortorder ASC";
+
                 $params = [
                     'contextlevel' => $contextlevel,
                     'frontpage_archetype' => 'frontpage',
@@ -133,7 +136,7 @@ class helper {
         try {
 
             if (!empty($COURSE->id) && $COURSE->id > 1) {
-                if ($PAGE->context->contextlevel === CONTEXT_COURSE or $PAGE->context->contextlevel === CONTEXT_MODULE) {
+                if ($PAGE->context->contextlevel === CONTEXT_COURSE || $PAGE->context->contextlevel === CONTEXT_MODULE) {
                     $context  = \context_course::instance($COURSE->id);
                     $contextlevel = CONTEXT_COURSE;
                     $courseid = $COURSE->id;
@@ -155,36 +158,37 @@ class helper {
                 }
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            // Skipped.
+            return;
         }
-        // 
+        // Return data.
         return [
             'context'  => $context,
             'contextlevel' => $contextlevel,
             'courseid' => $courseid,
             'roleids' => $roleids,
-            'lang' => current_language()
+            'lang' => current_language(),
         ];
     }
 
     /**
      * Get menu condition role name
      */
-    public static function get_menu_role_name($condition_roleid) {
+    public static function get_menu_role_name($conditionroleid) {
 
         global $DB;
-        $role_name = '';
-        if ($condition_roleid == 0) {
-            $role_name = get_string('everyone', 'local_easycustmenu');
-        } else if ($condition_roleid == '-1') {
-            $role_name = get_string('admin');
+        $rolename = '';
+        if ($conditionroleid == 0) {
+            $rolename = get_string('everyone', 'local_easycustmenu');
+        } else if ($conditionroleid == '-1') {
+            $rolename = get_string('admin');
         } else {
-            $role = $DB->get_record('role', ['id' => $condition_roleid]);
+            $role = $DB->get_record('role', ['id' => $conditionroleid]);
             if ($role) {
-                $role_name = role_get_name($role);
+                $rolename = role_get_name($role);
             }
         }
-        return $role_name;
+        return $rolename;
     }
 
     /**
@@ -192,38 +196,37 @@ class helper {
      */
     public static function define_ecm_config_menuitems() {
         global $CFG;
-        //
-        $current_menu_condition = self::get_current_menu_condition();
-        $contextlevel = $current_menu_condition['contextlevel'];
-        $courseid = $current_menu_condition['courseid'];
-        $roleids = $current_menu_condition['roleids'];
-        $lang = $current_menu_condition['lang'];
 
-        // 
+        $currentmenucondition = self::get_current_menu_condition();
+        $contextlevel = $currentmenucondition['contextlevel'];
+        $courseid = $currentmenucondition['courseid'];
+        $roleids = $currentmenucondition['roleids'];
+        $lang = $currentmenucondition['lang'];
+        // For custom nav menu.
         $custommenuitems = '';
         $navmenu = easycustmenu_handler::get_ecm_menu_items('navmenu', $contextlevel, $courseid, $roleids, $lang);
         if ($navmenu) {
             foreach ($navmenu as $key => $menu) {
-                $other_condition = ($menu->other_condition) ? json_decode($menu->other_condition, true) : [];
+                $othercondition = ($menu->other_condition) ? json_decode($menu->other_condition, true) : [];
                 $itemtext = $menu->menu_label;
                 $itemurl = $menu->menu_link;
-                $title = isset($other_condition['label_tooltip_title']) ? $other_condition['label_tooltip_title'] : '';
-                $link_target = isset($other_condition['link_target']) ? $other_condition['link_target'] : 0;
+                $title = isset($othercondition['label_tooltip_title']) ? $othercondition['label_tooltip_title'] : '';
+                $linktarget = isset($othercondition['link_target']) ? $othercondition['link_target'] : 0;
                 $itemlanguages = $menu->condition_lang;
                 $depth = $menu->depth;
                 $itemdepth = '';
                 for ($i = 0; $i < $depth; $i++) {
                     $itemdepth .= '-';
                 }
-                if($link_target){
-                    $itemurl = $itemurl.'" target="_blank"';
+                if ($linktarget) {
+                    $itemurl = $itemurl . '" target="_blank"';
                 }
                 $custommenuitems .= $itemdepth . $itemtext . "|" . $itemurl .  "|" . $title . "|" . $itemlanguages . "\n";
             }
             $CFG->custommenuitems = $custommenuitems;
         }
 
-        // 
+        // For custom user menu.
         $customusermenuitemsoutput = "";
         $usermenu = easycustmenu_handler::get_ecm_menu_items('usermenu', $contextlevel, $courseid, $roleids, $lang);
         if ($usermenu) {
@@ -240,8 +243,8 @@ class helper {
      * Get ecm header tab part
      */
     public static function get_ecm_header_templatecontext() {
-        $page_path = '/local/easycustmenu/edit.php';
-        $type = optional_param('type', '', PARAM_ALPHANUMEXT); // navmenu, usermenu
+        $pagepath = '/local/easycustmenu/edit.php';
+        $type = optional_param('type', '', PARAM_ALPHANUMEXT); // ... navmenu, usermenu
         $section = optional_param('section', '', PARAM_ALPHANUMEXT);
         $templatecontext = [];
         $templatecontext['single_menu'] = [
@@ -252,12 +255,12 @@ class helper {
             ],
             [
                 'menu_active_class' => ($type == 'navmenu') ? "active" : "",
-                'menu_moodle_url' => (new moodle_url($page_path, ['type' => 'navmenu']))->out(),
+                'menu_moodle_url' => (new moodle_url($pagepath, ['type' => 'navmenu']))->out(),
                 'menu_label' => get_string('header_nav_menu_setting', 'local_easycustmenu'),
             ],
             [
                 'menu_active_class' => ($type == 'usermenu') ? "active" : "",
-                'menu_moodle_url' => (new moodle_url($page_path, ['type' => 'usermenu']))->out(),
+                'menu_moodle_url' => (new moodle_url($pagepath, ['type' => 'usermenu']))->out(),
                 'menu_label' => get_string('user_menu_setting', 'local_easycustmenu'),
             ],
         ];

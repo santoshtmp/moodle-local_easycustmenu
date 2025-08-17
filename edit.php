@@ -33,7 +33,7 @@ require_once(__DIR__ . '/../../config.php');
 defined('MOODLE_INTERNAL') || die();
 
 // Get parameters.
-$type = required_param('type', PARAM_ALPHANUMEXT); // navmenu, usermenu, etc.
+$type = required_param('type', PARAM_ALPHANUMEXT); // ... navmenu, usermenu, etc.
 $action = optional_param('action', '', PARAM_ALPHA);
 $id = optional_param('id', 0, PARAM_INT);
 $context = \context_system::instance();
@@ -51,74 +51,74 @@ if ($action && !in_array($action, ['edit', 'delete'])) {
     throw new moodle_exception('invalidactionparam', 'local_easycustmenu');
 }
 
-// Prepare the page information. 
-$page_path = '/local/easycustmenu/edit.php';
-$url_param = ['type' => $type];
+// Prepare the page information.
+$pagepath = '/local/easycustmenu/edit.php';
+$urlparam = ['type' => $type];
 if ($action) {
-    $url_param['action'] = $action;
+    $urlparam['action'] = $action;
 }
 if ($id) {
-    $url_param['id'] = $id;
+    $urlparam['id'] = $id;
 }
-$url = new moodle_url($page_path, $url_param);
-$redirect_url = new moodle_url($page_path, ['type' => $type]);
+$url = new moodle_url($pagepath, $urlparam);
+$redirecturl = new moodle_url($pagepath, ['type' => $type]);
 if ($action == 'edit' && $id == 0) {
-    $page_title = get_string('add_page_title', 'local_easycustmenu');
+    $pagetitle = get_string('add_page_title', 'local_easycustmenu');
 } else if ($action == 'edit' && $id > 0) {
-    $page_title = get_string('edit_page_title', 'local_easycustmenu');
+    $pagetitle = get_string('edit_page_title', 'local_easycustmenu');
 } else if ($action == 'delete') {
-    $page_title = get_string('delete_page_title', 'local_easycustmenu');
+    $pagetitle = get_string('delete_page_title', 'local_easycustmenu');
 } else {
-    $page_title = get_string('pluginname', 'local_easycustmenu');
+    $pagetitle = get_string('pluginname', 'local_easycustmenu');
 }
 
-// setup page information.
+// ... setup page information.
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_pagetype('easycustmenu_navmenu_setting');
-$PAGE->set_title($page_title);
-$PAGE->set_heading($page_title);
+$PAGE->set_title($pagetitle);
+$PAGE->set_heading($pagetitle);
 $PAGE->requires->css(new moodle_url('/local/easycustmenu/style/nav-menu-setting.css'));
 $PAGE->add_body_class('page-easycustmenu');
 
 // Menu form actions or content to display.
 if ($action) {
-    $easycustmenu_form = new easycustmenu_form($redirect_url, [
+    $easycustmenuform = new easycustmenu_form($redirecturl, [
         'type' => $type,
         'action' => $action,
-        'id' => $id
+        'id' => $id,
     ]);
 
-    if ($easycustmenu_form->is_cancelled()) {
-        redirect($redirect_url);
-    } else if ($form_data = $easycustmenu_form->get_data()) {
-        easycustmenu_handler::save_data($form_data, $url, $redirect_url);
+    if ($easycustmenuform->is_cancelled()) {
+        redirect($redirecturl);
+    } else if ($formdata = $easycustmenuform->get_data()) {
+        easycustmenu_handler::save_data($formdata, $url, $redirecturl);
     } else {
         if ($action && $id) {
-            // verify sesskey
+            // Verify sesskey.
             $sesskey = required_param('sesskey', PARAM_ALPHANUM);
             if ($sesskey != sesskey()) {
-                redirect($redirect_url, get_string('invalidsesskey', 'local_easycustmenu'));
+                redirect($redirecturl, get_string('invalidsesskey', 'local_easycustmenu'));
             }
-            // For Delete
+            // For Delete.
             if ($action == 'delete') {
-                easycustmenu_handler::delete_data($id, $redirect_url);
+                easycustmenu_handler::delete_data($id, $redirecturl);
             }
-            // For Edit
+            // For Edit.
             if ($action == 'edit') {
-                $easycustmenu_form = easycustmenu_handler::edit_form($easycustmenu_form, $id, $redirect_url);
+                $easycustmenuform = easycustmenu_handler::edit_form($easycustmenuform, $id, $redirecturl);
             }
         }
     }
 
     $contents = '';
     $contents .= '<div class="custom-pages-setting-edit ' . $action . '">';
-    $contents .= $easycustmenu_form->render();
+    $contents .= $easycustmenuform->render();
     $contents .= '</div>';
 } else {
     $contents = '';
-    $contents .= easycustmenu_handler::get_ecm_menu_items_table($type, $page_path);
+    $contents .= easycustmenu_handler::get_ecm_menu_items_table($type, $pagepath);
 }
 
 // Output Content.

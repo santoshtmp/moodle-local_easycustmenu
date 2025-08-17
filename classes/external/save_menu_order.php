@@ -24,7 +24,7 @@ use core_external\external_value;
 
 /**
  * Provides the local_easycustmenu_save_menu_order external function.
- * 
+ *
  * @package    local_easycustmenu
  * @copyright  2025 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
@@ -47,7 +47,7 @@ class save_menu_order extends external_api {
                     'depth' => new external_value(PARAM_INT, 'Menu depth level'),
                     'parent' => new external_value(PARAM_INT, 'Parent menu item ID'),
                 ])
-            )
+            ),
         ]);
     }
 
@@ -61,7 +61,7 @@ class save_menu_order extends external_api {
         global $DB;
 
         $params = self::validate_parameters(self::execute_parameters(), [
-            'items' => $items
+            'items' => $items,
         ]);
 
         $context = \context_system::instance();
@@ -89,12 +89,12 @@ class save_menu_order extends external_api {
 
             return [
                 'status' => true,
-                'message' => 'Menu order saved successfully'
+                'message' => 'Menu order saved successfully',
             ];
         } catch (\Throwable $th) {
             return [
                 'status' => false,
-                'message' => 'Database error: ' . $th->getMessage()
+                'message' => 'Database error: ' . $th->getMessage(),
             ];
         }
     }

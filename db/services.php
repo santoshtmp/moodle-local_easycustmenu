@@ -34,5 +34,5 @@ $functions = [
         'type'        => 'write',
         'ajax'        => true,
         'loginrequired' => true,
-    ]
+    ],
 ];
