@@ -243,7 +243,10 @@ class easycustmenu_handler {
     public static function get_ecm_menu_items($type = 'navmenu', $context_level = 0, $courseid = 0, $roleids = [], $lang = '') {
 
         global $DB;
-
+        // check if table exist
+        if (!$DB->get_manager()->table_exists('local_easycustmenu')) {
+            return ;
+        }
         // sql parameters and where condition 
         $where_condition_apply = '';
         $sql_params = [

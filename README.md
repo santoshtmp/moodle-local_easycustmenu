@@ -1,6 +1,6 @@
 ## Easy Custom Menu Plugin 
 1. The **Easy Custom Menu** plugin improves the user experience by providing flexible control over custom nav and user menus.  
-2. Hide the default primary menus:
+2. Help to hide the default primary menus:
    - Home  
    - Dashboard  
    - My courses  
@@ -19,4 +19,6 @@ You can download as a zip from github then extract into your_moodle/local/easycu
 ## Screenshot
 ![General setting](./pix/screenshot/general-setting.png)
 ![Header Nav menu setting](./pix/screenshot/nav-menu.png)
+![Nav menu edit setting](./pix/screenshot/nav-menu-form.png)
 ![User menu setting](./pix/screenshot/user-menu.png)
+![User menu edit setting](./pix/screenshot/user-menu-form.png)
