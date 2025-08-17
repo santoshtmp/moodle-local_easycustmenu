@@ -38,7 +38,6 @@ use moodle_url;
  *
  */
 class helper {
-
     /**
      * check check_ecm_menu
      */
@@ -175,7 +174,6 @@ class helper {
      * Get menu condition role name
      */
     public static function get_menu_role_name($conditionroleid) {
-
         global $DB;
         $rolename = '';
         if ($conditionroleid == 0) {

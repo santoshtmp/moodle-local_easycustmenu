@@ -32,7 +32,6 @@ use core_external\external_value;
  *
  */
 class save_menu_order extends external_api {
-
     /**
      * Get parameters.
      *

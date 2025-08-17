@@ -34,7 +34,6 @@ require_once($CFG->libdir . '/formslib.php');
  *
  */
 class easycustmenu_form extends \moodleform {
-
     /**
      * Form definition.
      */
@@ -84,9 +83,6 @@ class easycustmenu_form extends \moodleform {
                 $languages,
                 ['multiple' => true, 'noselectionstring' => get_string('alllanguages', 'local_easycustmenu')]
             );
-            $mform->setType('condition_lang', PARAM_TEXT);
-        } else {
-            $mform->addElement('hidden', 'condition_lang', '');
             $mform->setType('condition_lang', PARAM_TEXT);
         }
 

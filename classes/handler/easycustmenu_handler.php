@@ -45,9 +45,13 @@ class easycustmenu_handler {
     protected static $menutable = 'local_easycustmenu';
 
     /**
-     * Save Data
-     * @param object $data
-     * @param string $returnurl
+     * Save or update a menu entry.
+     *
+     * @param stdClass $mformdata Form data object containing menu details.
+     * @param string $returnurl URL to redirect after saving.
+     * @param string $updatereturnurl URL to redirect after updating an existing record.
+     * @return void Redirects to the specified URL after operation.
+     * @throws \coding_exception
      */
     public static function save_data($mformdata, $returnurl, $updatereturnurl) {
         try {
@@ -103,7 +107,6 @@ class easycustmenu_handler {
             $data->condition_roleid = isset($mformdata->condition_roleid) ? $mformdata->condition_roleid : 0;
             $data->other_condition = json_encode($othercondition);
             $data->timemodified = time();
-
             // Insert or update.
             if (!empty($data->id) && ($mformdata->action ?? '') === 'edit') {
                 if ($DB->record_exists(self::$menutable, ['id' => $data->id])) {
@@ -135,8 +138,11 @@ class easycustmenu_handler {
     }
 
     /**
-     * Delete Data
-     * @param int $id
+     * Delete a menu entry.
+     *
+     * @param int $id Menu entry ID to delete.
+     * @param string $returnurl URL to redirect after deletion.
+     * @return void Redirects to the specified URL after operation.
      */
     public static function delete_data($id, $returnurl) {
         try {
@@ -167,12 +173,14 @@ class easycustmenu_handler {
     }
 
     /**
-     * edit form data
-     * @param object $mform
-     * @param int $id
+     * Load menu data into a form for editing.
+     *
+     * @param \moodleform $mform Moodle form instance.
+     * @param int $id Menu entry ID to edit.
+     * @param string $returnurl URL to redirect in case of error.
+     * @return \moodleform The form instance with data prefilled.
      */
     public static function edit_form($mform, $id, $returnurl) {
-
         try {
             global $DB;
             if (!$id) {
@@ -208,9 +216,11 @@ class easycustmenu_handler {
     }
 
     /**
-     * sort_menu_tree
-     * @param array|object $menuitems
-     * @param int $parent
+     * Recursively sort menu items into a tree structure.
+     *
+     * @param array|stdClass[] $menuitems Array of menu items.
+     * @param int $parent Parent ID to start sorting from.
+     * @return array Sorted array of menu items.
      */
     protected static function sort_menu_tree($menuitems, $parent = 0) {
         $sorteditems = [];
@@ -224,17 +234,16 @@ class easycustmenu_handler {
     }
 
     /**
-     * Get menu items by type.
+     * Retrieve Easy Custom Menu items based on type, context, course, role, and language.
      *
-     * @param string $type navmenu or usermenu
-     * @param int $contextlevel 10 or 50
-     * @param int $courseid
-     * @param array $roleids
-     * @param string $lang
-     * @return array
+     * @param string $type Menu type: 'navmenu' or 'usermenu'.
+     * @param int $contextlevel Context level, e.g., 10 (system) or 50 (course).
+     * @param int $courseid Course ID (required if context level is 50).
+     * @param int[] $roleids Array of role IDs to filter menu items.
+     * @param string $lang Language code to filter menu items.
+     * @return array Array of menu item objects.
      */
     public static function get_ecm_menu_items($type = 'navmenu', $contextlevel = 0, $courseid = 0, $roleids = [], $lang = '') {
-
         global $DB;
         // Check if table exist.
         if (!$DB->get_manager()->table_exists('local_easycustmenu')) {
@@ -282,8 +291,10 @@ class easycustmenu_handler {
     }
 
     /**
-     * Get menu item by id
-     * @param int $id
+     * Get a single ECM (Easy Custom Menu) item by ID.
+     *
+     * @param int $id Menu item ID.
+     * @return stdClass|null Returns menu item object if found, null otherwise.
      */
     public static function get_ecm_menu_by_id($id) {
         global $DB;
@@ -294,10 +305,10 @@ class easycustmenu_handler {
     }
 
     /**
-     * Get menu items table.
+     * Get the Easy Custom Menu items table name.
      *
-     * @param string $type
-     * @return string
+     * @param string $type Menu type ('navmenu' or 'usermenu').
+     * @return string Returns the database table name for the menu items.
      */
     public static function get_ecm_menu_items_table($type, $pagepath) {
         global $PAGE, $OUTPUT;
