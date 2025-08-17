@@ -49,18 +49,18 @@ class easycustmenu_form extends \moodleform {
         $mform->addElement('header', 'generalsettings', get_string($menu_item_title, 'local_easycustmenu'));
 
         // menu_label
-        $mform->addElement('text', 'menu_label', get_string('label', 'local_easycustmenu'), ['size' => 50]);
+        $mform->addElement('text', 'menu_label', get_string('menu_label', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_label', PARAM_TEXT);
         $mform->addRule('menu_label', null, 'required', null, 'client');
 
         // menu_link
-        $mform->addElement('text', 'menu_link', get_string('link', 'local_easycustmenu'), ['size' => 50]);
+        $mform->addElement('text', 'menu_link', get_string('menu_link', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_link', PARAM_URL);
         $mform->addRule('menu_link', null, 'required', null, 'client');
 
         // context_level
         $contextoptions = \local_easycustmenu\helper::get_ecm_context_level();
-        $mform->addElement('select', 'context_level', get_string('context_level', 'local_easycustmenu'), $contextoptions);
+        $mform->addElement('select', 'context_level', get_string('menu_context', 'local_easycustmenu'), $contextoptions);
         $mform->setType('context_level', PARAM_INT);
 
         // condition_courses Get courses list (only show when context_level == 50)
@@ -78,7 +78,7 @@ class easycustmenu_form extends \moodleform {
             $mform->addElement(
                 'autocomplete',
                 'condition_lang',
-                get_string('condition_lang', 'local_easycustmenu'),
+                get_string('menu_condition_lang', 'local_easycustmenu'),
                 $languages,       // choices
                 ['multiple' => true, 'noselectionstring' => get_string('alllanguages', 'local_easycustmenu')]
             );
@@ -96,12 +96,12 @@ class easycustmenu_form extends \moodleform {
         foreach ($rolesbycontext[$current_menu->context_level ?? CONTEXT_SYSTEM] as $key => $value) {
             $role_options[$value['value']] = $value['label'];
         }
-        $mform->addElement('select', 'condition_roleid', get_string('condition_role', 'local_easycustmenu'), $role_options);
+        $mform->addElement('select', 'condition_roleid', get_string('menu_condition_role', 'local_easycustmenu'), $role_options);
         $mform->setType('condition_roleid', PARAM_INT);
 
         if ($type == 'navmenu') {
             // tool tio title
-            $mform->addElement('text', 'label_tooltip_title', get_string('label_tooltip_title', 'local_easycustmenu'), ['size' => 50]);
+            $mform->addElement('text', 'label_tooltip_title', get_string('menu_label_tooltip_title', 'local_easycustmenu'), ['size' => 50]);
             $mform->setType('label_tooltip_title', PARAM_TEXT);
 
             // Open in new tab target blank
@@ -119,7 +119,7 @@ class easycustmenu_form extends \moodleform {
                 if ($menu->id == $id) {
                     continue;
                 }
-                if ($menu->depth > $current_menu->depth) {
+                if ($current_menu && $menu->depth > $current_menu->depth) {
                     continue;
                 }
                 $depth = '';
@@ -131,7 +131,7 @@ class easycustmenu_form extends \moodleform {
             $mform->addElement(
                 'select',
                 'parent',
-                get_string('parent', 'local_easycustmenu'),
+                get_string('menu_parent', 'local_easycustmenu'),
                 $menu_parent
             );
             $mform->setType('parent', PARAM_INT);

@@ -81,7 +81,7 @@ class easycustmenu_handler {
             }
             // Determine depth
             $depth = 0;
-            if (($mform_data->depth ?? 0) == 0 && !empty($mform_data->parent) && $menu_type == 'navmenu') {
+            if (!empty($mform_data->parent) && $menu_type == 'navmenu') {
                 $parent_data = $DB->get_record(self::$menu_table, ['id' => $mform_data->parent]);
                 if ($parent_data) {
                     $depth = (int)$parent_data->depth + 1;
@@ -253,7 +253,12 @@ class easycustmenu_handler {
         // 
         if ($context_level) {
             $sql_params['context_level'] = $context_level;
-            $where_condition[] = ($context_level == '50') ? '(ecm.context_level = :context_level OR ecm.context_level = 10)' : 'ecm.context_level = :context_level';
+            if ($context_level == '50') {
+                $sql_params['context_level_system'] = 10;
+                $where_condition[] = '(ecm.context_level = :context_level OR ecm.context_level = :context_level_system)';
+            } else {
+                $where_condition[] = 'ecm.context_level = :context_level';
+            }
         }
         if ($courseid && $context_level == '50') {
             $sql_params['courseid'] = $courseid;
@@ -316,7 +321,7 @@ class easycustmenu_handler {
         $core_renderer = $PAGE->get_renderer('core');
 
         // Prepare menus for template
-        $$menu_items = [];
+        $menu_items = [];
         foreach ($menus as $menu) {
             // Action menu
             $action_menu = new action_menu();
@@ -361,6 +366,7 @@ class easycustmenu_handler {
                 'parent' => $menu->parent,
                 'menu_order' => $menu->menu_order,
                 'menu_label' => format_string($menu->menu_label),
+                'menu_link' => $menu->menu_link,
                 'context' => format_string($contextoptions[$menu->context_level]),
                 'role_name' => \local_easycustmenu\helper::get_menu_role_name($menu->condition_roleid),
                 'action_menu' => $core_renderer->render($action_menu),
