@@ -38,11 +38,13 @@ use moodle_url;
 use stdClass;
 
 /**
- *
+ * class handle easycustmenu data
+ * 
  * @package    local_easycustmenu
  * @copyright  2025 santoshtmp <https://santoshmagar.com.np/>
  * @author     santoshtmp
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * 
  */
 class easycustmenu_handler {
     // table name

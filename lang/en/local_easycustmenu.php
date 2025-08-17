@@ -48,8 +48,8 @@ $string['delete_conform_text'] = 'Are you sure you want to delete "{$a->menu_lab
 $string['edit'] = 'Edit';
 $string['delete'] = 'Delete';
 $string['label'] = 'label';
-$string['invalidtypeparam'] = 'Check type param';
-$string['invalidactionparam'] = 'Check action param';
+$string['invalidtypeparam'] = 'Invalid type param. Check type param';
+$string['invalidactionparam'] = 'Invalid action param. Check action param';
 $string['invalideditaccess'] = 'Not allowed to edit menu, you need admin access.';
 $string['invalidsesskey'] = 'Your session key is missing or invalid.';
 $string['navmenu'] = 'Nav Menu Item';
@@ -80,8 +80,8 @@ $string['no_menu_items_please_add'] = 'No menu item added. Please add menu item.
 $string['save_order'] = 'Save Re-Order';
 $string['invalidmenudepth'] = 'Invalid menu depth detected! Please adjust highlighted rows.';
 $string['menu_parent'] = 'Menu parent';
-$string['show_through_site'] = 'Show throughout the site';
-$string['show_in_course'] = 'Show in course';
+$string['show_through_site'] = 'Show site-wide';
+$string['show_in_course'] = 'Show within course';
 
 // settings 
 $string['setting_activate'] = 'Activate';

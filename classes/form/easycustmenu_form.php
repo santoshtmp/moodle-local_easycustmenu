@@ -25,10 +25,13 @@ require_once($CFG->libdir . '/formslib.php');
 
 
 /**
- * Form for editing menu items.
+ * Form for editing easy custom menu items.
  *
  * @package    local_easycustmenu
- * @copyright  
+ * @copyright  2025 https://santoshmagar.com.np/
+ * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * 
  */
 class easycustmenu_form extends \moodleform {
 
