@@ -9,7 +9,7 @@
 * Invalid character form validation
 * Added system user roles to menu condition roles
 
-### Version 2.0.0
+### Version 2.0.0 (2025081703)
 
 * Add more condition roles and the context level as site or course 
 * Creadte seperate table to store easycustmenu settings
