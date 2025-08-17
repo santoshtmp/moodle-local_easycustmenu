@@ -34,7 +34,7 @@ $plugin->component = 'local_easycustmenu';
 $plugin->release = '2.0.0';
 
 // This is the version of the plugin.
-$plugin->version = 2025081703;
+$plugin->version = 2025081705;
 
 // This is a stable release.
 $plugin->maturity = MATURITY_STABLE;
