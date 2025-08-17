@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_easycustmenu/menu_items_tabl
+    @template local_easycustmenu/menu_items_table
 }}
 
 <div class="{{type}}-type-wrapper mt-4 mb-4">
@@ -38,7 +38,9 @@
                         <span class="child-icon-wrapper">{{{child_indentation_icon}}}</span>
                         <i class="icon fa fa-arrows-up-down-left-right fa-fw" role="img"></i>
                     </span>
-                    <span class="menu-label">{{menu_label}}</span>
+                    <span class="menu-label">
+                        <a href="{{menu_link}}" >{{menu_label}}</a>
+                    </span>
                 </td>
                 <td data-type="menu-context">
                     <span class="menu-context">{{context}}</span>

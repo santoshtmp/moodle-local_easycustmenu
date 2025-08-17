@@ -71,8 +71,8 @@ class helper {
      */
     public static function get_ecm_context_level() {
         return [
-            10 => get_string('site'),
-            50 => get_string('course')
+            10 => get_string('show_through_site','local_easycustmenu'),
+            50 => get_string('show_in_course','local_easycustmenu')
         ];
     }
 
