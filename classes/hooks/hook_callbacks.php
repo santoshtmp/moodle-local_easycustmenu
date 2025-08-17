@@ -61,7 +61,7 @@ class hook_callbacks {
             return;
         }
         $easycustmenu = new helper();
-        $easycustmenu->check_custum_header_menu();
+        $easycustmenu->check_ecm_menu();
     }
 
     /**

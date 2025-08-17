@@ -32,7 +32,7 @@ use local_easycustmenu\helper;
  */
 function local_easycustmenu_before_http_headers() {
     $easycustmenu = new helper();
-    $easycustmenu->check_custum_header_menu();
+    $easycustmenu->check_ecm_menu();
 }
 
 /**

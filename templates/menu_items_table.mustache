@@ -1,0 +1,71 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_easycustmenu/menu_items_table
+}}
+
+<div class="{{type}}-type-wrapper mt-4 mb-4">
+    <a href="{{{add_menu_url}}}" class="btn btn-primary add-menu"> {{#str}} add_menu_item, local_easycustmenu {{/str}}</a>
+
+    <table id="{{type}}-table" class="generaltable mt-4">
+        <thead>
+            <tr>
+                <th>{{#str}} label, local_easycustmenu {{/str}}</th>
+                <th>{{#str}} context, moodle {{/str}}</th>
+                <th>{{#str}} role, moodle {{/str}}</th>
+                <th>{{#str}} action, moodle {{/str}}</th>
+            </tr>
+        </thead>
+        <tbody data-type="{{type}}" data-action="reorder">
+            {{#menu_items}}
+            <tr data-id="{{id}}" data-depth="{{depth}}" data-parent="{{parent}}" data-menu_order="{{menu_order}}" data-menu_label="{{menu_label}}">
+                <td data-type="menu-label">
+                    <span class="float-start drag-handle" data-drag-type="move">
+                        <span class="child-icon-wrapper">{{{child_indentation_icon}}}</span>
+                        <i class="icon fa fa-arrows-up-down-left-right fa-fw" role="img"></i>
+                    </span>
+                    <span class="menu-label">
+                        <a href="{{menu_link}}" >{{menu_label}}</a>
+                    </span>
+                </td>
+                <td data-type="menu-context">
+                    <span class="menu-context">{{context}}</span>
+                </td>
+                <td data-type="menu-role">{{role_name}}</td>
+                <td data-type="menu-action">{{{action_menu}}}</td>
+            </tr>
+            {{/menu_items}}
+            {{^menu_items}}
+             <tr>
+                <td colspan="4">
+                    <p>{{#str}} no_menu_items_please_add, local_easycustmenu {{/str}}</p>
+                </td>
+            </tr>
+            {{/menu_items}}
+
+        </tbody>
+    </table>
+
+    <button id="save_menu_reorder" class="btn btn-primary mt-3" type="button" style="display: none;">
+        {{#str}} save_order, local_easycustmenu {{/str}}
+    </button>
+
+    <div id="depth-reusable-icon" style="display: none;">
+        <div id="child_indentation" style="display: none;">{{{child_indentation}}}</div>
+        <div id="child_arrow" style="display: none;">{{{child_arrow}}}</div>
+    </div>
+</div>
