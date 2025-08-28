@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'local_easycustmenu';
 
 // This is the named version.
-$plugin->release = '2.0.0';
+$plugin->release = '2.0.1';
 
 // This is the version of the plugin.
 $plugin->version = 2025082800;

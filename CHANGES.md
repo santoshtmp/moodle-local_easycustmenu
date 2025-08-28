@@ -14,3 +14,7 @@
 * Add more condition roles and the context level as site or course 
 * Creadte seperate table to store easycustmenu settings
 * change the menu control list and menu item form.
+
+### Version 2.0.1 (2025082800)
+
+* Fix db issue
