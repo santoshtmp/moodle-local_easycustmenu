@@ -257,25 +257,22 @@ class easycustmenu_handler {
         $wherecondition = [
             'ecm.menu_type = :menu_type',
         ];
+        // ... apply context level condition
         if ($contextlevel) {
             $sqlparams['context_level'] = $contextlevel;
-            if ($contextlevel == '50') {
-                $sqlparams['context_level_system'] = 10;
+            if ($contextlevel == CONTEXT_COURSE) {
+                $sqlparams['context_level_system'] = CONTEXT_SYSTEM;
                 $wherecondition[] = '(ecm.context_level = :context_level OR ecm.context_level = :context_level_system)';
             } else {
                 $wherecondition[] = 'ecm.context_level = :context_level';
             }
         }
-        if ($courseid && $contextlevel == '50') {
-            $sqlparams['courseid'] = $courseid;
-            $wherecondition[] = "(ecm.condition_courses = '' OR FIND_IN_SET(:courseid, ecm.condition_courses) > 0 )";
-        }
+        // ... apply roleids condition
         if ($roleids) {
-            $wherecondition[] = "(ecm.condition_roleid = '' OR ecm.condition_roleid IN ( " . implode(',', $roleids) . "))";
-        }
-        if ($lang) {
-            $sqlparams['lang'] = $lang;
-            $wherecondition[] = "(ecm.condition_lang = '' OR FIND_IN_SET(:lang, ecm.condition_lang) > 0 )";
+            list($insql, $inparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
+            $wherecondition[] = "(ecm.condition_roleid = :everyone OR ecm.condition_roleid $insql)";
+            $sqlparams = array_merge($sqlparams, $inparams);
+            $sqlparams['everyone'] = 0;
         }
         // Where condition.
         if (count($wherecondition) > 0) {
@@ -285,6 +282,24 @@ class easycustmenu_handler {
         $sqlquery = 'SELECT * FROM {local_easycustmenu} ecm ' . $whereconditionapply . ' ORDER BY ecm.menu_order ASC';
         // Execute sql query.
         $menurecords = $DB->get_records_sql($sqlquery, $sqlparams);
+        // ... check each row item
+        foreach ($menurecords as $key => $item) {
+            // ... apply courses condition on each row item
+            if ($courseid && $contextlevel == CONTEXT_COURSE) {
+                if ($item->context_level == CONTEXT_COURSE && $item->condition_courses) {
+                    if (!in_array($courseid, explode(',', $item->condition_courses))) {
+                        unset($menurecords[$key]);
+                    }
+                }
+            }
+            // ... apply lang condition.
+            if ($lang && $item->condition_lang) {
+                if (!in_array($lang, explode(',', $item->condition_lang))) {
+                    unset($menurecords[$key]);
+                }
+            }
+        }
+        // ... rearrange the menu tree
         $menuitems = self::sort_menu_tree($menurecords);
 
         return $menuitems;
