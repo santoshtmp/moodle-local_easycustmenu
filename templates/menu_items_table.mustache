@@ -16,6 +16,41 @@
 }}
 {{!
     @template local_easycustmenu/menu_items_table
+
+    Example context (json):
+    {
+        "type": "navmenu",
+        "add_menu_url": "/local/easycustmenu/add.php?type=navmenu",
+        "child_indentation": "<span class=\"indent\"></span>",
+        "child_arrow": "<i class=\"icon fa fa-chevron-right\"></i>",
+        "menu_items": [
+            {
+            "id": 1,
+            "depth": 0,
+            "parent": 0,
+            "menu_order": 1,
+            "menu_label": "Dashboard",
+            "menu_link": "/my/",
+            "child_indentation_icon": "",
+            "context": "Site",
+            "role_name": "Everyone",
+            "action_menu": "<a href=\"/local/easycustmenu/edit.php?id=1\" class=\"btn btn-sm btn-secondary\">Edit</a>"
+            },
+            {
+            "id": 2,
+            "depth": 1,
+            "parent": 1,
+            "menu_order": 2,
+            "menu_label": "Courses",
+            "menu_link": "/course/index.php",
+            "child_indentation_icon": "<span class=\"indent\"></span><i class=\"icon fa fa-chevron-right\"></i>",
+            "context": "Course",
+            "role_name": "Student",
+            "action_menu": "<a href=\"/local/easycustmenu/edit.php?id=2\" class=\"btn btn-sm btn-secondary\">Edit</a>"
+            }
+        ]
+    }
+
 }}
 
 <div class="{{type}}-type-wrapper mt-4 mb-4">

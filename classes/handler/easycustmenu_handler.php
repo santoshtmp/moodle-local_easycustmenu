@@ -323,6 +323,7 @@ class easycustmenu_handler {
      * Get the Easy Custom Menu items table name.
      *
      * @param string $type Menu type ('navmenu' or 'usermenu').
+     * @param string $pagepath
      * @return string Returns the database table name for the menu items.
      */
     public static function get_ecm_menu_items_table($type, $pagepath) {

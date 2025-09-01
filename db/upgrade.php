@@ -267,7 +267,14 @@ function local_easycustmenu_convert_data_into_new_format() {
 }
 
 /**
- * Save the menu data in order.
+ * Recursively saves menu data into the local_easycustmenu table.
+ *
+ * Inserts each menu item and its children into the database, maintaining parent-child relationships
+ * and menu order. Used during upgrade or import to persist menu structure.
+ *
+ * @param array $newnavmenutree Array of menu items (with children).
+ * @param int $parentid The parent menu item's ID (default: 0 for top-level).
+ * @return void
  */
 function local_easycustmenu_save_menu_data($newnavmenutree, $parentid = 0) {
     try {

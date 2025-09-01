@@ -78,6 +78,8 @@ class helper {
 
     /**
      * Get role base on menu context
+     * @param int $contextlevel
+     * @return array List of role records from the database.
      */
     public static function get_ecm_context_roles($contextlevel) {
         global $DB;
@@ -171,7 +173,14 @@ class helper {
     }
 
     /**
-     * Get menu condition role name
+     * Returns the display name for a given role ID.
+     *
+     * - If the role ID is 0, returns the string for "everyone".
+     * - If the role ID is -1, returns the string for "admin".
+     * - Otherwise, fetches the role record and returns its display name.
+     *
+     * @param int|string $conditionroleid The role ID to get the name for.
+     * @return string The display name of the role.
      */
     public static function get_menu_role_name($conditionroleid) {
         global $DB;

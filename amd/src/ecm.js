@@ -73,9 +73,9 @@ export const admin_core_setting_init = (string_array) => {
     * core custommenuitems
     */
     let btnecmcustommenuitems = get_ecm_btn(navmenuLink, string_array['manage_menu_label']);
-    var show_menu_label = string_array['show_menu_label']; //'Show Default "Custom menu items" ';
-    var hide_menu_label = string_array['hide_menu_label']; //'Hide Default "Custom menu items" ';
-    let btn_hide_show_custommenuitems = get_ecm_btn('#', show_menu_label, 'show_hide_custommenuitems show_menu');
+    var showmenulabel = string_array['show_menu_label']; //'Show Default "Custom menu items" ';
+    var hidemenulabel = string_array['hide_menu_label']; //'Hide Default "Custom menu items" ';
+    let btn_hide_show_custommenuitems = get_ecm_btn('#', showmenulabel, 'show_hide_custommenuitems show_menu');
     if (document.querySelector("#admin-custommenuitems > .form-setting ")) {
         document.querySelector("#admin-custommenuitems > .form-setting ").prepend(btnecmcustommenuitems);
         document.querySelector("#admin-custommenuitems > .form-setting ").prepend(btn_hide_show_custommenuitems);
@@ -83,21 +83,21 @@ export const admin_core_setting_init = (string_array) => {
         document.querySelector("#admin-custommenuitems > .form-setting .form-defaultinfo ").style.display = "none";
         document.querySelector("#admin-custommenuitems > .form-setting .form-description ").style.display = "none";
 
-        var element_show_hide = document.querySelector("#admin-custommenuitems > .form-setting a.show_hide_custommenuitems");
-        element_show_hide.addEventListener("click", function(e) {
+        var elementShowHide = document.querySelector("#admin-custommenuitems > .form-setting a.show_hide_custommenuitems");
+        elementShowHide.addEventListener("click", function(e) {
             e.stopPropagation();
             e.preventDefault();
-            if (element_show_hide.classList.contains("show_menu")) {
-                element_show_hide.classList.remove("show_menu");
-                element_show_hide.classList.add("hide_menu");
-                element_show_hide.textContent = hide_menu_label;
+            if (elementShowHide.classList.contains("show_menu")) {
+                elementShowHide.classList.remove("show_menu");
+                elementShowHide.classList.add("hide_menu");
+                elementShowHide.textContent = hidemenulabel;
                 document.querySelector("#admin-custommenuitems > .form-setting .form-textarea").style.display = "block";
                 document.querySelector("#admin-custommenuitems > .form-setting .form-defaultinfo ").style.display = "block";
                 document.querySelector("#admin-custommenuitems > .form-setting .form-description ").style.display = "block";
             } else {
-                element_show_hide.classList.remove("hide_menu");
-                element_show_hide.classList.add("show_menu");
-                element_show_hide.textContent = show_menu_label;
+                elementShowHide.classList.remove("hide_menu");
+                elementShowHide.classList.add("show_menu");
+                elementShowHide.textContent = showmenulabel;
                 document.querySelector("#admin-custommenuitems > .form-setting .form-textarea").style.display = "none";
                 document.querySelector("#admin-custommenuitems > .form-setting .form-defaultinfo ").style.display = "none";
                 document.querySelector("#admin-custommenuitems > .form-setting .form-description ").style.display = "none";
@@ -106,33 +106,33 @@ export const admin_core_setting_init = (string_array) => {
     }
 
     /** core customusermenuitems */
-    let btn_ecm_customusermenuitems = get_ecm_btn(usermenuLink, string_array['manage_menu_label_2']);
-    var show_menu_label_2 = string_array['show_menu_label_2'];
-    var hide_menu_label_2 = string_array['hide_menu_label_2'];
-    let btn_hide_show_customusermenuitems = get_ecm_btn('#', show_menu_label_2, 'show_hide_customusermenuitems show_menu');
+    let btnecmcustomusermenuitems = get_ecm_btn(usermenuLink, string_array['manage_menu_label_2']);
+    var showmenulabel2 = string_array['show_menu_label_2'];
+    var hidemenulabel2 = string_array['hide_menu_label_2'];
+    let btnhideshowcustomusermenuitems = get_ecm_btn('#', showmenulabel2, 'show_hide_customusermenuitems show_menu');
 
     if (document.querySelector("#admin-customusermenuitems > .form-setting ")) {
-        document.querySelector("#admin-customusermenuitems > .form-setting ").prepend(btn_ecm_customusermenuitems);
-        document.querySelector("#admin-customusermenuitems > .form-setting ").prepend(btn_hide_show_customusermenuitems);
+        document.querySelector("#admin-customusermenuitems > .form-setting ").prepend(btnecmcustomusermenuitems);
+        document.querySelector("#admin-customusermenuitems > .form-setting ").prepend(btnhideshowcustomusermenuitems);
         document.querySelector("#admin-customusermenuitems > .form-setting .form-textarea").style.display = "none";
         document.querySelector("#admin-customusermenuitems > .form-setting .form-defaultinfo ").style.display = "none";
         document.querySelector("#admin-customusermenuitems > .form-setting .form-description ").style.display = "none";
 
-        var element_show_hide_2 = document.querySelector("#admin-customusermenuitems  a.show_hide_customusermenuitems");
-        element_show_hide_2.addEventListener("click", function(e) {
+        var elementshowhide2 = document.querySelector("#admin-customusermenuitems  a.show_hide_customusermenuitems");
+        elementshowhide2.addEventListener("click", function(e) {
             e.stopPropagation();
             e.preventDefault();
-            if (element_show_hide_2.classList.contains("show_menu")) {
-                element_show_hide_2.classList.remove("show_menu");
-                element_show_hide_2.classList.add("hide_menu");
-                element_show_hide_2.textContent = hide_menu_label_2;
+            if (elementshowhide2.classList.contains("show_menu")) {
+                elementshowhide2.classList.remove("show_menu");
+                elementshowhide2.classList.add("hide_menu");
+                elementshowhide2.textContent = hidemenulabel2;
                 document.querySelector("#admin-customusermenuitems > .form-setting .form-textarea").style.display = "block";
                 document.querySelector("#admin-customusermenuitems > .form-setting .form-defaultinfo ").style.display = "block";
                 document.querySelector("#admin-customusermenuitems > .form-setting .form-description ").style.display = "block";
             } else {
-                element_show_hide_2.classList.remove("hide_menu");
-                element_show_hide_2.classList.add("show_menu");
-                element_show_hide_2.textContent = show_menu_label_2;
+                elementshowhide2.classList.remove("hide_menu");
+                elementshowhide2.classList.add("show_menu");
+                elementshowhide2.textContent = showmenulabel2;
                 document.querySelector("#admin-customusermenuitems > .form-setting .form-textarea").style.display = "none";
                 document.querySelector("#admin-customusermenuitems > .form-setting .form-defaultinfo ").style.display = "none";
                 document.querySelector("#admin-customusermenuitems > .form-setting .form-description ").style.display = "none";
