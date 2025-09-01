@@ -25,10 +25,10 @@
 import $ from 'jquery';
 import SortableList from 'core/sortable_list';
 import Ajax from 'core/ajax';
-import { getString } from 'core/str';
+import {getString} from 'core/str';
 
 /**
- * variables define
+ * Variables define
  */
 var elementSelector = '';
 const moveHandlerSelector = '[data-drag-type=move]';
@@ -42,12 +42,12 @@ async function check_invalid_depth() {
     $(elementSelector + ' tr').removeClass('invalid-depth').css('background-color', '');
     $('#menu_depth_error').remove();
 
-    // check on each tr
+    // Check on each tr
     $(elementSelector + ' tr').each(function() {
         let depth = parseInt($(this).attr('data-depth')) || 0;
-        let parent_id = parseInt($(this).attr('data-parent'));
-        let parent_depth = $(elementSelector + ' tr[data-id="' + parent_id + '"]').attr('data-depth') || 0;
-        if (Math.abs(depth - parseInt(parent_depth)) > 1) {
+        let parentId = parseInt($(this).attr('data-parent'));
+        let parentDepth = $(elementSelector + ' tr[data-id="' + parentId + '"]').attr('data-depth') || 0;
+        if (Math.abs(depth - parseInt(parentDepth)) > 1) {
             invalidRows.push($(this));
         }
     });
@@ -70,14 +70,14 @@ async function check_invalid_depth() {
 
 /**
  * To save the menu items
- * @param {*} reorder_items
+ * @param {*} reorderItems
  */
-async function ajax_save_menu_items(reorder_items) {
+async function ajax_save_menu_items(reorderItems) {
     // AJAX request to save the order
     const request = {
         methodname: 'local_easycustmenu_save_menu_order',
         args: {
-            items: reorder_items,
+            items: reorderItems,
         }
     };
     return await Ajax.call([request])[0]
