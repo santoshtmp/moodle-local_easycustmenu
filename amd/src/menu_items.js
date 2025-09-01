@@ -30,8 +30,8 @@ import { getString } from 'core/str';
 /**
  * variables define
  */
-let elementSelector = '';
-let moveHandlerSelector = '[data-drag-type=move]';
+const elementSelector = '';
+const moveHandlerSelector = '[data-drag-type=move]';
 
 
 /**
@@ -43,7 +43,7 @@ async function check_invalid_depth() {
     $('#menu_depth_error').remove();
 
     // check on each tr
-    $(elementSelector + ' tr').each(function () {
+    $(elementSelector + ' tr').each(function() {
         let depth = parseInt($(this).attr('data-depth')) || 0;
         let parent_id = parseInt($(this).attr('data-parent'));
         let parent_depth = $(elementSelector + ' tr[data-id="' + parent_id + '"]').attr('data-depth') || 0;
@@ -54,7 +54,7 @@ async function check_invalid_depth() {
 
     // check invalid length
     if (invalidRows.length > 0) {
-        invalidRows.forEach(function (row) {
+        invalidRows.forEach(function(row) {
             row.addClass('invalid-depth').css('background-color', '#ffcccc'); // light red
         });
         $('#save_menu_reorder').prop('disabled', true);
@@ -81,7 +81,7 @@ async function ajax_save_menu_items(reorder_items) {
         }
     };
     return await Ajax.call([request])[0]
-        .done(function (response) {
+        .done(function(response) {
             if (response.status) {
                 window.location.reload();
                 // window.console.log('Menu order saved successfully.');
@@ -89,9 +89,9 @@ async function ajax_save_menu_items(reorder_items) {
             } else {
                 window.console.log('Error saving menu order:', response.message);
             }
-        }).fail(function () {
+        }).fail(function() {
             window.console.log('request failed.');
-        }).always(function () {
+        }).always(function() {
             $('#save_menu_reorder').prop('disabled', false);
         }
         );
@@ -101,10 +101,10 @@ async function ajax_save_menu_items(reorder_items) {
  * get_reorder_items
  */
 function get_reorder_items() {
-    let reorder_items = {};
+    let reorderItems = {};
     let depthStack = {}; // Stores the last seen ID for each depth level
     let parent = 0;
-    $(elementSelector + ' tr').each(function (index) {
+    $(elementSelector + ' tr').each(function(index) {
         let id = parseInt($(this).attr('data-id'));
         let depth = parseInt($(this).attr('data-depth')) || 0;
         // Determine parent
@@ -118,7 +118,7 @@ function get_reorder_items() {
         depthStack[depth] = id;
         //
         $(this).attr('data-parent', parent);
-        reorder_items[id] = {
+        reorderItems[id] = {
             menu_order: index,
             id: id,
             depth: depth,
@@ -126,7 +126,7 @@ function get_reorder_items() {
         };
 
     });
-    return reorder_items;
+    return reorderItems;
 }
 
 /**
@@ -137,8 +137,8 @@ function get_reorder_items() {
 export const menu_item_reorder = (tableid) => {
     //
     elementSelector = '#' + tableid + ' tbody[data-action="reorder"]';
-    let child_arrow = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_arrow').innerHTML;
-    let child_indentation = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_indentation').innerHTML;
+    const childArrow = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_arrow').innerHTML;
+    const childIndentation = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_indentation').innerHTML;
 
     // Initialise SortableList for drag-and-drop.
     new SortableList(
@@ -152,14 +152,14 @@ export const menu_item_reorder = (tableid) => {
     );
 
     // Disable click on drag handle to prevent unintended clicks
-    $(elementSelector).on('click', moveHandlerSelector, function (e) {
+    $(elementSelector).on('click', moveHandlerSelector, function(e) {
         e.preventDefault();
         e.stopPropagation();
         return false;
     });
 
     // Prevent dragging start for first depth 0
-    $(elementSelector).on('mousedown', moveHandlerSelector, function (e) {
+    $(elementSelector).on('mousedown', moveHandlerSelector, function(e) {
         let tr = $(this).closest('tr');
 
         // Find all depth 0 rows
@@ -182,7 +182,7 @@ export const menu_item_reorder = (tableid) => {
     });
 
     // Handle drag-and-drop depth changes.
-    $(elementSelector).on(SortableList.EVENTS.DROP, async function (evt, info) {
+    $(elementSelector).on(SortableList.EVENTS.DROP, async function(evt, info) {
         if (tableid == 'navmenu-table') {
             let element = info.element;
             let end_x = info.endX;
@@ -211,16 +211,16 @@ export const menu_item_reorder = (tableid) => {
             // Update element depth and child-icon only if depth changed
             if (new_itemDepth !== itemDepth) {
                 element.attr('data-depth', new_itemDepth);
-                let child_indentation_icon = '';
+                let childIndentationIcon = '';
                 if (new_itemDepth) {
                     for (let index = 0; index < new_itemDepth - 1; index++) {
-                        child_indentation_icon += child_indentation;
+                        childIndentationIcon += childIndentation;
                     }
-                    child_indentation_icon += child_arrow;
+                    childIndentationIcon += childArrow;
                 }
                 let indentation = element.find('.child-icon-wrapper');
                 if (indentation) {
-                    indentation.html(child_indentation_icon);
+                    indentation.html(childIndentationIcon);
                 }
 
             }
@@ -231,12 +231,12 @@ export const menu_item_reorder = (tableid) => {
     });
 
     // save the order of menu items
-    $('#save_menu_reorder').on('click', async function () {
+    $('#save_menu_reorder').on('click', async function() {
         // Disable to prevent multiple clicks
         $(this).prop('disabled', true);
         //
-        let reorder_items = get_reorder_items();
-        Object.values(reorder_items).forEach(function (item) {
+        let reorderItems = get_reorder_items();
+        Object.values(reorderItems).forEach(function (item) {
             let tr = $(elementSelector + ' tr[data-id="' + item.id + '"]');
             if (tr) {
                 tr.attr('data-depth', item.depth);
@@ -251,7 +251,7 @@ export const menu_item_reorder = (tableid) => {
             return;
         }
         // save the menu items
-        await ajax_save_menu_items(reorder_items);
+        await ajax_save_menu_items(reorderItems);
 
     });
 

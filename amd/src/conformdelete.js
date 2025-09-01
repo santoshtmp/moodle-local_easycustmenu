@@ -22,22 +22,22 @@
  *
  */
 
-define(['core/notification', 'core/str'], function (notification, str) {
+define(['core/notification', 'core/str'], function(notification, str) {
     return {
-        init: function () {
-            document.querySelectorAll('.delete-action').forEach(function (link) {
-                link.addEventListener('click', function (e) {
+        init: function() {
+            document.querySelectorAll('.delete-action').forEach(function(link) {
+                link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const url = this.getAttribute('href');
-                    let data_heading = this.getAttribute('data-heading');
-                    let data_title = this.getAttribute('data-title');
-                    data_title = (data_title) ? data_title : '';
+                    let dataHeading = this.getAttribute('data-heading');
+                    let dataTitle = this.getAttribute('data-title');
+                    dataTitle = (dataTitle) ? dataTitle : '';
                     notification.confirm(
-                        data_heading,
-                        str.get_string('delete_conform_text', 'local_easycustmenu', { menu_label: data_title }),
+                        dataHeading,
+                        str.get_string('delete_conform_text', 'local_easycustmenu', { menu_label: dataTitle }),
                         str.get_string('yes'),
                         str.get_string('cancel'),
-                        function () {
+                        function() {
                             window.location.href = url;
                         }
                     );
