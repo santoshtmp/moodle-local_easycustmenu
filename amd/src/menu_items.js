@@ -30,7 +30,7 @@ import { getString } from 'core/str';
 /**
  * variables define
  */
-const elementSelector = '';
+var elementSelector = '';
 const moveHandlerSelector = '[data-drag-type=move]';
 
 
@@ -52,7 +52,7 @@ async function check_invalid_depth() {
         }
     });
 
-    // check invalid length
+    // Check invalid length
     if (invalidRows.length > 0) {
         invalidRows.forEach(function(row) {
             row.addClass('invalid-depth').css('background-color', '#ffcccc'); // light red
@@ -185,11 +185,11 @@ export const menu_item_reorder = (tableid) => {
     $(elementSelector).on(SortableList.EVENTS.DROP, async function(evt, info) {
         if (tableid == 'navmenu-table') {
             let element = info.element;
-            let end_x = info.endX;
-            let start_x = info.startX;
+            let endX = info.endX;
+            let startX = info.startX;
             let positionChanged = info.positionChanged;
             let itemDepth = parseInt(element.attr('data-depth')) || 0;
-            let new_itemDepth = itemDepth;
+            let newItemDepth = itemDepth;
             let prevElement = element.prev();
             let prevElementDepth = parseInt(prevElement.attr('data-depth')) || 0;
 
@@ -197,23 +197,23 @@ export const menu_item_reorder = (tableid) => {
             if (positionChanged) {
                 let elementIndex = $(elementSelector + ' tr').index(element);
                 let targetNextElementDepth = parseInt(info.targetNextElement.attr('data-depth')) || 0;
-                new_itemDepth = (elementIndex == 0) ? 0 : Math.max(prevElementDepth, targetNextElementDepth);
+                newItemDepth = (elementIndex == 0) ? 0 : Math.max(prevElementDepth, targetNextElementDepth);
             } else {
                 if (prevElement.length) {
-                    if (end_x > start_x + 30) {
-                        new_itemDepth = Math.min(itemDepth + 1, prevElementDepth + 1);
-                    } else if (end_x < start_x - 30) {
-                        new_itemDepth = Math.max(0, itemDepth - 1);
+                    if (endX > startX + 30) {
+                        newItemDepth = Math.min(itemDepth + 1, prevElementDepth + 1);
+                    } else if (endX < startX - 30) {
+                        newItemDepth = Math.max(0, itemDepth - 1);
                     }
                 }
             }
 
             // Update element depth and child-icon only if depth changed
-            if (new_itemDepth !== itemDepth) {
-                element.attr('data-depth', new_itemDepth);
+            if (newItemDepth !== itemDepth) {
+                element.attr('data-depth', newItemDepth);
                 let childIndentationIcon = '';
-                if (new_itemDepth) {
-                    for (let index = 0; index < new_itemDepth - 1; index++) {
+                if (newItemDepth) {
+                    for (let index = 0; index < newItemDepth - 1; index++) {
                         childIndentationIcon += childIndentation;
                     }
                     childIndentationIcon += childArrow;
@@ -230,11 +230,10 @@ export const menu_item_reorder = (tableid) => {
 
     });
 
-    // save the order of menu items
+    // Save the order of menu items
     $('#save_menu_reorder').on('click', async function() {
         // Disable to prevent multiple clicks
         $(this).prop('disabled', true);
-        //
         let reorderItems = get_reorder_items();
         Object.values(reorderItems).forEach(function (item) {
             let tr = $(elementSelector + ' tr[data-id="' + item.id + '"]');
@@ -244,13 +243,13 @@ export const menu_item_reorder = (tableid) => {
                 tr.attr('data-menu_order', item.menu_order);
             }
         });
-        // check invalid depth
-        let invalid_depth = await check_invalid_depth();
-        if (invalid_depth) {
+        // Check invalid depth
+        let invalidDepth = await check_invalid_depth();
+        if (invalidDepth) {
             $(this).prop('disabled', false);
             return;
         }
-        // save the menu items
+        // Save the menu items
         await ajax_save_menu_items(reorderItems);
 
     });
