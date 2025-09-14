@@ -33,7 +33,7 @@ export const adminPluginSettingInit = (templatecontext) => {
     */
     let beforeDiv = "";
     Templates.render('local_easycustmenu/easycustmenu_setting_header', templatecontext)
-        .then(function(html) {
+        .then(function (html) {
             beforeDiv = document.querySelector("#menu_setting_collection .ecm-header");
             if (beforeDiv) {
                 beforeDiv.outerHTML = html;
@@ -63,81 +63,22 @@ function getEcmBtn(link, label, cssClass = '') {
 
 /**
  *
- * @param {*} stringArray
+ * @param {*} jsdata
  */
-export const adminCoreSettingInit = (stringArray) => {
-
-    let navmenuLink = "/local/easycustmenu/edit.php?type=navmenu";
-    let usermenuLink = "/local/easycustmenu/edit.php?type=usermenu";
+export const adminCoreSettingInit = (jsdata) => {
     /**
     * Core custommenuitems
     */
-    let btnecmcustommenuitems = getEcmBtn(navmenuLink, stringArray['manage_menu_label']);
-    var showmenulabel = stringArray['show_menu_label']; //'Show Default "Custom menu items" ';
-    var hidemenulabel = stringArray['hide_menu_label']; //'Hide Default "Custom menu items" ';
-    let btnHideShowCustommenuitems = getEcmBtn('#', showmenulabel, 'show_hide_custommenuitems show_menu');
     if (document.querySelector("#admin-custommenuitems > .form-setting ")) {
-        document.querySelector("#admin-custommenuitems > .form-setting ").prepend(btnecmcustommenuitems);
-        document.querySelector("#admin-custommenuitems > .form-setting ").prepend(btnHideShowCustommenuitems);
-        document.querySelector("#admin-custommenuitems > .form-setting .form-textarea").style.display = "none";
-        document.querySelector("#admin-custommenuitems > .form-setting .form-defaultinfo ").style.display = "none";
-        document.querySelector("#admin-custommenuitems > .form-setting .form-description ").style.display = "none";
-
-        var elementShowHide = document.querySelector("#admin-custommenuitems > .form-setting a.show_hide_custommenuitems");
-        elementShowHide.addEventListener("click", function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            if (elementShowHide.classList.contains("show_menu")) {
-                elementShowHide.classList.remove("show_menu");
-                elementShowHide.classList.add("hide_menu");
-                elementShowHide.textContent = hidemenulabel;
-                document.querySelector("#admin-custommenuitems > .form-setting .form-textarea").style.display = "block";
-                document.querySelector("#admin-custommenuitems > .form-setting .form-defaultinfo ").style.display = "block";
-                document.querySelector("#admin-custommenuitems > .form-setting .form-description ").style.display = "block";
-            } else {
-                elementShowHide.classList.remove("hide_menu");
-                elementShowHide.classList.add("show_menu");
-                elementShowHide.textContent = showmenulabel;
-                document.querySelector("#admin-custommenuitems > .form-setting .form-textarea").style.display = "none";
-                document.querySelector("#admin-custommenuitems > .form-setting .form-defaultinfo ").style.display = "none";
-                document.querySelector("#admin-custommenuitems > .form-setting .form-description ").style.display = "none";
-            }
-        });
+        document.querySelector("#admin-custommenuitems > .form-setting ").prepend(
+            getEcmBtn(jsdata.manageNavMenuLink, jsdata.managenavmenulabel)
+        );
     }
 
     /** Core customusermenuitems */
-    let btnecmcustomusermenuitems = getEcmBtn(usermenuLink, stringArray['manage_menu_label_2']);
-    var showmenulabel2 = stringArray['show_menu_label_2'];
-    var hidemenulabel2 = stringArray['hide_menu_label_2'];
-    let btnhideshowcustomusermenuitems = getEcmBtn('#', showmenulabel2, 'show_hide_customusermenuitems show_menu');
-
     if (document.querySelector("#admin-customusermenuitems > .form-setting ")) {
-        document.querySelector("#admin-customusermenuitems > .form-setting ").prepend(btnecmcustomusermenuitems);
-        document.querySelector("#admin-customusermenuitems > .form-setting ").prepend(btnhideshowcustomusermenuitems);
-        document.querySelector("#admin-customusermenuitems > .form-setting .form-textarea").style.display = "none";
-        document.querySelector("#admin-customusermenuitems > .form-setting .form-defaultinfo ").style.display = "none";
-        document.querySelector("#admin-customusermenuitems > .form-setting .form-description ").style.display = "none";
-
-        var elementshowhide2 = document.querySelector("#admin-customusermenuitems  a.show_hide_customusermenuitems");
-        elementshowhide2.addEventListener("click", function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            if (elementshowhide2.classList.contains("show_menu")) {
-                elementshowhide2.classList.remove("show_menu");
-                elementshowhide2.classList.add("hide_menu");
-                elementshowhide2.textContent = hidemenulabel2;
-                document.querySelector("#admin-customusermenuitems > .form-setting .form-textarea").style.display = "block";
-                document.querySelector("#admin-customusermenuitems > .form-setting .form-defaultinfo ").style.display = "block";
-                document.querySelector("#admin-customusermenuitems > .form-setting .form-description ").style.display = "block";
-            } else {
-                elementshowhide2.classList.remove("hide_menu");
-                elementshowhide2.classList.add("show_menu");
-                elementshowhide2.textContent = showmenulabel2;
-                document.querySelector("#admin-customusermenuitems > .form-setting .form-textarea").style.display = "none";
-                document.querySelector("#admin-customusermenuitems > .form-setting .form-defaultinfo ").style.display = "none";
-                document.querySelector("#admin-customusermenuitems > .form-setting .form-description ").style.display = "none";
-
-            }
-        });
+        document.querySelector("#admin-customusermenuitems > .form-setting ").prepend(
+            getEcmBtn(jsdata.manageUserMenuLink, jsdata.manageusermenulabel)
+        );
     }
 };

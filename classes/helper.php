@@ -299,15 +299,13 @@ class helper {
             } else {
                 $showecmcore = get_config('local_easycustmenu', 'show_ecm_core');
                 if ($showecmcore) {
-                    $stringarray = [
-                        'show_menu_label' => get_string('show_menu_label', 'local_easycustmenu'),
-                        'hide_menu_label' => get_string('hide_menu_label', 'local_easycustmenu'),
-                        'manage_menu_label' => get_string('manage_menu_label', 'local_easycustmenu'),
-                        'show_menu_label_2' => get_string('show_menu_label_2', 'local_easycustmenu'),
-                        'hide_menu_label_2' => get_string('hide_menu_label_2', 'local_easycustmenu'),
-                        'manage_menu_label_2' => get_string('manage_menu_label_2', 'local_easycustmenu'),
+                    $jsdata = [
+                        'managenavmenulabel' => get_string('managenavmenulabel', 'local_easycustmenu'),
+                        'manageNavMenuLink' => (new moodle_url("/local/easycustmenu/edit.php", ["type" => "navmenu"]))->out(false),
+                        'manageusermenulabel' => get_string('manageusermenulabel', 'local_easycustmenu'),
+                        'manageUserMenuLink' => (new moodle_url("/local/easycustmenu/edit.php", ["type" => "usermenu"]))->out(false),
                     ];
-                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminCoreSettingInit', [$stringarray]);
+                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminCoreSettingInit', [$jsdata]);
                 }
             }
         }
