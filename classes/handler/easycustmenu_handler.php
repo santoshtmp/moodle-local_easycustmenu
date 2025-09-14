@@ -26,8 +26,11 @@
 
 namespace local_easycustmenu\handler;
 
-use action_menu;
-use pix_icon;
+// use action_menu;
+
+use core\output\action_menu;
+use core\output\pix_icon;
+// use pix_icon;
 use moodle_url;
 use stdClass;
 
