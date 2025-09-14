@@ -41,6 +41,10 @@ export const adminPluginSettingInit = (templatecontext) => {
                     beforeDiv.outerHTML = html;
                 }
             }
+            return true;
+        })
+        .catch((error) => {
+            window.console.log('Template rendering failed:' + error);
         });
 };
 

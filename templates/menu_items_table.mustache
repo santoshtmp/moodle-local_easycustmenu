@@ -28,7 +28,7 @@
             "id": 1,
             "depth": 0,
             "parent": 0,
-            "menu_order": 1,
+            "menuorder": 1,
             "menu_label": "Dashboard",
             "menu_link": "/my/",
             "child_indentation_icon": "",
@@ -40,7 +40,7 @@
             "id": 2,
             "depth": 1,
             "parent": 1,
-            "menu_order": 2,
+            "menuorder": 2,
             "menu_label": "Courses",
             "menu_link": "/course/index.php",
             "child_indentation_icon": "<span class=\"indent\"></span><i class=\"icon fa fa-chevron-right\"></i>",
@@ -67,7 +67,7 @@
         </thead>
         <tbody data-type="{{type}}" data-action="reorder">
             {{#menu_items}}
-            <tr data-id="{{id}}" data-depth="{{depth}}" data-parent="{{parent}}" data-menu_order="{{menu_order}}" data-menu_label="{{menu_label}}">
+            <tr data-id="{{id}}" data-depth="{{depth}}" data-parent="{{parent}}" data-menuorder="{{menuorder}}" data-menu_label="{{menu_label}}">
                 <td data-type="menu-label">
                     <span class="float-start drag-handle" data-drag-type="move">
                         <span class="child-icon-wrapper">{{{child_indentation_icon}}}</span>

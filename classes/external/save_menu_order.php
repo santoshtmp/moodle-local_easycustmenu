@@ -77,7 +77,7 @@ class save_menu_order extends external_api {
                 if ($DB->record_exists('local_easycustmenu', ['id' => $item['id']])) {
                     $DB->update_record('local_easycustmenu', (object)[
                         'id' => $item['id'],
-                        'menuorder' => $item['menuorder'],
+                        'menu_order' => $item['menuorder'],
                         'depth' => $item['depth'],
                         'parent' => $item['parent'],
                     ]);
