@@ -333,7 +333,7 @@ class easycustmenu_handler {
         $menus = self::get_ecm_menu_items($type);
 
         // Load JS.
-        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menu_item_reorder', [$type . '-table']);
+        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menuItemReorder', [$type . '-table']);
         $PAGE->requires->js_call_amd('local_easycustmenu/conformdelete', 'init');
 
         $childindentation = $OUTPUT->pix_icon(

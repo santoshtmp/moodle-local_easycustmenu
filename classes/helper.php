@@ -307,7 +307,7 @@ class helper {
                         'hide_menu_label_2' => get_string('hide_menu_label_2', 'local_easycustmenu'),
                         'manage_menu_label_2' => get_string('manage_menu_label_2', 'local_easycustmenu'),
                     ];
-                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_core_setting_init', [$stringarray]);
+                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminCoreSettingInit', [$stringarray]);
                 }
             }
         }

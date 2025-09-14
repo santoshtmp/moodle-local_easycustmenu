@@ -65,7 +65,7 @@ function getEcmBtn(link, label, cssClass = '') {
  *
  * @param {*} stringArray
  */
-export const admin_core_setting_init = (stringArray) => {
+export const adminCoreSettingInit = (stringArray) => {
 
     let navmenuLink = "/local/easycustmenu/edit.php?type=navmenu";
     let usermenuLink = "/local/easycustmenu/edit.php?type=usermenu";

@@ -55,7 +55,7 @@ async function checkInvalidDepth() {
     // Check invalid length
     if (invalidRows.length > 0) {
         invalidRows.forEach(function(row) {
-            row.addClass('invalid-depth').css('background-color', '#ffcccc'); // light red
+            row.addClass('invalid-depth').css('background-color', '#ffcccc');
         });
         $('#save_menu_reorder').prop('disabled', true);
         $('<div id="menu_depth_error" style="color:red;margin-top:10px;">' +
@@ -84,8 +84,6 @@ async function ajaxSaveMenuItems(reorderItems) {
         .done(function(response) {
             if (response.status) {
                 window.location.reload();
-                // window.console.log('Menu order saved successfully.');
-                // $('#save_menu_reorder').hide();
             } else {
                 window.console.log('Error saving menu order:', response.message);
             }
@@ -98,9 +96,9 @@ async function ajaxSaveMenuItems(reorderItems) {
 }
 
 /**
- * get_reorder_items
+ * Get reorder items
  */
-function get_reorder_items() {
+function getReorderItems() {
     let reorderItems = {};
     let depthStack = {}; // Stores the last seen ID for each depth level
     let parent = 0;
@@ -134,7 +132,7 @@ function get_reorder_items() {
  *
  * @param {*} tableid
  */
-export const menu_item_reorder = (tableid) => {
+export const menuItemReorder = (tableid) => {
     elementSelector = '#' + tableid + ' tbody[data-action="reorder"]';
     const childArrow = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_arrow').innerHTML;
     const childIndentation = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_indentation').innerHTML;
@@ -233,7 +231,7 @@ export const menu_item_reorder = (tableid) => {
     $('#save_menu_reorder').on('click', async function() {
         // Disable to prevent multiple clicks
         $(this).prop('disabled', true);
-        let reorderItems = get_reorder_items();
+        let reorderItems = getReorderItems();
         Object.values(reorderItems).forEach(function (item) {
             let tr = $(elementSelector + ' tr[data-id="' + item.id + '"]');
             if (tr) {
@@ -274,7 +272,7 @@ export const contextRoleFilter = (rolesByContext) => {
         const roleList = rolesByContext[ctxValue] || [];
         const previouslySelected = roleSelect.value;
         roleSelect.innerHTML = '';
-        roleList.forEach(({ value, label }) => {
+        roleList.forEach(({value, label}) => {
             const opt = document.createElement('option');
             opt.value = value;
             opt.textContent = label;
