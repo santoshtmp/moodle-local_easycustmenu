@@ -85,7 +85,6 @@ class helper {
         global $DB;
         if (!empty($contextlevel)) {
             if ($contextlevel == CONTEXT_SYSTEM) {
-
                 $sql = "SELECT r.*
                     FROM {role} r
                     LEFT JOIN {role_context_levels} rcl ON r.id = rcl.roleid
@@ -135,7 +134,6 @@ class helper {
         $roleids = [];
 
         try {
-
             if (!empty($COURSE->id) && $COURSE->id > 1) {
                 if ($PAGE->context->contextlevel === CONTEXT_COURSE || $PAGE->context->contextlevel === CONTEXT_MODULE) {
                     $context  = \context_course::instance($COURSE->id);

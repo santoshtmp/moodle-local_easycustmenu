@@ -26,11 +26,8 @@
 
 namespace local_easycustmenu\handler;
 
-// use action_menu;
-
 use core\output\action_menu;
 use core\output\pix_icon;
-// use pix_icon;
 use moodle_url;
 use stdClass;
 
@@ -272,7 +269,7 @@ class easycustmenu_handler {
         }
         // ... apply roleids condition
         if ($roleids) {
-            list($insql, $inparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
+            [$insql, $inparams] = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
             $wherecondition[] = "(ecm.condition_roleid = :everyone OR ecm.condition_roleid $insql)";
             $sqlparams = array_merge($sqlparams, $inparams);
             $sqlparams['everyone'] = 0;
