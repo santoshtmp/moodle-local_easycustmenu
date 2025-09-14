@@ -85,7 +85,6 @@ class helper {
         global $DB;
         if (!empty($contextlevel)) {
             if ($contextlevel == CONTEXT_SYSTEM) {
-
                 $sql = "SELECT r.*
                     FROM {role} r
                     LEFT JOIN {role_context_levels} rcl ON r.id = rcl.roleid
@@ -135,7 +134,6 @@ class helper {
         $roleids = [];
 
         try {
-
             if (!empty($COURSE->id) && $COURSE->id > 1) {
                 if ($PAGE->context->contextlevel === CONTEXT_COURSE || $PAGE->context->contextlevel === CONTEXT_MODULE) {
                     $context  = \context_course::instance($COURSE->id);
@@ -297,19 +295,17 @@ class helper {
         if ($PAGE->pagelayout === 'admin' && in_array($PAGE->pagetype, $allowpagetype) && is_siteadmin()) {
             if ($PAGE->pagetype === 'admin-setting-local_easycustmenu') {
                 $pluginheadercontent = self::get_ecm_header_templatecontext();
-                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_plugin_setting_init', [$pluginheadercontent]);
+                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminPluginSettingInit', [$pluginheadercontent]);
             } else {
                 $showecmcore = get_config('local_easycustmenu', 'show_ecm_core');
                 if ($showecmcore) {
-                    $stringarray = [
-                        'show_menu_label' => get_string('show_menu_label', 'local_easycustmenu'),
-                        'hide_menu_label' => get_string('hide_menu_label', 'local_easycustmenu'),
-                        'manage_menu_label' => get_string('manage_menu_label', 'local_easycustmenu'),
-                        'show_menu_label_2' => get_string('show_menu_label_2', 'local_easycustmenu'),
-                        'hide_menu_label_2' => get_string('hide_menu_label_2', 'local_easycustmenu'),
-                        'manage_menu_label_2' => get_string('manage_menu_label_2', 'local_easycustmenu'),
+                    $jsdata = [
+                        'managenavmenulabel' => get_string('managenavmenulabel', 'local_easycustmenu'),
+                        'manageNavMenuLink' => (new moodle_url("/local/easycustmenu/edit.php", ["type" => "navmenu"]))->out(false),
+                        'manageusermenulabel' => get_string('manageusermenulabel', 'local_easycustmenu'),
+                        'manageUserMenuLink' => (new moodle_url("/local/easycustmenu/edit.php", ["type" => "usermenu"]))->out(false),
                     ];
-                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_core_setting_init', [$stringarray]);
+                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminCoreSettingInit', [$jsdata]);
                 }
             }
         }

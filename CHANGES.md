@@ -16,5 +16,7 @@
 * change the menu control list and menu item form.
 
 ### Version 2.0.1 (2025082800)
-
 * Fix db issue
+
+### Version 2.1.1 (2025091400)
+* Add support from moodle 4.5+ and 5.0+

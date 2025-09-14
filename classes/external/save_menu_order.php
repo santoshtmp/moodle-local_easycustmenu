@@ -42,7 +42,7 @@ class save_menu_order extends external_api {
             'items' => new external_multiple_structure(
                 new external_single_structure([
                     'id' => new external_value(PARAM_INT, 'Menu item ID'),
-                    'menu_order' => new external_value(PARAM_INT, 'Display order index'),
+                    'menuorder' => new external_value(PARAM_INT, 'Display order index'),
                     'depth' => new external_value(PARAM_INT, 'Menu depth level'),
                     'parent' => new external_value(PARAM_INT, 'Parent menu item ID'),
                 ])
@@ -77,7 +77,7 @@ class save_menu_order extends external_api {
                 if ($DB->record_exists('local_easycustmenu', ['id' => $item['id']])) {
                     $DB->update_record('local_easycustmenu', (object)[
                         'id' => $item['id'],
-                        'menu_order' => $item['menu_order'],
+                        'menu_order' => $item['menuorder'],
                         'depth' => $item['depth'],
                         'parent' => $item['parent'],
                     ]);

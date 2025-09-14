@@ -37,7 +37,7 @@ const moveHandlerSelector = '[data-drag-type=move]';
 /**
  * To check menu items siglings tr depths
  */
-async function check_invalid_depth() {
+async function checkInvalidDepth() {
     let invalidRows = [];
     $(elementSelector + ' tr').removeClass('invalid-depth').css('background-color', '');
     $('#menu_depth_error').remove();
@@ -55,7 +55,7 @@ async function check_invalid_depth() {
     // Check invalid length
     if (invalidRows.length > 0) {
         invalidRows.forEach(function(row) {
-            row.addClass('invalid-depth').css('background-color', '#ffcccc'); // light red
+            row.addClass('invalid-depth').css('background-color', '#ffcccc');
         });
         $('#save_menu_reorder').prop('disabled', true);
         $('<div id="menu_depth_error" style="color:red;margin-top:10px;">' +
@@ -72,7 +72,7 @@ async function check_invalid_depth() {
  * To save the menu items
  * @param {*} reorderItems
  */
-async function ajax_save_menu_items(reorderItems) {
+async function ajaxSaveMenuItems(reorderItems) {
     // AJAX request to save the order
     const request = {
         methodname: 'local_easycustmenu_save_menu_order',
@@ -84,8 +84,6 @@ async function ajax_save_menu_items(reorderItems) {
         .done(function(response) {
             if (response.status) {
                 window.location.reload();
-                // window.console.log('Menu order saved successfully.');
-                // $('#save_menu_reorder').hide();
             } else {
                 window.console.log('Error saving menu order:', response.message);
             }
@@ -98,9 +96,9 @@ async function ajax_save_menu_items(reorderItems) {
 }
 
 /**
- * get_reorder_items
+ * Get reorder items
  */
-function get_reorder_items() {
+function getReorderItems() {
     let reorderItems = {};
     let depthStack = {}; // Stores the last seen ID for each depth level
     let parent = 0;
@@ -119,7 +117,7 @@ function get_reorder_items() {
         //
         $(this).attr('data-parent', parent);
         reorderItems[id] = {
-            menu_order: index,
+            menuorder: index,
             id: id,
             depth: depth,
             parent: parent,
@@ -134,8 +132,7 @@ function get_reorder_items() {
  *
  * @param {*} tableid
  */
-export const menu_item_reorder = (tableid) => {
-    //
+export const menuItemReorder = (tableid) => {
     elementSelector = '#' + tableid + ' tbody[data-action="reorder"]';
     const childArrow = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_arrow').innerHTML;
     const childIndentation = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_indentation').innerHTML;
@@ -179,6 +176,7 @@ export const menu_item_reorder = (tableid) => {
                 return false;
             }
         }
+        return true;
     });
 
     // Handle drag-and-drop depth changes.
@@ -234,23 +232,23 @@ export const menu_item_reorder = (tableid) => {
     $('#save_menu_reorder').on('click', async function() {
         // Disable to prevent multiple clicks
         $(this).prop('disabled', true);
-        let reorderItems = get_reorder_items();
-        Object.values(reorderItems).forEach(function (item) {
+        let reorderItems = getReorderItems();
+        Object.values(reorderItems).forEach(function(item) {
             let tr = $(elementSelector + ' tr[data-id="' + item.id + '"]');
             if (tr) {
                 tr.attr('data-depth', item.depth);
                 tr.attr('data-parent', item.parent);
-                tr.attr('data-menu_order', item.menu_order);
+                tr.attr('data-menuorder', item.menuorder);
             }
         });
         // Check invalid depth
-        let invalidDepth = await check_invalid_depth();
+        let invalidDepth = await checkInvalidDepth();
         if (invalidDepth) {
             $(this).prop('disabled', false);
             return;
         }
         // Save the menu items
-        await ajax_save_menu_items(reorderItems);
+        await ajaxSaveMenuItems(reorderItems);
 
     });
 
@@ -262,7 +260,7 @@ export const menu_item_reorder = (tableid) => {
  * @param {*} rolesByContext
  * @returns
  */
-export const context_role_filter = (rolesByContext) => {
+export const contextRoleFilter = (rolesByContext) => {
     const contextSelect = document.querySelector('select[name="context_level"]');
     const roleSelect = document.querySelector('select[name="condition_roleid"]');
 
@@ -275,7 +273,7 @@ export const context_role_filter = (rolesByContext) => {
         const roleList = rolesByContext[ctxValue] || [];
         const previouslySelected = roleSelect.value;
         roleSelect.innerHTML = '';
-        roleList.forEach(({ value, label }) => {
+        roleList.forEach(({value, label}) => {
             const opt = document.createElement('option');
             opt.value = value;
             opt.textContent = label;

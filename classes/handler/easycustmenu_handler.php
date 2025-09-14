@@ -26,8 +26,8 @@
 
 namespace local_easycustmenu\handler;
 
-use action_menu;
-use pix_icon;
+use core\output\action_menu;
+use core\output\pix_icon;
 use moodle_url;
 use stdClass;
 
@@ -113,7 +113,7 @@ class easycustmenu_handler {
                     $status = $DB->update_record(self::$menutable, $data);
                     if ($status) {
                         $a = new stdClass();
-                        $a->menu_label = '"' . $data->menu_label . '" ';
+                        $a->menu_label = $data->menu_label;
                         $message = get_string('menu_updated', 'local_easycustmenu', $a);
                     }
                     $returnurl = $updatereturnurl;
@@ -269,7 +269,7 @@ class easycustmenu_handler {
         }
         // ... apply roleids condition
         if ($roleids) {
-            list($insql, $inparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
+            [$insql, $inparams] = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
             $wherecondition[] = "(ecm.condition_roleid = :everyone OR ecm.condition_roleid $insql)";
             $sqlparams = array_merge($sqlparams, $inparams);
             $sqlparams['everyone'] = 0;
@@ -333,7 +333,7 @@ class easycustmenu_handler {
         $menus = self::get_ecm_menu_items($type);
 
         // Load JS.
-        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menu_item_reorder', [$type . '-table']);
+        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'menuItemReorder', [$type . '-table']);
         $PAGE->requires->js_call_amd('local_easycustmenu/conformdelete', 'init');
 
         $childindentation = $OUTPUT->pix_icon(
