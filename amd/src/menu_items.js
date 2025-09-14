@@ -37,7 +37,7 @@ const moveHandlerSelector = '[data-drag-type=move]';
 /**
  * To check menu items siglings tr depths
  */
-async function check_invalid_depth() {
+async function checkInvalidDepth() {
     let invalidRows = [];
     $(elementSelector + ' tr').removeClass('invalid-depth').css('background-color', '');
     $('#menu_depth_error').remove();
@@ -72,7 +72,7 @@ async function check_invalid_depth() {
  * To save the menu items
  * @param {*} reorderItems
  */
-async function ajax_save_menu_items(reorderItems) {
+async function ajaxSaveMenuItems(reorderItems) {
     // AJAX request to save the order
     const request = {
         methodname: 'local_easycustmenu_save_menu_order',
@@ -135,7 +135,6 @@ function get_reorder_items() {
  * @param {*} tableid
  */
 export const menu_item_reorder = (tableid) => {
-    //
     elementSelector = '#' + tableid + ' tbody[data-action="reorder"]';
     const childArrow = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_arrow').innerHTML;
     const childIndentation = document.querySelector('.page-easycustmenu #depth-reusable-icon #child_indentation').innerHTML;
@@ -244,13 +243,13 @@ export const menu_item_reorder = (tableid) => {
             }
         });
         // Check invalid depth
-        let invalidDepth = await check_invalid_depth();
+        let invalidDepth = await checkInvalidDepth();
         if (invalidDepth) {
             $(this).prop('disabled', false);
             return;
         }
         // Save the menu items
-        await ajax_save_menu_items(reorderItems);
+        await ajaxSaveMenuItems(reorderItems);
 
     });
 
@@ -262,7 +261,7 @@ export const menu_item_reorder = (tableid) => {
  * @param {*} rolesByContext
  * @returns
  */
-export const context_role_filter = (rolesByContext) => {
+export const contextRoleFilter = (rolesByContext) => {
     const contextSelect = document.querySelector('select[name="context_level"]');
     const roleSelect = document.querySelector('select[name="condition_roleid"]');
 

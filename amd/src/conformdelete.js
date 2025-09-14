@@ -34,7 +34,7 @@ define(['core/notification', 'core/str'], function(notification, str) {
                     dataTitle = (dataTitle) ? dataTitle : '';
                     notification.confirm(
                         dataHeading,
-                        str.get_string('delete_conform_text', 'local_easycustmenu', { menu_label: dataTitle }),
+                        str.get_string('delete_conform_text', 'local_easycustmenu', {menulabel: dataTitle}),
                         str.get_string('yes'),
                         str.get_string('cancel'),
                         function() {

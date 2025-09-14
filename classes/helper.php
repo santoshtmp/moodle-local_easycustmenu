@@ -295,7 +295,7 @@ class helper {
         if ($PAGE->pagelayout === 'admin' && in_array($PAGE->pagetype, $allowpagetype) && is_siteadmin()) {
             if ($PAGE->pagetype === 'admin-setting-local_easycustmenu') {
                 $pluginheadercontent = self::get_ecm_header_templatecontext();
-                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'admin_plugin_setting_init', [$pluginheadercontent]);
+                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminPluginSettingInit', [$pluginheadercontent]);
             } else {
                 $showecmcore = get_config('local_easycustmenu', 'show_ecm_core');
                 if ($showecmcore) {

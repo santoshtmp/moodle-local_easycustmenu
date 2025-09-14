@@ -88,7 +88,7 @@ class easycustmenu_form extends \moodleform {
 
         // Prepare role data grouped by context level.
         $rolesbycontext = self::roleoptions_bycontextlevels($contextoptions);
-        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'context_role_filter', [$rolesbycontext]);
+        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'contextRoleFilter', [$rolesbycontext]);
         $roleoptions = [];
         foreach ($rolesbycontext[$currentmenu->context_level ?? CONTEXT_SYSTEM] as $key => $value) {
             $roleoptions[$value['value']] = $value['label'];
