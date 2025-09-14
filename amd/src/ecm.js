@@ -24,13 +24,11 @@
 import Templates from 'core/templates';
 
 /**
- *
+ * AdminPluginSettingInit
  * @param {*} templatecontext
  */
 export const adminPluginSettingInit = (templatecontext) => {
-    /**
-    * Adjust the setting section
-    */
+    // Adjust the setting section.
     let beforeDiv = "";
     Templates.render('local_easycustmenu/easycustmenu_setting_header', templatecontext)
         .then(function (html) {
@@ -47,7 +45,7 @@ export const adminPluginSettingInit = (templatecontext) => {
 };
 
 /**
- *
+ * GetEcmBtn
  * @param {*} link
  * @param {*} label
  * @param {*} cssClass
@@ -62,20 +60,18 @@ function getEcmBtn(link, label, cssClass = '') {
 }
 
 /**
- *
+ * AdminCoreSettingInit
  * @param {*} jsdata
  */
 export const adminCoreSettingInit = (jsdata) => {
-    /**
-    * Core custommenuitems
-    */
+    // Core custommenuitems.
     if (document.querySelector("#admin-custommenuitems > .form-setting ")) {
         document.querySelector("#admin-custommenuitems > .form-setting ").prepend(
             getEcmBtn(jsdata.manageNavMenuLink, jsdata.managenavmenulabel)
         );
     }
 
-    /** Core customusermenuitems */
+    // Core customusermenuitems.
     if (document.querySelector("#admin-customusermenuitems > .form-setting ")) {
         document.querySelector("#admin-customusermenuitems > .form-setting ").prepend(
             getEcmBtn(jsdata.manageUserMenuLink, jsdata.manageusermenulabel)
