@@ -113,7 +113,7 @@ class easycustmenu_handler {
                     $status = $DB->update_record(self::$menutable, $data);
                     if ($status) {
                         $a = new stdClass();
-                        $a->menu_label = '"' . $data->menu_label . '" ';
+                        $a->menu_label = $data->menu_label;
                         $message = get_string('menu_updated', 'local_easycustmenu', $a);
                     }
                     $returnurl = $updatereturnurl;

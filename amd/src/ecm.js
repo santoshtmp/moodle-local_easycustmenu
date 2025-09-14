@@ -31,7 +31,7 @@ export const adminPluginSettingInit = (templatecontext) => {
     // Adjust the setting section.
     let beforeDiv = "";
     Templates.render('local_easycustmenu/easycustmenu_setting_header', templatecontext)
-        .then(function (html) {
+        .then(function(html) {
             beforeDiv = document.querySelector("#menu_setting_collection .ecm-header");
             if (beforeDiv) {
                 beforeDiv.outerHTML = html;
