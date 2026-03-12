@@ -29,22 +29,17 @@ use local_easycustmenu\handler\easycustmenu_handler;
 use moodle_url;
 
 /**
- * Helper class for local_easycustmenu plugin.
- *
- * Provides utility methods for managing custom navigation and user menus,
- * including menu item configuration, context-based conditions, and role-based access.
+ * class to handle local_easycustmenu helper action
  *
  * @package    local_easycustmenu
  * @copyright  2024 santoshtmp <https://santoshmagar.com.np/>
  * @author     santoshtmp
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 class helper {
     /**
-     * Check and configure custom menu items based on plugin settings.
-     *
-     * Hides primary navigation items if configured and sets up custom menu items
-     * for both navigation and user menus based on current context, roles, and language.
+     * check check_ecm_menu
      */
     public function check_ecm_menu() {
         global $PAGE;
@@ -58,10 +53,9 @@ class helper {
     }
 
     /**
-     * Get available menu types.
+     * Get menu types.
      *
-     * @return array Associative array of menu type identifiers and their display names.
-     *               Keys: 'navmenu', 'usermenu'
+     * @return array
      */
     public static function get_menu_type() {
         return [
@@ -73,8 +67,7 @@ class helper {
     /**
      * Get menu context levels.
      *
-     * @return array Associative array of context level identifiers and their display names.
-     *               Keys: 10 (site-wide), 50 (course-specific)
+     * @return array
      */
     public static function get_ecm_context_level() {
         return [
@@ -84,10 +77,9 @@ class helper {
     }
 
     /**
-     * Get roles based on menu context level.
-     *
-     * @param int $contextlevel The context level (CONTEXT_SYSTEM or CONTEXT_COURSE).
-     * @return array List of role records applicable to the specified context level.
+     * Get role base on menu context
+     * @param int $contextlevel
+     * @return array List of role records from the database.
      */
     public static function get_ecm_context_roles($contextlevel) {
         global $DB;
@@ -119,35 +111,29 @@ class helper {
     }
 
     /**
-     * Get the current menu condition based on user context.
-     *
-     * Determines the current context, user roles, and language to establish
-     * menu visibility conditions.
+     * Get the current menu condition.
      *
      * Rules for context object and its level:
      * - 50 if inside a real course (course id > 1)
      * - 10 for system context or front page (course id = 1)
      *
-     * @return array|null {
-     *     @type context $context       Moodle context object for the current page
-     *     @type int     $contextlevel  Context level (CONTEXT_COURSE=50 or CONTEXT_SYSTEM=10)
-     *     @type int     $courseid      Course ID (0 for front page or system)
-     *     @type array   $roleids       Array of unique role IDs applicable to the user, with -1 for site admin
-     *     @type string  $lang          Current language code
-     * } Returns null if an error occurs during context/role resolution.
+     * @return array {
+     *     context       => context, // Moodle context object
+     *     contextlevel  => int,     // 50 or 10
+     *     courseid      => int,     // 0 for front page or system
+     *     roleids       => array,   // role IDs, with -1 for site admin
+     *     lang          => string   // current language code
+     * }
      */
     public static function get_current_menu_condition() {
         global $PAGE, $COURSE, $USER;
-
-        // Initialize default values.
+        // Defaults.
         $context = \context_system::instance();
         $contextlevel  = CONTEXT_SYSTEM;
         $courseid = 0;
         $roleids = [];
 
         try {
-            // Determine context level based on current page location.
-            // Set to CONTEXT_COURSE if inside a real course (course id > 1).
             if (!empty($COURSE->id) && $COURSE->id > 1) {
                 if ($PAGE->context->contextlevel === CONTEXT_COURSE || $PAGE->context->contextlevel === CONTEXT_MODULE) {
                     $context  = \context_course::instance($COURSE->id);
@@ -155,34 +141,15 @@ class helper {
                     $courseid = $COURSE->id;
                 }
             }
-
-            // Add 'everyone' role identifier (applies to all users).
-            $roleids[] = 0;
-
-            // Add site admin role identifier if user is site administrator.
+            // Get user roles in this context.
             if (is_siteadmin($USER->id)) {
                 $roleids[] = -1;
             }
-
-            // Add authenticated user role (for logged-in, non-guest users).
             if (isloggedin() && !isguestuser()) {
                 $authuserroles = get_archetype_roles('user');
                 $authuserrole = reset($authuserroles);
-                if ($authuserrole) {
-                    $roleids[] = $authuserrole->id;
-                }
+                $roleids[] = $authuserrole->id;
             }
-
-            // Add guest role for not-logged-in or guest users.
-            if (!isloggedin() || isguestuser()) {
-                $guestroles = get_archetype_roles('guest');
-                $guestrole = reset($guestroles);
-                if ($guestrole) {
-                    $roleids[] = $guestrole->id;
-                }
-            }
-
-            // Add all roles assigned to the user in the current context.
             $assignedroles = get_user_roles($context, $USER->id, false);
             if (!empty($assignedroles)) {
                 foreach ($assignedroles as $role) {
@@ -190,49 +157,55 @@ class helper {
                 }
             }
         } catch (\Throwable $th) {
-            // Return early if any error occurs during context/role resolution.
+            // Skipped.
             return;
         }
-
-        // Return the collected menu condition data.
+        // Return data.
         return [
             'context'  => $context,
             'contextlevel' => $contextlevel,
             'courseid' => $courseid,
-            'roleids' => array_unique($roleids),
+            'roleids' => $roleids,
             'lang' => current_language(),
         ];
     }
 
     /**
-     * Get the display name for a given role ID.
+     * Returns the display name for a given role ID.
+     *
+     * - If the role ID is 0, returns the string for "everyone".
+     * - If the role ID is -1, returns the string for "admin".
+     * - Otherwise, fetches the role record and returns its display name.
      *
      * @param int|string $conditionroleid The role ID to get the name for.
-     *                                    Special values: 0 = everyone, -1 = admin
-     * @return string The display name of the role or special label.
+     * @return string The display name of the role.
      */
     public static function get_menu_role_name($conditionroleid) {
         global $DB;
-        $rolename = '';
-        if ($conditionroleid == 0) {
-            $rolename = get_string('everyone', 'local_easycustmenu');
-        } else if ($conditionroleid == '-1') {
-            $rolename = get_string('admin');
-        } else {
-            $role = $DB->get_record('role', ['id' => $conditionroleid]);
-            if ($role) {
-                $rolename = role_get_name($role);
+        // supports comma-separated multiple role IDs, returns all names e.g. "Teacher, Student":
+        if (empty($conditionroleid) || $conditionroleid == '0') {
+            return get_string('everyone', 'local_easycustmenu');
+        }
+        $roleids = explode(',', $conditionroleid);
+        $names = [];
+        foreach ($roleids as $rid) {
+            $rid = trim($rid);
+            if ($rid == '0') {
+                $names[] = get_string('everyone', 'local_easycustmenu');
+            } else if ($rid == '-1') {
+                $names[] = get_string('admin');
+            } else {
+                $role = $DB->get_record('role', ['id' => $rid]);
+                if ($role) {
+                    $names[] = role_get_name($role);
+                }
             }
         }
-        return $rolename;
+        return implode(', ', $names);
     }
 
     /**
-     * Configure menu items based on Easy Custom Menu settings.
-     *
-     * Retrieves and processes menu items for both navigation and user menus based on
-     * current context conditions (context level, course ID, roles, language).
-     * Sets the global $CFG->custommenuitems and $CFG->customusermenuitems properties.
+     * check and define menu items according to easycustmenu
      */
     public static function define_ecm_config_menuitems() {
         global $CFG;
@@ -280,12 +253,7 @@ class helper {
     }
 
     /**
-     * Get header tab context for Easy Custom Menu admin pages.
-     *
-     * Builds the template context for the tabbed navigation in the plugin's admin interface,
-     * including links to general settings, navigation menu settings, and user menu settings.
-     *
-     * @return array Template context containing menu tab configurations with active states and URLs.
+     * Get ecm header tab part
      */
     public static function get_ecm_header_templatecontext() {
         $pagepath = '/local/easycustmenu/edit.php';
@@ -313,12 +281,7 @@ class helper {
     }
 
     /**
-     * Generate content to be added before the footer.
-     *
-     * Injects JavaScript and CSS for Easy Custom Menu admin pages when the plugin is activated.
-     * Provides enhanced UI for menu management on admin settings pages.
-     *
-     * @return string HTML content with inline styles and scripts, or empty string if not applicable.
+     * before_footer_content
      */
     public static function before_footer_content() {
         $activate = (get_config('local_easycustmenu', 'activate')) ?: "";

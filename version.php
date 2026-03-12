@@ -34,7 +34,7 @@ $plugin->component = 'local_easycustmenu';
 $plugin->release = '2.1.2';
 
 // This is the version of the plugin.
-$plugin->version = 2026031200;
+$plugin->version = 2025091401;
 
 // This is a stable release.
 $plugin->maturity = MATURITY_STABLE;
@@ -43,4 +43,4 @@ $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2024100100;
 
 // This is the release of Moodle this plugin requires.
-$plugin->supported = [405, 501];
+$plugin->supported = [405, 500];

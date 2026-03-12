@@ -20,3 +20,9 @@
 
 ### Version 2.1.1 (2025091400)
 * Add support from moodle 4.5+ and 5.0+
+
+### Version 2.1.2 (2025091401)
+* Multi-role support: Menu items can now be assigned to multiple roles (e.g., Teacher + Student) instead of only one role at a time
+* Changed condition_roleid column from INT to CHAR(150) to store comma-separated role IDs
+* Added DB upgrade step to migrate existing single role values to the new format
+* Role selector changed from single-select dropdown to multi-select autocomplete in the menu item form

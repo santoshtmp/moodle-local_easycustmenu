@@ -262,7 +262,10 @@ export const menuItemReorder = (tableid) => {
  */
 export const contextRoleFilter = (rolesByContext) => {
     const contextSelect = document.querySelector('select[name="context_level"]');
-    const roleSelect = document.querySelector('select[name="condition_roleid"]');
+    
+    //supports both multi-select (condition_roleid[]) and single (condition_roleid):
+    const roleSelect = document.querySelector('select[name="condition_roleid[]"]')
+        || document.querySelector('select[name="condition_roleid"]');
 
     if (!contextSelect || !roleSelect) {
         return;
@@ -271,13 +274,15 @@ export const contextRoleFilter = (rolesByContext) => {
     contextSelect.addEventListener('change', () => {
         const ctxValue = contextSelect.value;
         const roleList = rolesByContext[ctxValue] || [];
-        const previouslySelected = roleSelect.value;
+        // array of all selected values for multi-select support:
+        const previouslySelected = Array.from(roleSelect.selectedOptions).map(o => o.value);
         roleSelect.innerHTML = '';
         roleList.forEach(({value, label}) => {
             const opt = document.createElement('option');
             opt.value = value;
             opt.textContent = label;
-            if (value === previouslySelected) {
+            //includes() check to support multi-select:
+            if (previouslySelected.includes(String(value))) {
                 opt.selected = true;
             }
             roleSelect.appendChild(opt);
