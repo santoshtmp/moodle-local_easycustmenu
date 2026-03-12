@@ -270,9 +270,8 @@ class easycustmenu_handler {
         // ... apply roleids condition
         if ($roleids) {
             [$insql, $inparams] = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
-            $wherecondition[] = "(ecm.condition_roleid = :everyone OR ecm.condition_roleid $insql)";
+            $wherecondition[] = "ecm.condition_roleid $insql";
             $sqlparams = array_merge($sqlparams, $inparams);
-            $sqlparams['everyone'] = 0;
         }
         // Where condition.
         if (count($wherecondition) > 0) {

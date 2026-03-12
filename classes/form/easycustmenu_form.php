@@ -25,17 +25,25 @@ require_once($CFG->libdir . '/formslib.php');
 
 
 /**
- * Form for editing easy custom menu items.
+ * Form for editing Easy Custom Menu items.
+ *
+ * Provides a form interface for adding and editing navigation and user menu items
+ * with configurable conditions such as context level, roles, courses, and language.
  *
  * @package    local_easycustmenu
  * @copyright  2025 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
  */
 class easycustmenu_form extends \moodleform {
     /**
-     * Form definition.
+     * Define the form elements.
+     *
+     * Builds the form for adding or editing a menu item with fields for:
+     * - Menu label and link
+     * - Context level (site-wide or course-specific)
+     * - Condition filters (courses, language, roles)
+     * - Navigation-specific options (tooltip, new tab, parent menu)
      */
     public function definition() {
         global $PAGE;
@@ -47,25 +55,25 @@ class easycustmenu_form extends \moodleform {
         $currentmenu = easycustmenu_handler::get_ecm_menu_by_id($id);
         $menuitemtitle = ($id) ? 'edit_menu_item' : 'add_menu_item';
 
-        // Header.
+        // Form header.
         $mform->addElement('header', 'generalsettings', get_string($menuitemtitle, 'local_easycustmenu'));
 
-        // Menu label.
+        // Menu label field.
         $mform->addElement('text', 'menu_label', get_string('menu_label', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_label', PARAM_TEXT);
         $mform->addRule('menu_label', null, 'required', null, 'client');
 
-        // Menu link.
+        // Menu link field.
         $mform->addElement('text', 'menu_link', get_string('menu_link', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_link', PARAM_URL);
         $mform->addRule('menu_link', null, 'required', null, 'client');
 
-        // Context level.
+        // Context level selector.
         $contextoptions = \local_easycustmenu\helper::get_ecm_context_level();
         $mform->addElement('select', 'context_level', get_string('menu_context', 'local_easycustmenu'), $contextoptions);
         $mform->setType('context_level', PARAM_INT);
 
-        // Condition courses Get courses list (only show when context_level == 50).
+        // Condition courses: Get courses list (only shown when context_level == 50).
         $options = [
             'multiple' => true,
             'noselectionstring' => get_string('allcourses', 'local_easycustmenu'),
@@ -73,7 +81,7 @@ class easycustmenu_form extends \moodleform {
         $mform->addElement('course', 'condition_courses', get_string('course'), $options);
         $mform->hideIf('condition_courses', 'context_level', 'neq', 50);
 
-        // Condition lang.
+        // Condition language selector.
         $languages = get_string_manager()->get_list_of_translations();
         if (count($languages) > 1) {
             $mform->addElement(
@@ -96,8 +104,9 @@ class easycustmenu_form extends \moodleform {
         $mform->addElement('select', 'condition_roleid', get_string('menu_condition_role', 'local_easycustmenu'), $roleoptions);
         $mform->setType('condition_roleid', PARAM_INT);
 
+        // Navigation menu specific fields.
         if ($type == 'navmenu') {
-            // Tool tio title.
+            // Tooltip title for menu label.
             $mform->addElement(
                 'text',
                 'label_tooltip_title',
@@ -106,7 +115,7 @@ class easycustmenu_form extends \moodleform {
             );
             $mform->setType('label_tooltip_title', PARAM_TEXT);
 
-            // Open in new tab target blank.
+            // Open in new browser tab option.
             $radioarray = [];
             $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('yes'), 1);
             $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('no'), 0);
@@ -120,6 +129,7 @@ class easycustmenu_form extends \moodleform {
             $mform->setDefault('link_target', 0);
         }
 
+        // Parent menu selector for navigation menus.
         if ($type == 'navmenu') {
             $menus = easycustmenu_handler::get_ecm_menu_items($type);
             $menuparent = [0 => get_string('top')];
@@ -145,31 +155,33 @@ class easycustmenu_form extends \moodleform {
             $mform->setType('parent', PARAM_INT);
             $mform->setDefault('parent', 0);
         } else {
-            // Hidden parent.
+            // Hidden parent field for user menus.
             $mform->addElement('hidden', 'parent');
             $mform->setType('parent', PARAM_INT);
             $mform->setDefault('parent', 0);
         }
 
-        // Hidden depth.
+        // Hidden depth field.
         $mform->addElement('hidden', 'depth');
         $mform->setType('depth', PARAM_INT);
         $mform->setDefault('depth', 0);
 
-        // Hidden menu_type.
+        // Hidden menu_type field.
         $mform->addElement('hidden', 'menu_type');
         $mform->setType('menu_type', PARAM_TEXT);
         $mform->setDefault('menu_type', $type);
-        // Hidden id.
+        
+        // Hidden id field.
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', 0);
 
-        // Hidden menu_order.
+        // Hidden menu_order field.
         $mform->addElement('hidden', 'menu_order');
         $mform->setType('menu_order', PARAM_INT);
         $mform->setDefault('menu_order', 0);
-        // Hidden action.
+        
+        // Hidden action field.
         $mform->addElement('hidden', 'action');
         $mform->setType('action', PARAM_TEXT);
         $mform->setDefault('action', $action);
@@ -179,10 +191,13 @@ class easycustmenu_form extends \moodleform {
 
 
     /**
-     * Builds a list of role options grouped by context levels.
+     * Build role options grouped by context levels.
      *
-     * @param array $contextoptions The context options array.
-     * @return array Roles grouped by context level.
+     * Retrieves roles for each context level and formats them as selectable options,
+     * including special entries for 'everyone' (0) and 'admin' (-1).
+     *
+     * @param array $contextoptions Associative array of context level values and labels.
+     * @return array Roles grouped by context level, each containing value and label pairs.
      */
     public static function roleoptions_bycontextlevels($contextoptions) {
         $rolesbycontext = [];
@@ -210,18 +225,20 @@ class easycustmenu_form extends \moodleform {
     }
 
     /**
-     * Custom validation for the form.
+     * Validate form data.
+     *
+     * Performs custom validation to check for duplicate menu labels within the same menu type.
      *
      * @param array $data Submitted form data.
-     * @param array $files Uploaded files (not used here).
-     * @return array Array of errors, empty if no errors.
+     * @param array $files Uploaded files (not used in this form).
+     * @return array Array of validation errors, empty if no errors.
      */
     public function validation($data, $files) {
         global $DB;
 
         $errors = parent::validation($data, $files);
 
-        // Add field validation check for duplicate menu label.
+        // Validate for duplicate menu labels within the same menu type.
         if ($data['menu_label']) {
             $normalizedlabel = \core_text::strtolower(trim($data['menu_label']));
 
@@ -233,11 +250,24 @@ class easycustmenu_form extends \moodleform {
 
             $existing = $DB->get_record_sql($sql, $params);
 
-            // If a record exists and it's not the current editing record.
+            // Error if a record exists and it's not the current editing record.
             if ($existing && (empty($data['id']) || $existing->id != $data['id'])) {
                 $a = new stdClass();
                 $a->menu_label = trim($data['menu_label']);
                 $errors['menu_label'] = get_string('label_error', 'local_easycustmenu', $a);
+            }
+        }
+
+        // Validate menu_link is a valid URL.
+        if (!empty($data['menu_link'])) {
+            $menuurl = trim($data['menu_link']);
+            // Check if URL has valid format (absolute URL or relative/internal path).
+            $isabsoluteurl = preg_match('~^https?://[^\s/$.?#].[^\s]*$~i', $menuurl);
+            $isrelativeurl = preg_match('~^(/|\.\/|\.\./)[^\s]*$~', $menuurl);
+            // Also allow www. URLs (will be treated as http).
+            $iswwwurl = preg_match('~^www\.[^\s]+$~i', $menuurl);
+            if (!$isabsoluteurl && !$isrelativeurl && !$iswwwurl) {
+                $errors['menu_link'] = get_string('invalidurl', 'local_easycustmenu');
             }
         }
 
