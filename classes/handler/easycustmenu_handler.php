@@ -104,7 +104,10 @@ class easycustmenu_handler {
             $data->menu_link = $menulink;
             $data->condition_courses = ($mformdata->context_level == 50) ? implode(',', $mformdata->condition_courses ?? []) : '';
             $data->condition_lang = isset($mformdata->condition_lang) ? implode(',', $mformdata->condition_lang ?? []) : '';
-            $data->condition_roleid = isset($mformdata->condition_roleid) ? $mformdata->condition_roleid : 0;
+            //stores multiple roles as comma-separated string e.g. "1,3,5":
+            $data->condition_roleid = isset($mformdata->condition_roleid)
+                ? (is_array($mformdata->condition_roleid) ? implode(',', $mformdata->condition_roleid) : $mformdata->condition_roleid)
+                : '0';
             $data->other_condition = json_encode($othercondition);
             $data->timemodified = time();
             // Insert or update.
@@ -201,7 +204,8 @@ class easycustmenu_handler {
                 $entry->menu_link = $data->menu_link;
                 $entry->condition_courses = ($data->condition_courses) ? explode(',', $data->condition_courses) : [];
                 $entry->condition_lang = $data->condition_lang;
-                $entry->condition_roleid = $data->condition_roleid;
+                //explode to array so multi-select autocomplete pre-fills correctly on edit:
+                $entry->condition_roleid = ($data->condition_roleid) ? explode(',', $data->condition_roleid) : ['0'];
                 $entry->label_tooltip_title = $othercondition['label_tooltip_title'] ?? '';
                 $entry->link_target = isset($othercondition['link_target']) ? $othercondition['link_target'] : 0;
                 $mform->set_data($entry);
@@ -267,11 +271,21 @@ class easycustmenu_handler {
                 $wherecondition[] = 'ecm.context_level = :context_level';
             }
         }
-        // ... apply roleids condition
+        //NEW CODE - LIKE pattern matching to support comma-separated role IDs stored in condition_roleid:
+        // ... apply roleids condition (supports multiple roles stored as comma-separated).
+        // Pad with commas on both sides to ensure exact role ID boundary matching.
         if ($roleids) {
-            [$insql, $inparams] = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
-            $wherecondition[] = "ecm.condition_roleid $insql";
-            $sqlparams = array_merge($sqlparams, $inparams);
+            $roleConditions = ["ecm.condition_roleid = :everyone"];
+            foreach ($roleids as $idx => $rid) {
+                $pexact = 'rid_exact_' . $idx;
+                $pmid   = 'rid_mid_' . $idx;
+                $roleConditions[] = "ecm.condition_roleid = :{$pexact}";
+                $roleConditions[] = $DB->sql_like($DB->sql_concat("','", 'ecm.condition_roleid', "','"), ":{$pmid}", false);
+                $sqlparams[$pexact] = (string)$rid;
+                $sqlparams[$pmid]   = '%,' . $rid . ',%';
+            }
+            $wherecondition[] = "(" . implode(" OR ", $roleConditions) . ")";
+            $sqlparams['everyone'] = '0';
         }
         // Where condition.
         if (count($wherecondition) > 0) {

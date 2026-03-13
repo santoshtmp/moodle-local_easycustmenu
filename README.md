@@ -7,9 +7,9 @@
    - Site administration  
 3. Manage custom menus with flexible conditions.
 4. Conditions can be applied based on:
-   - **Role** – Display menus according to user roles.  
+   - **Role** – Display menus according to one or multiple user roles (e.g., show a menu item to Teachers and Managers).  
    - **Context** – Show menus site-wide or within specific courses (including activities such as modules or pages).  
-   - **Language** – Display menus depending on the user’s language preference.  
+   - **Language** – Display menus depending on the user's language preference. 
 5. Option to open menu items in a **new browser tab**.
 
 
