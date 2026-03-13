@@ -20,3 +20,6 @@
 
 ### Version 2.1.1 (2025091400)
 * Add support from moodle 4.5+ and 5.0+
+
+### Version 2.1.2 (2026031200)
+* Fix guest access item and menu link validation
