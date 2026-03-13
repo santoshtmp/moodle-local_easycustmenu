@@ -35,7 +35,7 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class easycustmenu_form extends \moodleform {
     /**
-     * Form definition.
+     * Define form elements for creating or editing a menu item.
      */
     public function definition() {
         global $PAGE;
@@ -47,25 +47,25 @@ class easycustmenu_form extends \moodleform {
         $currentmenu = easycustmenu_handler::get_ecm_menu_by_id($id);
         $menuitemtitle = ($id) ? 'edit_menu_item' : 'add_menu_item';
 
-        // Header.
+        // Form header.
         $mform->addElement('header', 'generalsettings', get_string($menuitemtitle, 'local_easycustmenu'));
 
-        // Menu label.
+        // Menu label field.
         $mform->addElement('text', 'menu_label', get_string('menu_label', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_label', PARAM_TEXT);
         $mform->addRule('menu_label', null, 'required', null, 'client');
 
-        // Menu link.
+        // Menu link field.
         $mform->addElement('text', 'menu_link', get_string('menu_link', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_link', PARAM_URL);
         $mform->addRule('menu_link', null, 'required', null, 'client');
 
-        // Context level.
+        // Context level selector.
         $contextoptions = \local_easycustmenu\helper::get_ecm_context_level();
         $mform->addElement('select', 'context_level', get_string('menu_context', 'local_easycustmenu'), $contextoptions);
         $mform->setType('context_level', PARAM_INT);
 
-        // Condition courses Get courses list (only show when context_level == 50).
+        // Condition courses selector (visible only when context_level == 50).
         $options = [
             'multiple' => true,
             'noselectionstring' => get_string('allcourses', 'local_easycustmenu'),
@@ -73,7 +73,7 @@ class easycustmenu_form extends \moodleform {
         $mform->addElement('course', 'condition_courses', get_string('course'), $options);
         $mform->hideIf('condition_courses', 'context_level', 'neq', 50);
 
-        // Condition lang.
+        // Language selector.
         $languages = get_string_manager()->get_list_of_translations();
         if (count($languages) > 1) {
             $mform->addElement(
@@ -88,12 +88,13 @@ class easycustmenu_form extends \moodleform {
 
         // Prepare role data grouped by context level.
         $rolesbycontext = self::roleoptions_bycontextlevels($contextoptions);
-        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'contextRoleFilter', [$rolesbycontext]);
+        $noselectionstring = get_string('everyone', 'local_easycustmenu');
+        $PAGE->requires->js_call_amd('local_easycustmenu/menu_items', 'contextRoleFilter', [$rolesbycontext, $noselectionstring]);
         $roleoptions = [];
         foreach ($rolesbycontext[$currentmenu->context_level ?? CONTEXT_SYSTEM] as $key => $value) {
             $roleoptions[$value['value']] = $value['label'];
         }
-        //multi-select autocomplete to allow selecting multiple roles, PARAM_TEXT for comma-separated IDs:
+        // Role selector (multi-select autocomplete for multiple roles, stored as comma-separated IDs).
         $mform->addElement(
             'autocomplete',
             'condition_roleid',
@@ -103,8 +104,9 @@ class easycustmenu_form extends \moodleform {
         );
         $mform->setType('condition_roleid', PARAM_TEXT);
 
+        // Navigation menu specific fields.
         if ($type == 'navmenu') {
-            // Tool tio title.
+            // Tooltip title field.
             $mform->addElement(
                 'text',
                 'label_tooltip_title',
@@ -113,7 +115,7 @@ class easycustmenu_form extends \moodleform {
             );
             $mform->setType('label_tooltip_title', PARAM_TEXT);
 
-            // Open in new tab target blank.
+            // Open in new tab selector.
             $radioarray = [];
             $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('yes'), 1);
             $radioarray[] = $mform->createElement('radio', 'link_target', '', get_string('no'), 0);
@@ -127,6 +129,7 @@ class easycustmenu_form extends \moodleform {
             $mform->setDefault('link_target', 0);
         }
 
+        // Parent menu selector for navmenu, hidden for usermenu.
         if ($type == 'navmenu') {
             $menus = easycustmenu_handler::get_ecm_menu_items($type);
             $menuparent = [0 => get_string('top')];
@@ -152,31 +155,33 @@ class easycustmenu_form extends \moodleform {
             $mform->setType('parent', PARAM_INT);
             $mform->setDefault('parent', 0);
         } else {
-            // Hidden parent.
+            // Hidden parent field for usermenu.
             $mform->addElement('hidden', 'parent');
             $mform->setType('parent', PARAM_INT);
             $mform->setDefault('parent', 0);
         }
 
-        // Hidden depth.
+        // Hidden depth field.
         $mform->addElement('hidden', 'depth');
         $mform->setType('depth', PARAM_INT);
         $mform->setDefault('depth', 0);
 
-        // Hidden menu_type.
+        // Hidden menu_type field.
         $mform->addElement('hidden', 'menu_type');
         $mform->setType('menu_type', PARAM_TEXT);
         $mform->setDefault('menu_type', $type);
-        // Hidden id.
+
+        // Hidden id field.
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', 0);
 
-        // Hidden menu_order.
+        // Hidden menu_order field.
         $mform->addElement('hidden', 'menu_order');
         $mform->setType('menu_order', PARAM_INT);
         $mform->setDefault('menu_order', 0);
-        // Hidden action.
+
+        // Hidden action field.
         $mform->addElement('hidden', 'action');
         $mform->setType('action', PARAM_TEXT);
         $mform->setDefault('action', $action);
@@ -186,10 +191,10 @@ class easycustmenu_form extends \moodleform {
 
 
     /**
-     * Builds a list of role options grouped by context levels.
+     * Build role options grouped by context levels.
      *
-     * @param array $contextoptions The context options array.
-     * @return array Roles grouped by context level.
+     * @param array $contextoptions Context level options.
+     * @return array Roles grouped by context level, including 'everyone' and 'admin' options.
      */
     public static function roleoptions_bycontextlevels($contextoptions) {
         $rolesbycontext = [];
@@ -217,11 +222,13 @@ class easycustmenu_form extends \moodleform {
     }
 
     /**
-     * Custom validation for the form.
+     * Validate form data.
+     *
+     * Checks for duplicate menu labels and validates URL format.
      *
      * @param array $data Submitted form data.
-     * @param array $files Uploaded files (not used here).
-     * @return array Array of errors, empty if no errors.
+     * @param array $files Uploaded files (not used).
+     * @return array Array of validation errors, empty if no errors.
      */
     public function validation($data, $files) {
         global $DB;

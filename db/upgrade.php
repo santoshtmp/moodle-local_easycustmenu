@@ -73,7 +73,7 @@ function xmldb_local_easycustmenu_upgrade($oldversion) {
 
 
     // Upgrade: change condition_roleid from INT to CHAR to support multiple roles.
-    $newversion = 2025091401;
+    $newversion = 2026031300;
     if ($oldversion < $newversion) {
         $table = new xmldb_table('local_easycustmenu');
         $field = new xmldb_field('condition_roleid', XMLDB_TYPE_CHAR, '150', null, XMLDB_NOTNULL, null, '0');

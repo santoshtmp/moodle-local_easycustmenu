@@ -23,7 +23,8 @@
 
 ### Version 2.1.2 (2026031200)
 * Fix guest access item and menu link validation
-### Version 2.1.2 (2025091401)
+
+### Version 2.1.3 (2026031300)
 * Multi-role support: Menu items can now be assigned to multiple roles (e.g., Teacher + Student) instead of only one role at a time
 * Changed condition_roleid column from INT to CHAR(150) to store comma-separated role IDs
 * Added DB upgrade step to migrate existing single role values to the new format

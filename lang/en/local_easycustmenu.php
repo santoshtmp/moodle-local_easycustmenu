@@ -79,6 +79,7 @@ $string['save_order'] = 'Save Re-Order';
 $string['invalidmenudepth'] = 'Invalid menu depth detected! Please adjust highlighted rows.';
 $string['menu_parent'] = 'Menu parent';
 $string['show_through_site'] = 'Show site-wide';
+$string['invalidurl'] = 'Invalid URL format. URL must start with http://, https://, www., or be a relative path (e.g., /course/view.php).';
 $string['show_in_course'] = 'Show within course';
 $string['setting_activate'] = 'Activate';
 $string['setting_activate_desc'] = 'Activate the Easy Custom Menu feature.';

@@ -25,7 +25,7 @@
 import $ from 'jquery';
 import SortableList from 'core/sortable_list';
 import Ajax from 'core/ajax';
-import {getString} from 'core/str';
+import { getString } from 'core/str';
 
 /**
  * Variables define
@@ -43,7 +43,7 @@ async function checkInvalidDepth() {
     $('#menu_depth_error').remove();
 
     // Check on each tr
-    $(elementSelector + ' tr').each(function() {
+    $(elementSelector + ' tr').each(function () {
         let depth = parseInt($(this).attr('data-depth')) || 0;
         let parentId = parseInt($(this).attr('data-parent'));
         let parentDepth = $(elementSelector + ' tr[data-id="' + parentId + '"]').attr('data-depth') || 0;
@@ -54,7 +54,7 @@ async function checkInvalidDepth() {
 
     // Check invalid length
     if (invalidRows.length > 0) {
-        invalidRows.forEach(function(row) {
+        invalidRows.forEach(function (row) {
             row.addClass('invalid-depth').css('background-color', '#ffcccc');
         });
         $('#save_menu_reorder').prop('disabled', true);
@@ -81,15 +81,15 @@ async function ajaxSaveMenuItems(reorderItems) {
         }
     };
     return await Ajax.call([request])[0]
-        .done(function(response) {
+        .done(function (response) {
             if (response.status) {
                 window.location.reload();
             } else {
                 window.console.log('Error saving menu order:', response.message);
             }
-        }).fail(function() {
+        }).fail(function () {
             window.console.log('request failed.');
-        }).always(function() {
+        }).always(function () {
             $('#save_menu_reorder').prop('disabled', false);
         }
         );
@@ -102,7 +102,7 @@ function getReorderItems() {
     let reorderItems = {};
     let depthStack = {}; // Stores the last seen ID for each depth level
     let parent = 0;
-    $(elementSelector + ' tr').each(function(index) {
+    $(elementSelector + ' tr').each(function (index) {
         let id = parseInt($(this).attr('data-id'));
         let depth = parseInt($(this).attr('data-depth')) || 0;
         // Determine parent
@@ -149,14 +149,14 @@ export const menuItemReorder = (tableid) => {
     );
 
     // Disable click on drag handle to prevent unintended clicks
-    $(elementSelector).on('click', moveHandlerSelector, function(e) {
+    $(elementSelector).on('click', moveHandlerSelector, function (e) {
         e.preventDefault();
         e.stopPropagation();
         return false;
     });
 
     // Prevent dragging start for first depth 0
-    $(elementSelector).on('mousedown', moveHandlerSelector, function(e) {
+    $(elementSelector).on('mousedown', moveHandlerSelector, function (e) {
         let tr = $(this).closest('tr');
 
         // Find all depth 0 rows
@@ -180,7 +180,7 @@ export const menuItemReorder = (tableid) => {
     });
 
     // Handle drag-and-drop depth changes.
-    $(elementSelector).on(SortableList.EVENTS.DROP, async function(evt, info) {
+    $(elementSelector).on(SortableList.EVENTS.DROP, async function (evt, info) {
         if (tableid == 'navmenu-table') {
             let element = info.element;
             let endX = info.endX;
@@ -229,11 +229,11 @@ export const menuItemReorder = (tableid) => {
     });
 
     // Save the order of menu items
-    $('#save_menu_reorder').on('click', async function() {
+    $('#save_menu_reorder').on('click', async function () {
         // Disable to prevent multiple clicks
         $(this).prop('disabled', true);
         let reorderItems = getReorderItems();
-        Object.values(reorderItems).forEach(function(item) {
+        Object.values(reorderItems).forEach(function (item) {
             let tr = $(elementSelector + ' tr[data-id="' + item.id + '"]');
             if (tr) {
                 tr.attr('data-depth', item.depth);
@@ -256,13 +256,13 @@ export const menuItemReorder = (tableid) => {
 
 
 /**
- *
- * @param {*} rolesByContext
- * @returns
+ * Filter role options based on context level and show default label when empty.
+ * @param {Object} rolesByContext - Roles grouped by context level.
+ * @param {string} noSelectionString - Default label to show when no roles are selected.
+ * @returns {void}
  */
-export const contextRoleFilter = (rolesByContext) => {
+export const contextRoleFilter = (rolesByContext, noSelectionString) => {
     const contextSelect = document.querySelector('select[name="context_level"]');
-    
     //supports both multi-select (condition_roleid[]) and single (condition_roleid):
     const roleSelect = document.querySelector('select[name="condition_roleid[]"]')
         || document.querySelector('select[name="condition_roleid"]');
@@ -277,7 +277,7 @@ export const contextRoleFilter = (rolesByContext) => {
         // array of all selected values for multi-select support:
         const previouslySelected = Array.from(roleSelect.selectedOptions).map(o => o.value);
         roleSelect.innerHTML = '';
-        roleList.forEach(({value, label}) => {
+        roleList.forEach(({ value, label }) => {
             const opt = document.createElement('option');
             opt.value = value;
             opt.textContent = label;
@@ -287,5 +287,22 @@ export const contextRoleFilter = (rolesByContext) => {
             }
             roleSelect.appendChild(opt);
         });
+
+        let selectioncontainer = document.querySelector('#fitem_id_condition_roleid .form-autocomplete-selection');
+        const roleValues = roleList.map(r => String(r.value));
+        Array.from(selectioncontainer.children).forEach(child => {
+            if (!roleValues.includes(child.getAttribute("data-value"))) {
+                child.remove();
+            }
+        });
+
+        // Show default label if no selections remain
+        if (selectioncontainer.children.length === 0) {
+            const defaultLabel = document.createElement('span');
+            defaultLabel.className = 'text-muted m-1 h-5';
+            defaultLabel.textContent = noSelectionString || 'Select roles';
+            selectioncontainer.appendChild(defaultLabel);
+        }
+
     });
 };
