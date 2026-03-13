@@ -256,13 +256,16 @@ export const menuItemReorder = (tableid) => {
 
 
 /**
- *
- * @param {*} rolesByContext
- * @returns
+ * Filter role options based on context level and show default label when empty.
+ * @param {Object} rolesByContext - Roles grouped by context level.
+ * @param {string} noSelectionString - Default label to show when no roles are selected.
+ * @returns {void}
  */
-export const contextRoleFilter = (rolesByContext) => {
+export const contextRoleFilter = (rolesByContext, noSelectionString) => {
     const contextSelect = document.querySelector('select[name="context_level"]');
-    const roleSelect = document.querySelector('select[name="condition_roleid"]');
+    // Supports both multi-select (condition_roleid[]) and single (condition_roleid):
+    const roleSelect = document.querySelector('select[name="condition_roleid[]"]')
+        || document.querySelector('select[name="condition_roleid"]');
 
     if (!contextSelect || !roleSelect) {
         return;
@@ -271,16 +274,35 @@ export const contextRoleFilter = (rolesByContext) => {
     contextSelect.addEventListener('change', () => {
         const ctxValue = contextSelect.value;
         const roleList = rolesByContext[ctxValue] || [];
-        const previouslySelected = roleSelect.value;
+        // Array of all selected values for multi-select support:
+        const previouslySelected = Array.from(roleSelect.selectedOptions).map(o => o.value);
         roleSelect.innerHTML = '';
         roleList.forEach(({value, label}) => {
             const opt = document.createElement('option');
             opt.value = value;
             opt.textContent = label;
-            if (value === previouslySelected) {
+            // Includes() check to support multi-select:
+            if (previouslySelected.includes(String(value))) {
                 opt.selected = true;
             }
             roleSelect.appendChild(opt);
         });
+
+        let selectioncontainer = document.querySelector('#fitem_id_condition_roleid .form-autocomplete-selection');
+        const roleValues = roleList.map(r => String(r.value));
+        Array.from(selectioncontainer.children).forEach(child => {
+            if (!roleValues.includes(child.getAttribute("data-value"))) {
+                child.remove();
+            }
+        });
+
+        // Show default label if no selections remain
+        if (selectioncontainer.children.length === 0) {
+            const defaultLabel = document.createElement('span');
+            defaultLabel.className = 'text-muted m-1 h-5';
+            defaultLabel.textContent = noSelectionString || 'Select roles';
+            selectioncontainer.appendChild(defaultLabel);
+        }
+
     });
 };

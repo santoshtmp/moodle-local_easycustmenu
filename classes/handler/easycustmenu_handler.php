@@ -92,6 +92,14 @@ class easycustmenu_handler {
                 'label_tooltip_title' => isset($mformdata->label_tooltip_title) ? $mformdata->label_tooltip_title : '',
                 'link_target' => isset($mformdata->link_target) ? $mformdata->link_target : 0,
             ];
+            // Condition roleid.
+            $conditionroleid = isset($mformdata->condition_roleid) ? $mformdata->condition_roleid : '0';
+            if (is_array($mformdata->condition_roleid) && count($mformdata->condition_roleid)) {
+                $conditionroleid = implode(',', $mformdata->condition_roleid);
+            } else {
+                $conditionroleid = '0';
+            }
+
             // Process the data.
             $data = new stdClass();
             $data->id = isset($mformdata->id) ? $mformdata->id : 0;
@@ -104,7 +112,8 @@ class easycustmenu_handler {
             $data->menu_link = $menulink;
             $data->condition_courses = ($mformdata->context_level == 50) ? implode(',', $mformdata->condition_courses ?? []) : '';
             $data->condition_lang = isset($mformdata->condition_lang) ? implode(',', $mformdata->condition_lang ?? []) : '';
-            $data->condition_roleid = isset($mformdata->condition_roleid) ? $mformdata->condition_roleid : 0;
+            // Stores multiple roles as comma-separated string e.g. "1,3,5".
+            $data->condition_roleid = $conditionroleid;
             $data->other_condition = json_encode($othercondition);
             $data->timemodified = time();
             // Insert or update.
@@ -201,7 +210,8 @@ class easycustmenu_handler {
                 $entry->menu_link = $data->menu_link;
                 $entry->condition_courses = ($data->condition_courses) ? explode(',', $data->condition_courses) : [];
                 $entry->condition_lang = $data->condition_lang;
-                $entry->condition_roleid = $data->condition_roleid;
+                // Explode to array so multi-select autocomplete pre-fills correctly on edit.
+                $entry->condition_roleid = ($data->condition_roleid) ? explode(',', $data->condition_roleid) : ['0'];
                 $entry->label_tooltip_title = $othercondition['label_tooltip_title'] ?? '';
                 $entry->link_target = isset($othercondition['link_target']) ? $othercondition['link_target'] : 0;
                 $mform->set_data($entry);
@@ -257,7 +267,7 @@ class easycustmenu_handler {
         $wherecondition = [
             'ecm.menu_type = :menu_type',
         ];
-        // ... apply context level condition
+        // Apply context level condition.
         if ($contextlevel) {
             $sqlparams['context_level'] = $contextlevel;
             if ($contextlevel == CONTEXT_COURSE) {
@@ -267,12 +277,18 @@ class easycustmenu_handler {
                 $wherecondition[] = 'ecm.context_level = :context_level';
             }
         }
-        // ... apply roleids condition
+        // Apply roleids condition (supports comma-separated role IDs).
+        // Match role ID by wrapping both stored value and search pattern with commas.
         if ($roleids) {
-            [$insql, $inparams] = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
-            $wherecondition[] = "ecm.condition_roleid $insql";
-            $sqlparams = array_merge($sqlparams, $inparams);
+            $roleconditions = [];
+            foreach ($roleids as $idx => $rid) {
+                $pmid = 'rid_mid_' . $idx;
+                $roleconditions[] = $DB->sql_like($DB->sql_concat("','", 'ecm.condition_roleid', "','"), ":{$pmid}", false);
+                $sqlparams[$pmid] = '%,' . $rid . ',%';
+            }
+            $wherecondition[] = "(" . implode(" OR ", $roleconditions) . ")";
         }
+
         // Where condition.
         if (count($wherecondition) > 0) {
             $whereconditionapply = "WHERE " . implode(" AND ", $wherecondition);
@@ -281,9 +297,9 @@ class easycustmenu_handler {
         $sqlquery = 'SELECT * FROM {local_easycustmenu} ecm ' . $whereconditionapply . ' ORDER BY ecm.menu_order ASC';
         // Execute sql query.
         $menurecords = $DB->get_records_sql($sqlquery, $sqlparams);
-        // ... check each row item
+        // Check each row item.
         foreach ($menurecords as $key => $item) {
-            // ... apply courses condition on each row item
+            // Apply courses condition on each row item.
             if ($courseid && $contextlevel == CONTEXT_COURSE) {
                 if ($item->context_level == CONTEXT_COURSE && $item->condition_courses) {
                     if (!in_array($courseid, explode(',', $item->condition_courses))) {
@@ -291,14 +307,14 @@ class easycustmenu_handler {
                     }
                 }
             }
-            // ... apply lang condition.
+            // Apply lang condition.
             if ($lang && $item->condition_lang) {
                 if (!in_array($lang, explode(',', $item->condition_lang))) {
                     unset($menurecords[$key]);
                 }
             }
         }
-        // ... rearrange the menu tree
+        // Rearrange the menu tree.
         $menuitems = self::sort_menu_tree($menurecords);
 
         return $menuitems;

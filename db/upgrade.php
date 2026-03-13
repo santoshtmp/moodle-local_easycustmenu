@@ -71,9 +71,19 @@ function xmldb_local_easycustmenu_upgrade($oldversion) {
         local_easycustmenu_convert_data_into_new_format();
     }
 
+    // Upgrade: change condition_roleid from INT to CHAR to support multiple roles.
+    $newversion = 2026031300;
+    if ($oldversion < $newversion) {
+        $table = new xmldb_table('local_easycustmenu');
+        $field = new xmldb_field('condition_roleid', XMLDB_TYPE_CHAR, '150', null, XMLDB_NOTNULL, null, '0');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_type($table, $field);
+        }
+        upgrade_plugin_savepoint(true, $newversion, 'local', 'easycustmenu');
+    }
+
     return true;
 }
-
 
 /**
  * Convert old data into new data format
