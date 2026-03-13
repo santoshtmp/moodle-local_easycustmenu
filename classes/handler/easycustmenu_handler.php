@@ -92,10 +92,14 @@ class easycustmenu_handler {
                 'label_tooltip_title' => isset($mformdata->label_tooltip_title) ? $mformdata->label_tooltip_title : '',
                 'link_target' => isset($mformdata->link_target) ? $mformdata->link_target : 0,
             ];
-            // Condition roleid
-            $condition_roleid = isset($mformdata->condition_roleid) ? $mformdata->condition_roleid : '0';
-            $condition_roleid = (is_array($mformdata->condition_roleid) && count($mformdata->condition_roleid)) ? implode(',', $mformdata->condition_roleid) : '0';
-            
+            // Condition roleid.
+            $conditionroleid = isset($mformdata->condition_roleid) ? $mformdata->condition_roleid : '0';
+            if (is_array($mformdata->condition_roleid) && count($mformdata->condition_roleid)) {
+                $conditionroleid = implode(',', $mformdata->condition_roleid);
+            } else {
+                $conditionroleid = '0';
+            }
+
             // Process the data.
             $data = new stdClass();
             $data->id = isset($mformdata->id) ? $mformdata->id : 0;
@@ -108,9 +112,8 @@ class easycustmenu_handler {
             $data->menu_link = $menulink;
             $data->condition_courses = ($mformdata->context_level == 50) ? implode(',', $mformdata->condition_courses ?? []) : '';
             $data->condition_lang = isset($mformdata->condition_lang) ? implode(',', $mformdata->condition_lang ?? []) : '';
-            //stores multiple roles as comma-separated string e.g. "1,3,5":
-
-            $data->condition_roleid = $condition_roleid;
+            // Stores multiple roles as comma-separated string e.g. "1,3,5".
+            $data->condition_roleid = $conditionroleid;
             $data->other_condition = json_encode($othercondition);
             $data->timemodified = time();
             // Insert or update.
@@ -207,7 +210,7 @@ class easycustmenu_handler {
                 $entry->menu_link = $data->menu_link;
                 $entry->condition_courses = ($data->condition_courses) ? explode(',', $data->condition_courses) : [];
                 $entry->condition_lang = $data->condition_lang;
-                //explode to array so multi-select autocomplete pre-fills correctly on edit:
+                // Explode to array so multi-select autocomplete pre-fills correctly on edit.
                 $entry->condition_roleid = ($data->condition_roleid) ? explode(',', $data->condition_roleid) : ['0'];
                 $entry->label_tooltip_title = $othercondition['label_tooltip_title'] ?? '';
                 $entry->link_target = isset($othercondition['link_target']) ? $othercondition['link_target'] : 0;
@@ -277,13 +280,13 @@ class easycustmenu_handler {
         // Apply roleids condition (supports comma-separated role IDs).
         // Match role ID by wrapping both stored value and search pattern with commas.
         if ($roleids) {
-            $roleConditions = [];
+            $roleconditions = [];
             foreach ($roleids as $idx => $rid) {
                 $pmid = 'rid_mid_' . $idx;
-                $roleConditions[] = $DB->sql_like($DB->sql_concat("','", 'ecm.condition_roleid', "','"), ":{$pmid}", false);
+                $roleconditions[] = $DB->sql_like($DB->sql_concat("','", 'ecm.condition_roleid', "','"), ":{$pmid}", false);
                 $sqlparams[$pmid] = '%,' . $rid . ',%';
             }
-            $wherecondition[] = "(" . implode(" OR ", $roleConditions) . ")";
+            $wherecondition[] = "(" . implode(" OR ", $roleconditions) . ")";
         }
 
         // Where condition.

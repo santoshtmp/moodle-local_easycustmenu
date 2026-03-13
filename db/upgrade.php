@@ -71,7 +71,6 @@ function xmldb_local_easycustmenu_upgrade($oldversion) {
         local_easycustmenu_convert_data_into_new_format();
     }
 
-
     // Upgrade: change condition_roleid from INT to CHAR to support multiple roles.
     $newversion = 2026031300;
     if ($oldversion < $newversion) {
@@ -85,7 +84,6 @@ function xmldb_local_easycustmenu_upgrade($oldversion) {
 
     return true;
 }
-
 
 /**
  * Convert old data into new data format

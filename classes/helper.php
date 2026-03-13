@@ -202,7 +202,7 @@ class helper {
             }
         } catch (\Throwable $th) {
             // Exception occurred, return early.
-            return;
+            return [];
         }
 
         return [
@@ -318,7 +318,7 @@ class helper {
      */
     public static function get_ecm_header_templatecontext() {
         $pagepath = '/local/easycustmenu/edit.php';
-        $type = optional_param('type', '', PARAM_ALPHANUMEXT); // navmenu, usermenu
+        $type = optional_param('type', '', PARAM_ALPHANUMEXT); // Use: navmenu, usermenu.
         $section = optional_param('section', '', PARAM_ALPHANUMEXT);
         $templatecontext = [];
         $templatecontext['single_menu'] = [
@@ -376,11 +376,13 @@ class helper {
                 // Initialize core settings with ECM links if enabled.
                 $showecmcore = get_config('local_easycustmenu', 'show_ecm_core');
                 if ($showecmcore) {
+                    $navmenuurl = new moodle_url("/local/easycustmenu/edit.php", ["type" => "navmenu"]);
+                    $usermenuurl = new moodle_url("/local/easycustmenu/edit.php", ["type" => "usermenu"]);
                     $jsdata = [
                         'managenavmenulabel' => get_string('managenavmenulabel', 'local_easycustmenu'),
-                        'manageNavMenuLink' => (new moodle_url("/local/easycustmenu/edit.php", ["type" => "navmenu"]))->out(false),
+                        'manageNavMenuLink' => $navmenuurl->out(false),
                         'manageusermenulabel' => get_string('manageusermenulabel', 'local_easycustmenu'),
-                        'manageUserMenuLink' => (new moodle_url("/local/easycustmenu/edit.php", ["type" => "usermenu"]))->out(false),
+                        'manageUserMenuLink' => $usermenuurl->out(false),
                     ];
                     $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminCoreSettingInit', [$jsdata]);
                 }
