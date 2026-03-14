@@ -92,13 +92,6 @@ class easycustmenu_handler {
                 'label_tooltip_title' => isset($mformdata->label_tooltip_title) ? $mformdata->label_tooltip_title : '',
                 'link_target' => isset($mformdata->link_target) ? $mformdata->link_target : 0,
             ];
-            // Condition roleid.
-            $conditionroleid = isset($mformdata->condition_roleid) ? $mformdata->condition_roleid : '0';
-            if (is_array($mformdata->condition_roleid) && count($mformdata->condition_roleid)) {
-                $conditionroleid = implode(',', $mformdata->condition_roleid);
-            } else {
-                $conditionroleid = '0';
-            }
 
             // Process the data.
             $data = new stdClass();
@@ -112,8 +105,7 @@ class easycustmenu_handler {
             $data->menu_link = $menulink;
             $data->condition_courses = ($mformdata->context_level == 50) ? implode(',', $mformdata->condition_courses ?? []) : '';
             $data->condition_lang = isset($mformdata->condition_lang) ? implode(',', $mformdata->condition_lang ?? []) : '';
-            // Stores multiple roles as comma-separated string e.g. "1,3,5".
-            $data->condition_roleid = $conditionroleid;
+            $data->condition_roleid = $mformdata->condition_roleids ?? '0';
             $data->other_condition = json_encode($othercondition);
             $data->timemodified = time();
             // Insert or update.
@@ -210,8 +202,8 @@ class easycustmenu_handler {
                 $entry->menu_link = $data->menu_link;
                 $entry->condition_courses = ($data->condition_courses) ? explode(',', $data->condition_courses) : [];
                 $entry->condition_lang = $data->condition_lang;
-                // Explode to array so multi-select autocomplete pre-fills correctly on edit.
                 $entry->condition_roleid = ($data->condition_roleid) ? explode(',', $data->condition_roleid) : ['0'];
+                $entry->condition_roleids = $data->condition_roleid;
                 $entry->label_tooltip_title = $othercondition['label_tooltip_title'] ?? '';
                 $entry->link_target = isset($othercondition['link_target']) ? $othercondition['link_target'] : 0;
                 $mform->set_data($entry);

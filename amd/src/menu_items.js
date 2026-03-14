@@ -254,6 +254,19 @@ export const menuItemReorder = (tableid) => {
 
 };
 
+/**
+ * Update hidden input with selected role IDs as comma-separated values.
+ * @param {HTMLSelectElement} roleSelect - The role select element.
+ */
+const updateRoleIdsInput = (roleSelect) => {
+    const selectedValues = Array.from(roleSelect.selectedOptions).map(opt => opt.value).join(',');
+    window.console.log(selectedValues);
+
+    const hiddenInput = document.querySelector('input[name="condition_roleids"]');
+    if (hiddenInput) {
+        hiddenInput.value = selectedValues;
+    }
+};
 
 /**
  * Filter role options based on context level and show default label when empty.
@@ -274,8 +287,8 @@ export const contextRoleFilter = (rolesByContext, noSelectionString) => {
     contextSelect.addEventListener('change', () => {
         const ctxValue = contextSelect.value;
         const roleList = rolesByContext[ctxValue] || [];
-        // Array of all selected values for multi-select support:
         const previouslySelected = Array.from(roleSelect.selectedOptions).map(o => o.value);
+
         roleSelect.innerHTML = '';
         roleList.forEach(({value, label}) => {
             const opt = document.createElement('option');
@@ -304,5 +317,11 @@ export const contextRoleFilter = (rolesByContext, noSelectionString) => {
             selectioncontainer.appendChild(defaultLabel);
         }
 
+        updateRoleIdsInput(roleSelect);
     });
+
+    roleSelect.addEventListener('change', () => {
+        updateRoleIdsInput(roleSelect);
+    });
+
 };

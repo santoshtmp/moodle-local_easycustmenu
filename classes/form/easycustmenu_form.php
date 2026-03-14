@@ -176,6 +176,10 @@ class easycustmenu_form extends \moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', 0);
 
+        // Hidden condition_roleids field.
+        $mform->addElement('hidden', 'condition_roleids');
+        $mform->setType('condition_roleids', PARAM_TEXT);
+
         // Hidden menu_order field.
         $mform->addElement('hidden', 'menu_order');
         $mform->setType('menu_order', PARAM_INT);
