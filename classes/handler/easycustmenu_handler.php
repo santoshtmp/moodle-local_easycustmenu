@@ -105,7 +105,7 @@ class easycustmenu_handler {
             $data->menu_link = $menulink;
             $data->condition_courses = ($mformdata->context_level == 50) ? implode(',', $mformdata->condition_courses ?? []) : '';
             $data->condition_lang = isset($mformdata->condition_lang) ? implode(',', $mformdata->condition_lang ?? []) : '';
-            $data->condition_roleid = $mformdata->condition_roleids ?? '0';
+            $data->condition_roleid = $mformdata->condition_roleids ?: '0';
             $data->other_condition = json_encode($othercondition);
             $data->timemodified = time();
             // Insert or update.
