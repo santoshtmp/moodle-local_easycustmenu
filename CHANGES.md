@@ -29,3 +29,6 @@
 * Changed condition_roleid column from INT to CHAR(150) to store comma-separated role IDs
 * Added DB upgrade step to migrate existing single role values to the new format
 * Role selector changed from single-select dropdown to multi-select autocomplete in the menu item form
+
+### Version 2.1.4 (2026050600)
+* Fix everyone role condition initial save.
