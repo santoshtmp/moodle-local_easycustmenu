@@ -44,30 +44,29 @@ use moodle_url;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
-
     /**
      * Singleton instance of the helper class.
      *
-     * @since 1.0.0
      * @var helper|null
+     * @since 1.0.0
      */
     private static ?helper $instance = null;
 
     /**
      * Indicates whether the Easy Custom Menu plugin is activated.
      *
-     * @since 1.0.0
      * @var bool
+     * @since 1.0.0
      */
     public bool $activate = false;
 
     /**
      * List of primary navigation items to hide based on plugin settings.
      *
-     * @since 1.0.0
      * @var array
+     * @since 1.0.0
      */
-    public array $hide_primarynavigation = [];
+    public array $hideprimarynavigation = [];
 
     /**
      * Prevent cloning of the singleton instance.
@@ -109,7 +108,7 @@ class helper {
     private function __construct() {
         $this->activate = (bool) get_config('local_easycustmenu', 'activate');
         $raw = get_config('local_easycustmenu', 'hide_primarynavigation');
-        $this->hide_primarynavigation = $raw ? array_filter(array_map('trim', explode(',', $raw))) : [];
+        $this->hideprimarynavigation = $raw ? array_filter(array_map('trim', explode(',', $raw))) : [];
     }
 
     /**
@@ -144,18 +143,18 @@ class helper {
             return;
         }
 
-        if (empty($this->hide_primarynavigation)) {
+        if (empty($this->hideprimarynavigation)) {
             return;
         }
 
         // Apply theme-level hiding.
-        $PAGE->theme->removedprimarynavitems = $this->hide_primarynavigation;
+        $PAGE->theme->removedprimarynavitems = $this->hideprimarynavigation;
 
         // Remove matching nodes from the navigation tree if provided.
         if ($primarynav === null) {
             return;
         }
-        foreach ($this->hide_primarynavigation as $item) {
+        foreach ($this->hideprimarynavigation as $item) {
             $node = $primarynav->find($item, \navigation_node::TYPE_ROOTNODE);
             if ($node) {
                 $node->remove();
@@ -269,15 +268,15 @@ class helper {
                 }
             }
 
-            // 0 = everyone (applies to all users).
+            // Everyone role identifier applies to all users.
             $roleids[] = 0;
 
-            // -1 = site administrator.
+            // Site administrator role identifier.
             if (is_siteadmin($USER->id)) {
                 $roleids[] = -1;
             }
 
-            // Authenticated (non-guest) user role.
+            // Authenticated user role for logged-in, non-guest users.
             if (isloggedin() && !isguestuser()) {
                 $authuserroles = get_archetype_roles('user');
                 $authuserrole  = reset($authuserroles);
@@ -479,7 +478,6 @@ class helper {
 
         if ($PAGE->pagetype === 'admin-setting-local_easycustmenu') {
             // Initialize ECM plugin settings page.
-
             $pluginheadercontent = self::get_ecm_header_templatecontext();
             $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminPluginSettingInit', [$pluginheadercontent]);
         } else if (get_config('local_easycustmenu', 'show_ecm_core')) {
