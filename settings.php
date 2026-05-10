@@ -69,6 +69,7 @@ if ($hassiteconfig) {
         'myhome' => get_string('myhome'),
         'courses' => get_string('mycourses'),
         'siteadminnode' => get_string('administrationsite'),
+        'calendar' => get_string('calendar', 'calendar'),
     ];
     $name = 'local_easycustmenu/hide_primarynavigation';
     $title = get_string('hide_primarynavigation_title', 'local_easycustmenu');

@@ -32,3 +32,7 @@
 
 ### Version 2.1.4 (2026050600)
 * Fix everyone role condition initial save.
+
+### Version 2.1.5 (2026051000)
+* Update primary navigation item hidden options.
+* Manage helpers function.

@@ -44,6 +44,74 @@ use moodle_url;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
+
+    /**
+     * Singleton instance of the helper class.
+     *
+     * @since 1.0.0
+     * @var helper|null
+     */
+    private static ?helper $instance = null;
+
+    /**
+     * Indicates whether the Easy Custom Menu plugin is activated.
+     *
+     * @since 1.0.0
+     * @var bool
+     */
+    public bool $activate = false;
+
+    /**
+     * List of primary navigation items to hide based on plugin settings.
+     *
+     * @since 1.0.0
+     * @var array
+     */
+    public array $hide_primarynavigation = [];
+
+    /**
+     * Prevent cloning of the singleton instance.
+     */
+    private function __clone() {
+    }
+
+    /**
+     * Prevent unserialization of the singleton instance.
+     *
+     * @throws \Exception Always throws an exception to prevent unserialization.
+     */
+    public function __wakeup() {
+        throw new \Exception('Cannot unserialize singleton');
+    }
+
+    /**
+     * Get singleton instance.
+     *
+     * Ensures only one instance of the class exists.
+     *
+     * @since 1.0.0
+     * @return helper The singleton instance.
+     */
+    public static function get_instance(): helper {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Private constructor to prevent direct instantiation.
+     *
+     * Initializes the helper class. Use get_instance() to access the singleton instance.
+     *
+     * @since 1.0.0
+     */
+    private function __construct() {
+        $this->activate = (bool) get_config('local_easycustmenu', 'activate');
+        $raw = get_config('local_easycustmenu', 'hide_primarynavigation');
+        $this->hide_primarynavigation = $raw ? array_filter(array_map('trim', explode(',', $raw))) : [];
+    }
+
     /**
      * Check and configure ECM menu settings.
      *
@@ -52,15 +120,46 @@ class helper {
      *
      * @return void
      */
-    public function check_ecm_menu() {
+    public function check_ecm_menu(): void {
+        if (!$this->activate) {
+            return;
+        }
+        $this->manage_primary_navigation();
+        self::define_ecm_config_menuitems();
+    }
+
+    /**
+     * Manage primary navigation based on plugin settings.
+     *
+     * Hides primary navigation items according to the 'hide_primarynavigation' configuration
+     * and removes specific nodes from the provided navigation node if necessary.
+     *
+     * @param \navigation_node|null $primarynav The primary navigation node to modify, or null to skip node removal.
+     * @return void
+     */
+    public function manage_primary_navigation(?\navigation_node $primarynav = null): void {
         global $PAGE;
 
-        $theme = $PAGE->theme;
-        $activate = (get_config('local_easycustmenu', 'activate')) ?: "";
-        if ($activate) {
-            // Hide primary navigation items based on configuration.
-            $theme->removedprimarynavitems = explode(',', get_config('local_easycustmenu', 'hide_primarynavigation'));
-            $this->define_ecm_config_menuitems();
+        if (!$this->activate) {
+            return;
+        }
+
+        if (empty($this->hide_primarynavigation)) {
+            return;
+        }
+
+        // Apply theme-level hiding.
+        $PAGE->theme->removedprimarynavitems = $this->hide_primarynavigation;
+
+        // Remove matching nodes from the navigation tree if provided.
+        if ($primarynav === null) {
+            return;
+        }
+        foreach ($this->hide_primarynavigation as $item) {
+            $node = $primarynav->find($item, \navigation_node::TYPE_ROOTNODE);
+            if ($node) {
+                $node->remove();
+            }
         }
     }
 
@@ -69,9 +168,9 @@ class helper {
      *
      * @return array Associative array of menu type identifiers and their display names.
      */
-    public static function get_menu_type() {
+    public static function get_menu_type(): array {
         return [
-            'navmenu' => get_string('navmenu', 'local_easycustmenu'),
+            'navmenu'  => get_string('navmenu', 'local_easycustmenu'),
             'usermenu' => get_string('usermenu', 'local_easycustmenu'),
         ];
     }
@@ -81,10 +180,10 @@ class helper {
      *
      * @return array Associative array of context level identifiers and their display names.
      */
-    public static function get_ecm_context_level() {
+    public static function get_ecm_context_level(): array {
         return [
-            10 => get_string('show_through_site', 'local_easycustmenu'),
-            50 => get_string('show_in_course', 'local_easycustmenu'),
+            CONTEXT_SYSTEM => get_string('show_through_site', 'local_easycustmenu'),
+            CONTEXT_COURSE => get_string('show_in_course', 'local_easycustmenu'),
         ];
     }
 
@@ -97,33 +196,33 @@ class helper {
      * @param int $contextlevel The context level (e.g., CONTEXT_SYSTEM, CONTEXT_COURSE).
      * @return array List of role records from the database.
      */
-    public static function get_ecm_context_roles($contextlevel) {
+    public static function get_ecm_context_roles(int $contextlevel): array {
         global $DB;
-        if (!empty($contextlevel)) {
-            if ($contextlevel == CONTEXT_SYSTEM) {
-                $sql = "SELECT r.*
-                    FROM {role} r
-                    LEFT JOIN {role_context_levels} rcl ON r.id = rcl.roleid
-                    WHERE (rcl.contextlevel = :contextlevel OR rcl.roleid IS NULL)
-                    AND (r.archetype IS NULL OR r.archetype <> :frontpage_archetype)
-                    ORDER BY r.sortorder ASC";
 
-                $params = [
-                    'contextlevel' => $contextlevel,
-                    'frontpage_archetype' => 'frontpage',
-                ];
+        if (empty($contextlevel)) {
+            return $DB->get_records('role');
+        }
 
-                return $DB->get_records_sql($sql, $params);
-            } else {
-                $sql = "SELECT r.*
+        if ($contextlevel === CONTEXT_SYSTEM) {
+            $sql = "SELECT r.*
+                      FROM {role} r
+                 LEFT JOIN {role_context_levels} rcl ON r.id = rcl.roleid
+                     WHERE (rcl.contextlevel = :contextlevel OR rcl.roleid IS NULL)
+                       AND (r.archetype IS NULL OR r.archetype <> :frontpage_archetype)
+                  ORDER BY r.sortorder ASC";
+
+            return $DB->get_records_sql($sql, [
+                'contextlevel'        => $contextlevel,
+                'frontpage_archetype' => 'frontpage',
+            ]);
+        }
+
+        $sql = "SELECT r.*
                   FROM {role} r
                   JOIN {role_context_levels} rcl ON r.id = rcl.roleid
                  WHERE rcl.contextlevel = :contextlevel";
-                return $DB->get_records_sql($sql, ['contextlevel' => $contextlevel]);
-            }
-        }
 
-        return $DB->get_records('role');
+        return $DB->get_records_sql($sql, ['contextlevel' => $contextlevel]);
     }
 
     /**
@@ -132,108 +231,108 @@ class helper {
      * Determines the current context, course, roles, and language for menu display.
      *
      * Context level rules:
-     * - 50 (CONTEXT_COURSE): Inside a real course (course id > 1)
-     * - 10 (CONTEXT_SYSTEM): System context or front page (course id = 1)
+     * - CONTEXT_COURSE (50): Inside a real course (course id > 1)
+     * - CONTEXT_SYSTEM (10): System context or front page (course id = 1)
      *
      * Role IDs include:
-     * - 0: Everyone (applies to all users)
+     * - 0:  Everyone (applies to all users)
      * - -1: Site administrator (if user is admin)
      * - Authenticated user role ID (if logged in and not guest)
      * - Guest role ID (if not logged in or is guest)
      * - All roles assigned to the user in the current context
      *
      * @return array {
-     *     context       => \context,    // Moodle context object
-     *     contextlevel  => int,         // 50 (course) or 10 (system)
-     *     courseid      => int,         // 0 for front page or system
-     *     roleids       => array,       // Role IDs, with 0 for everyone, -1 for admin
-     *     lang          => string       // Current language code
+     *     context      => \context,  // Moodle context object
+     *     contextlevel => int,       // CONTEXT_COURSE or CONTEXT_SYSTEM
+     *     courseid     => int,       // 0 for front page or system context
+     *     roleids      => int[],     // Unique role IDs applicable to the current user
+     *     lang         => string     // Current language code
      * }
+     * Returns an empty array if an error occurs during context resolution.
      */
-    public static function get_current_menu_condition() {
+    public static function get_current_menu_condition(): array {
         global $PAGE, $COURSE, $USER;
 
-        // Defaults.
-        $context = \context_system::instance();
-        $contextlevel  = CONTEXT_SYSTEM;
-        $courseid = 0;
-        $roleids = [];
+        /** @var \context $context */
+        $context      = \context_system::instance();
+        $contextlevel = CONTEXT_SYSTEM;
+        $courseid     = 0;
+        $roleids      = [];
 
         try {
             if (!empty($COURSE->id) && $COURSE->id > 1) {
-                if ($PAGE->context->contextlevel === CONTEXT_COURSE || $PAGE->context->contextlevel === CONTEXT_MODULE) {
-                    $context  = \context_course::instance($COURSE->id);
+                $level = $PAGE->context->contextlevel;
+                if ($level === CONTEXT_COURSE || $level === CONTEXT_MODULE) {
+                    $context      = \context_course::instance($COURSE->id);
                     $contextlevel = CONTEXT_COURSE;
-                    $courseid = $COURSE->id;
+                    $courseid     = $COURSE->id;
                 }
             }
-            // Add 'everyone' role identifier (applies to all users).
+
+            // 0 = everyone (applies to all users).
             $roleids[] = 0;
 
-            // Add site admin role identifier if user is site administrator.
+            // -1 = site administrator.
             if (is_siteadmin($USER->id)) {
                 $roleids[] = -1;
             }
 
-            // Add authenticated user role (for logged-in, non-guest users).
+            // Authenticated (non-guest) user role.
             if (isloggedin() && !isguestuser()) {
                 $authuserroles = get_archetype_roles('user');
-                $authuserrole = reset($authuserroles);
+                $authuserrole  = reset($authuserroles);
                 if ($authuserrole) {
-                    $roleids[] = $authuserrole->id;
+                    $roleids[] = (int) $authuserrole->id;
                 }
             }
 
-            // Add guest role for not-logged-in or guest users.
+            // Guest role for logged-out or guest users.
             if (!isloggedin() || isguestuser()) {
                 $guestroles = get_archetype_roles('guest');
-                $guestrole = reset($guestroles);
+                $guestrole  = reset($guestroles);
                 if ($guestrole) {
-                    $roleids[] = $guestrole->id;
+                    $roleids[] = (int) $guestrole->id;
                 }
             }
 
-            // Add all roles assigned to the user in the current context.
+            // All roles explicitly assigned to the user in the current context.
             $assignedroles = get_user_roles($context, $USER->id, true);
-            if (!empty($assignedroles)) {
-                foreach ($assignedroles as $role) {
-                    $roleids[] = $role->roleid;
-                }
+            foreach ($assignedroles as $role) {
+                $roleids[] = (int) $role->roleid;
             }
         } catch (\Throwable $th) {
-            // Exception occurred, return early.
             return [];
         }
 
         return [
-            'context'  => $context,
+            'context'      => $context,
             'contextlevel' => $contextlevel,
-            'courseid' => $courseid,
-            'roleids' => array_unique($roleids),
-            'lang' => current_language(),
+            'courseid'     => $courseid,
+            'roleids'      => array_unique($roleids),
+            'lang'         => current_language(),
         ];
     }
 
     /**
-     * Get the display name for a given role ID or comma-separated role IDs.
+     * Get the display name for a given role ID or comma-separated list of role IDs.
      *
      * Special role ID values:
      * - 0 or empty: Returns "everyone"
      * - -1: Returns "admin"
-     * - Other values: Fetches role name from database
+     * - Other values: Fetches the role name from the database
      *
      * @param int|string $conditionroleid The role ID(s) to get the name for.
      * @return string The display name(s) of the role(s), comma-separated if multiple.
      */
-    public static function get_menu_role_name($conditionroleid) {
+    public static function get_menu_role_name($conditionroleid): string {
         global $DB;
 
-        if (empty($conditionroleid) || $conditionroleid == '0') {
+        if (empty($conditionroleid) || $conditionroleid === '0' || $conditionroleid === 0) {
             return get_string('everyone', 'local_easycustmenu');
         }
-        $roleids = explode(',', $conditionroleid);
+
         $names = [];
-        foreach ($roleids as $rid) {
+        foreach (explode(',', (string) $conditionroleid) as $rid) {
             $rid = trim($rid);
             if ($rid == '0') {
                 $names[] = get_string('everyone', 'local_easycustmenu');
@@ -246,6 +345,7 @@ class helper {
                 }
             }
         }
+
         return implode(', ', $names);
     }
 
@@ -258,49 +358,52 @@ class helper {
      *
      * @return void
      */
-    public static function define_ecm_config_menuitems() {
+    public static function define_ecm_config_menuitems(): void {
         global $CFG;
 
         $currentmenucondition = self::get_current_menu_condition();
-        $contextlevel = $currentmenucondition['contextlevel'];
-        $courseid = $currentmenucondition['courseid'];
-        $roleids = $currentmenucondition['roleids'];
-        $lang = $currentmenucondition['lang'];
 
-        // Configure custom navigation menu items.
-        $custommenuitems = '';
-        $navmenu = easycustmenu_handler::get_ecm_menu_items('navmenu', $contextlevel, $courseid, $roleids, $lang);
-        if ($navmenu) {
-            foreach ($navmenu as $key => $menu) {
-                $othercondition = ($menu->other_condition) ? json_decode($menu->other_condition, true) : [];
-                $itemtext = $menu->menu_label;
-                $itemurl = $menu->menu_link;
-                $title = isset($othercondition['label_tooltip_title']) ? $othercondition['label_tooltip_title'] : '';
-                $linktarget = isset($othercondition['link_target']) ? $othercondition['link_target'] : 0;
-                $itemlanguages = $menu->condition_lang;
-                $depth = $menu->depth;
-                $itemdepth = '';
-                for ($i = 0; $i < $depth; $i++) {
-                    $itemdepth .= '-';
-                }
-                if ($linktarget) {
-                    $itemurl = $itemurl . '" target="_blank"';
-                }
-                $custommenuitems .= $itemdepth . $itemtext . "|" . $itemurl .  "|" . $title . "|" . $itemlanguages . "\n";
-            }
-            $CFG->custommenuitems = $custommenuitems;
+        // Bail out if context resolution failed.
+        if (empty($currentmenucondition)) {
+            return;
         }
 
-        // Configure custom user menu items.
-        $customusermenuitemsoutput = "";
+        $contextlevel = $currentmenucondition['contextlevel'];
+        $courseid     = $currentmenucondition['courseid'];
+        $roleids      = $currentmenucondition['roleids'];
+        $lang         = $currentmenucondition['lang'];
+
+        // Build and assign the custom navigation menu items string.
+        $navmenu = easycustmenu_handler::get_ecm_menu_items('navmenu', $contextlevel, $courseid, $roleids, $lang);
+        if ($navmenu) {
+            $lines = [];
+            foreach ($navmenu as $menu) {
+                $othercondition = $menu->other_condition ? json_decode($menu->other_condition, true) : [];
+                $itemtext   = $menu->menu_label;
+                $itemurl    = $menu->menu_link;
+                $title      = $othercondition['label_tooltip_title'] ?? '';
+                $linktarget = $othercondition['link_target'] ?? 0;
+                $languages  = $menu->condition_lang;
+                $depth      = (int) $menu->depth;
+                $prefix     = str_repeat('-', $depth);
+
+                if ($linktarget) {
+                    $itemurl .= '" target="_blank"';
+                }
+
+                $lines[] = $prefix . $itemtext . '|' . $itemurl . '|' . $title . '|' . $languages;
+            }
+            $CFG->custommenuitems = implode("\n", $lines) . "\n";
+        }
+
+        // Build and assign the custom user menu items string.
         $usermenu = easycustmenu_handler::get_ecm_menu_items('usermenu', $contextlevel, $courseid, $roleids, $lang);
         if ($usermenu) {
-            foreach ($usermenu as $key => $menu) {
-                $itemtext = $menu->menu_label;
-                $itemurl = $menu->menu_link;
-                $customusermenuitemsoutput .= $itemtext . "|" . $itemurl . "\n";
+            $lines = [];
+            foreach ($usermenu as $menu) {
+                $lines[] = $menu->menu_label . '|' . $menu->menu_link;
             }
-            $CFG->customusermenuitems = $customusermenuitemsoutput;
+            $CFG->customusermenuitems = implode("\n", $lines) . "\n";
         }
     }
 
@@ -312,53 +415,52 @@ class helper {
      * and user menu settings.
      *
      * @return array Template context array containing menu tab configurations with:
-     *               - menu_active_class: CSS class for active state
-     *               - menu_moodle_url: moodle_url object for the menu link
-     *               - menu_label: Display label for the menu tab
+     *               - menu_active_class: CSS class for the active tab
+     *               - menu_moodle_url:   URL string for the menu link
+     *               - menu_label:        Display label for the menu tab
      */
-    public static function get_ecm_header_templatecontext() {
+    public static function get_ecm_header_templatecontext(): array {
         $pagepath = '/local/easycustmenu/edit.php';
-        $type = optional_param('type', '', PARAM_ALPHANUMEXT); // Use: navmenu, usermenu.
-        $section = optional_param('section', '', PARAM_ALPHANUMEXT);
-        $templatecontext = [];
-        $templatecontext['single_menu'] = [
-            [
-                'menu_active_class' => ($section == 'local_easycustmenu') ? 'active' : '',
-                'menu_moodle_url' => (new moodle_url('/admin/settings.php', ['section' => 'local_easycustmenu']))->out(),
-                'menu_label' => get_string('general_setting', 'local_easycustmenu'),
-            ],
-            [
-                'menu_active_class' => ($type == 'navmenu') ? "active" : "",
-                'menu_moodle_url' => (new moodle_url($pagepath, ['type' => 'navmenu']))->out(),
-                'menu_label' => get_string('header_nav_menu_setting', 'local_easycustmenu'),
-            ],
-            [
-                'menu_active_class' => ($type == 'usermenu') ? "active" : "",
-                'menu_moodle_url' => (new moodle_url($pagepath, ['type' => 'usermenu']))->out(),
-                'menu_label' => get_string('user_menu_setting', 'local_easycustmenu'),
+        $type     = optional_param('type', '', PARAM_ALPHANUMEXT); // Use: navmenu, usermenu.
+        $section  = optional_param('section', '', PARAM_ALPHANUMEXT);
+
+        return [
+            'single_menu' => [
+                [
+                    'menu_active_class' => ($section === 'local_easycustmenu') ? 'active' : '',
+                    'menu_moodle_url'   => (new moodle_url('/admin/settings.php', ['section' => 'local_easycustmenu']))->out(),
+                    'menu_label'        => get_string('general_setting', 'local_easycustmenu'),
+                ],
+                [
+                    'menu_active_class' => ($type === 'navmenu') ? 'active' : '',
+                    'menu_moodle_url'   => (new moodle_url($pagepath, ['type' => 'navmenu']))->out(),
+                    'menu_label'        => get_string('header_nav_menu_setting', 'local_easycustmenu'),
+                ],
+                [
+                    'menu_active_class' => ($type === 'usermenu') ? 'active' : '',
+                    'menu_moodle_url'   => (new moodle_url($pagepath, ['type' => 'usermenu']))->out(),
+                    'menu_label'        => get_string('user_menu_setting', 'local_easycustmenu'),
+                ],
             ],
         ];
-        return $templatecontext;
     }
 
     /**
-     * Generate content and initialize JavaScript for the before footer hook.
+     * Generate content and initialize JavaScript for the before-footer hook.
      *
      * This method is called during the before_footer output hook. It injects
      * JavaScript for admin settings pages related to Easy Custom Menu configuration.
      * Only executes for site administrators on specific admin pages.
      *
-     * @return string HTML content containing inline styles and scripts, or empty string if not applicable.
+     * @return string HTML content containing inline styles and/or scripts, or an empty string if not applicable.
      */
-    public static function before_footer_content() {
-        $activate = (get_config('local_easycustmenu', 'activate')) ?: "";
-        if (!$activate) {
-            return;
+    public function before_footer_content(): string {
+        global $PAGE;
+
+        if (!$this->activate) {
+            return '';
         }
 
-        global $PAGE;
-        $content = '';
-        $scriptcontent = $stylecontent = '';
         $allowpagetype = [
             'admin-setting-themesettingsadvanced',
             'admin-setting-themesettings',
@@ -367,36 +469,33 @@ class helper {
             'easycustmenu_usermenu_setting',
         ];
 
-        if ($PAGE->pagelayout === 'admin' && in_array($PAGE->pagetype, $allowpagetype) && is_siteadmin()) {
-            if ($PAGE->pagetype === 'admin-setting-local_easycustmenu') {
-                // Initialize ECM plugin settings page.
-                $pluginheadercontent = self::get_ecm_header_templatecontext();
-                $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminPluginSettingInit', [$pluginheadercontent]);
-            } else {
-                // Initialize core settings with ECM links if enabled.
-                $showecmcore = get_config('local_easycustmenu', 'show_ecm_core');
-                if ($showecmcore) {
-                    $navmenuurl = new moodle_url("/local/easycustmenu/edit.php", ["type" => "navmenu"]);
-                    $usermenuurl = new moodle_url("/local/easycustmenu/edit.php", ["type" => "usermenu"]);
-                    $jsdata = [
-                        'managenavmenulabel' => get_string('managenavmenulabel', 'local_easycustmenu'),
-                        'manageNavMenuLink' => $navmenuurl->out(false),
-                        'manageusermenulabel' => get_string('manageusermenulabel', 'local_easycustmenu'),
-                        'manageUserMenuLink' => $usermenuurl->out(false),
-                    ];
-                    $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminCoreSettingInit', [$jsdata]);
-                }
-            }
+        if (
+            $PAGE->pagelayout !== 'admin'
+            || !in_array($PAGE->pagetype, $allowpagetype, true)
+            || !is_siteadmin()
+        ) {
+            return '';
         }
 
-        // Output inline styles and scripts if present.
-        if ($stylecontent) {
-            $content .= '<style>' . $stylecontent . '</style>';
-        }
-        if ($scriptcontent) {
-            $content .= '<script>' . $scriptcontent . '</script>';
+        if ($PAGE->pagetype === 'admin-setting-local_easycustmenu') {
+            // Initialize ECM plugin settings page.
+
+            $pluginheadercontent = self::get_ecm_header_templatecontext();
+            $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminPluginSettingInit', [$pluginheadercontent]);
+        } else if (get_config('local_easycustmenu', 'show_ecm_core')) {
+            // Initialize core settings with ECM links if enabled.
+            $navmenuurl  = new moodle_url('/local/easycustmenu/edit.php', ['type' => 'navmenu']);
+            $usermenuurl = new moodle_url('/local/easycustmenu/edit.php', ['type' => 'usermenu']);
+            $jsdata = [
+                'managenavmenulabel'  => get_string('managenavmenulabel', 'local_easycustmenu'),
+                'manageNavMenuLink'   => $navmenuurl->out(false),
+                'manageusermenulabel' => get_string('manageusermenulabel', 'local_easycustmenu'),
+                'manageUserMenuLink'  => $usermenuurl->out(false),
+            ];
+            $PAGE->requires->js_call_amd('local_easycustmenu/ecm', 'adminCoreSettingInit', [$jsdata]);
         }
 
-        return $content;
+        // Reserved for future inline style/script injection.
+        return '';
     }
 }
