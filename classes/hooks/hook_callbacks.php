@@ -15,12 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Hook callbacks for local_easycustmenu plugin.
  *
  * @package    local_easycustmenu
  * @copyright  2024 https://santoshmagar.com.np/
  * @author     santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
  */
 
 namespace local_easycustmenu\hooks;
@@ -31,31 +31,33 @@ use core\hook\output\before_standard_head_html_generation;
 use local_easycustmenu\helper;
 
 /**
- * Hook callbacks for local_easycustmenu
+ * Hook callbacks for local_easycustmenu.
  *
  * @package    local_easycustmenu
  * @copyright  santoshtmp7 https://github.com/santoshtmp/moodle-local_easycustmenu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class hook_callbacks {
+
     /**
-     * Callback allowing to modify primary navigation
-     * 
-     * Primary navigation is built using the core\navigation\views\primary class, so we can use the primary_extend hook to modify it.
-     * 
+     * Callback to modify primary navigation.
+     *
+     * Primary navigation is built using the core\navigation\views\primary class,
+     * so we use the primary_extend hook to modify it.
+     *
      * @param \core\hook\navigation\primary_extend $hook
+     * @return void
      */
     public static function primary_navigation_extend(primary_extend $hook): void {
-        // Test.
         $primarynav = $hook->get_primaryview();
         helper::get_instance()->manage_primary_navigation($primarynav);
     }
 
-
     /**
-     * Callback allowing to before_http_headers
+     * Callback for before_http_headers hook.
      *
      * @param \core\hook\output\before_http_headers $hook
+     * @return void
      */
     public static function before_http_headers(before_http_headers $hook): void {
         global $CFG;
@@ -67,9 +69,10 @@ class hook_callbacks {
     }
 
     /**
-     * Callback allowing to add to <head> of the page
+     * Callback to add content to the <head> of the page.
      *
      * @param \core\hook\output\before_standard_head_html_generation $hook
+     * @return void
      */
     public static function before_standard_head_html_generation(before_standard_head_html_generation $hook): void {
         global $CFG;
@@ -80,9 +83,10 @@ class hook_callbacks {
     }
 
     /**
-     * Callback allowing to add contetnt inside the region-main, in the very end
+     * Callback to add content inside the region-main, at the very end.
      *
      * @param \core\hook\output\before_footer_html_generation $hook
+     * @return void
      */
     public static function before_footer_html_generation(\core\hook\output\before_footer_html_generation $hook): void {
         global $CFG;
@@ -90,7 +94,6 @@ class hook_callbacks {
             // Do nothing during installation or upgrade.
             return;
         }
-
         $output = helper::get_instance()->before_footer_content();
         $hook->add_html($output);
     }
