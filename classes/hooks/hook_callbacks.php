@@ -39,12 +39,16 @@ use local_easycustmenu\helper;
  */
 class hook_callbacks {
     /**
-     * Callback allowing to add primary node
-     *
+     * Callback allowing to modify primary navigation
+     * 
+     * Primary navigation is built using the core\navigation\views\primary class, so we can use the primary_extend hook to modify it.
+     * 
      * @param \core\hook\navigation\primary_extend $hook
      */
     public static function primary_navigation_extend(primary_extend $hook): void {
         // Test.
+        $primarynav = $hook->get_primaryview();
+        helper::get_instance()->manage_primary_navigation($primarynav);
     }
 
 
@@ -59,8 +63,7 @@ class hook_callbacks {
             // Do nothing during installation or upgrade.
             return;
         }
-        $easycustmenu = new helper();
-        $easycustmenu->check_ecm_menu();
+        helper::get_instance()->check_ecm_menu();
     }
 
     /**
@@ -87,7 +90,8 @@ class hook_callbacks {
             // Do nothing during installation or upgrade.
             return;
         }
-        $output = helper::before_footer_content();
+
+        $output = helper::get_instance()->before_footer_content();
         $hook->add_html($output);
     }
 }

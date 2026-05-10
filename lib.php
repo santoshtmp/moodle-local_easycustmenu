@@ -31,8 +31,7 @@ use local_easycustmenu\helper;
  * https://docs.moodle.org/dev/Output_callbacks#before_http_headers
  */
 function local_easycustmenu_before_http_headers() {
-    $easycustmenu = new helper();
-    $easycustmenu->check_ecm_menu();
+    helper::get_instance()->check_ecm_menu();
 }
 
 /**
@@ -41,5 +40,5 @@ function local_easycustmenu_before_http_headers() {
  * @return string
  */
 function local_easycustmenu_before_footer() {
-    return helper::before_footer_content();
+    return helper::get_instance()->before_footer_content();
 }
