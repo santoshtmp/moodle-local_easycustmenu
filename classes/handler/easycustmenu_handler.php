@@ -60,9 +60,15 @@ class easycustmenu_handler {
             // Validate required fields.
             $menulabel = isset($mformdata->menu_label) ? $mformdata->menu_label : '';
             $menulink = isset($mformdata->menu_link) ? $mformdata->menu_link : '';
-            if (!$menulabel || !$menulink) {
-                $message = get_string('menu_error_submit', 'local_easycustmenu');
-                redirect($returnurl, $message);
+            $isdivider = (bool) ($mformdata->isdivider ?? 0);
+            if ($isdivider) {
+                $menulabel = '###';
+                $menulink = '';
+            } else {
+                if (!$menulabel || !$menulink) {
+                    $message = get_string('menu_error_submit', 'local_easycustmenu');
+                    redirect($returnurl, $message);
+                }
             }
             $menutype = isset($mformdata->menu_type) ? $mformdata->menu_type : 'navmenu';
             // Determine menu order.
@@ -91,6 +97,7 @@ class easycustmenu_handler {
             $othercondition = [
                 'label_tooltip_title' => isset($mformdata->label_tooltip_title) ? $mformdata->label_tooltip_title : '',
                 'link_target' => isset($mformdata->link_target) ? $mformdata->link_target : 0,
+                'isdivider' => $isdivider,
             ];
 
             // Process the data.
@@ -205,6 +212,7 @@ class easycustmenu_handler {
                 $entry->condition_roleid = ($data->condition_roleid) ? explode(',', $data->condition_roleid) : ['0'];
                 $entry->condition_roleids = $data->condition_roleid;
                 $entry->label_tooltip_title = $othercondition['label_tooltip_title'] ?? '';
+                $entry->isdivider = (bool)($othercondition['isdivider'] ?? '');
                 $entry->link_target = isset($othercondition['link_target']) ? $othercondition['link_target'] : 0;
                 $mform->set_data($entry);
                 return $mform;
