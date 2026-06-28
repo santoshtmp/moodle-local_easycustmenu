@@ -50,15 +50,34 @@ class easycustmenu_form extends \moodleform {
         // Form header.
         $mform->addElement('header', 'generalsettings', get_string($menuitemtitle, 'local_easycustmenu'));
 
+        // Register a custom rule that makes a field required only when isdivider is NOT checked.
+        $mform->registerRule(
+            'requiredifnotdivider',
+            'callback',
+            function ($value, $isdivider) {
+                if (!empty($isdivider)) {
+                    return true; // Skip requirement when divider is checked.
+                }
+                return trim((string) $value) !== '';
+            }
+        );
+
         // Menu label field.
         $mform->addElement('text', 'menu_label', get_string('menu_label', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_label', PARAM_TEXT);
-        $mform->addRule('menu_label', null, 'required', null, 'client');
+        // $mform->addRule('menu_label', null, 'required', null, 'client');
+        $mform->addRule('menu_label', get_string('required'), 'requiredifnotdivider', $this->_form->exportValue('isdivider'), 'server');
+        $mform->_required[] = 'menu_label';
+        $mform->hideIf('menu_label', 'isdivider', 'checked');
+        $mform->disabledIf('menu_label', 'isdivider', 'checked');
 
         // Menu link field.
         $mform->addElement('text', 'menu_link', get_string('menu_link', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_link', PARAM_URL);
-        $mform->addRule('menu_link', null, 'required', null, 'client');
+        $mform->addRule('menu_label', get_string('required'), 'requiredifnotdivider', $this->_form->exportValue('isdivider'), 'server');
+        $mform->_required[] = 'menu_link';
+        $mform->hideIf('menu_link', 'isdivider', 'checked');
+        $mform->disabledIf('menu_link', 'isdivider', 'checked');
 
         // Context level selector.
         $contextoptions = \local_easycustmenu\helper::get_ecm_context_level();
@@ -106,6 +125,14 @@ class easycustmenu_form extends \moodleform {
 
         // Navigation menu specific fields.
         if ($type == 'navmenu') {
+            // Define as divider
+            $mform->addElement(
+                'checkbox',
+                'isdivider',
+                get_string('define_divider', 'local_easycustmenu'),
+                get_string('empty_space', 'local_easycustmenu'),
+            );
+
             // Tooltip title field.
             $mform->addElement(
                 'text',
@@ -239,9 +266,19 @@ class easycustmenu_form extends \moodleform {
 
         $errors = parent::validation($data, $files);
 
+        if (empty($data['isdivider'])) {
+            if (trim((string) ($data['menu_label'] ?? '')) === '') {
+                $errors['menu_label'] = get_string('required');
+            }
+            if (trim((string) ($data['menu_link'] ?? '')) === '') {
+                $errors['menu_link'] = get_string('required');
+            }
+        }
+
         // Add field validation check for duplicate menu label.
-        if ($data['menu_label']) {
-            $normalizedlabel = \core_text::strtolower(trim($data['menu_label']));
+        $menuLabel = $data['menu_label'] ?? '';
+        if (!empty($data['isdivider']) && !empty($menuLabel)) {
+            $normalizedlabel = \core_text::strtolower(trim($menuLabel));
 
             $sql = "SELECT id FROM {local_easycustmenu} WHERE LOWER(menu_label) = :label AND menu_type = :menu_type";
             $params = [
@@ -254,14 +291,15 @@ class easycustmenu_form extends \moodleform {
             // If a record exists and it's not the current editing record.
             if ($existing && (empty($data['id']) || $existing->id != $data['id'])) {
                 $a = new stdClass();
-                $a->menu_label = trim($data['menu_label']);
+                $a->menu_label = trim($menuLabel);
                 $errors['menu_label'] = get_string('label_error', 'local_easycustmenu', $a);
             }
         }
 
         // Validate menu_link is a valid URL.
-        if (!empty($data['menu_link'])) {
-            $menuurl = trim($data['menu_link']);
+        $menuLink = $data['menu_link'] ?? '';
+        if (!empty($data['isdivider']) && !empty($menuLink)) {
+            $menuurl = trim($menuLink);
             // Check if URL has valid format (absolute URL or relative/internal path).
             $isabsoluteurl = preg_match('~^https?://[^\s/$.?#].[^\s]*$~i', $menuurl);
             $isrelativeurl = preg_match('~^(/|\.\/|\.\./)[^\s]*$~', $menuurl);

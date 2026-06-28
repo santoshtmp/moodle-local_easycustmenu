@@ -31,16 +31,16 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'local_easycustmenu';
 
 // This is the named version.
-$plugin->release = '5.2.0';
+$plugin->release = '2.1.6';
 
 // This is the version of the plugin.
-$plugin->version = 2026052901;
+$plugin->version = 2026062800;
 
 // This is a stable release.
 $plugin->maturity = MATURITY_STABLE;
 
 // This is the version of Moodle this plugin requires.
-$plugin->requires = 2026042000;
+$plugin->requires = 2024100100;
 
 // This is the release of Moodle this plugin requires.
-// $plugin->supported = [405, 502];
+$plugin->supported = [405, 502];
