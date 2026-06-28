@@ -136,7 +136,7 @@ class easycustmenu_form extends \moodleform {
 
         // Navigation menu specific fields.
         if ($type == 'navmenu') {
-            // Define as divider
+            // Define as divider.
             $mform->addElement(
                 'checkbox',
                 'isdivider',
