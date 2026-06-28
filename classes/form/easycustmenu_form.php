@@ -65,8 +65,13 @@ class easycustmenu_form extends \moodleform {
         // Menu label field.
         $mform->addElement('text', 'menu_label', get_string('menu_label', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_label', PARAM_TEXT);
-        // $mform->addRule('menu_label', null, 'required', null, 'client');
-        $mform->addRule('menu_label', get_string('required'), 'requiredifnotdivider', $this->_form->exportValue('isdivider'), 'server');
+        $mform->addRule(
+            'menu_label',
+            get_string('required'),
+            'requiredifnotdivider',
+            $this->_form->exportValue('isdivider'),
+            'server'
+        );
         $mform->_required[] = 'menu_label';
         $mform->hideIf('menu_label', 'isdivider', 'checked');
         $mform->disabledIf('menu_label', 'isdivider', 'checked');
@@ -74,7 +79,13 @@ class easycustmenu_form extends \moodleform {
         // Menu link field.
         $mform->addElement('text', 'menu_link', get_string('menu_link', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_link', PARAM_URL);
-        $mform->addRule('menu_label', get_string('required'), 'requiredifnotdivider', $this->_form->exportValue('isdivider'), 'server');
+        $mform->addRule(
+            'menu_label',
+            get_string('required'),
+            'requiredifnotdivider',
+            $this->_form->exportValue('isdivider'),
+            'server'
+        );
         $mform->_required[] = 'menu_link';
         $mform->hideIf('menu_link', 'isdivider', 'checked');
         $mform->disabledIf('menu_link', 'isdivider', 'checked');
@@ -276,9 +287,9 @@ class easycustmenu_form extends \moodleform {
         }
 
         // Add field validation check for duplicate menu label.
-        $menuLabel = $data['menu_label'] ?? '';
-        if (!empty($data['isdivider']) && !empty($menuLabel)) {
-            $normalizedlabel = \core_text::strtolower(trim($menuLabel));
+        $menulabel = $data['menu_label'] ?? '';
+        if (!empty($data['isdivider']) && !empty($menulabel)) {
+            $normalizedlabel = \core_text::strtolower(trim($menulabel));
 
             $sql = "SELECT id FROM {local_easycustmenu} WHERE LOWER(menu_label) = :label AND menu_type = :menu_type";
             $params = [
@@ -291,15 +302,15 @@ class easycustmenu_form extends \moodleform {
             // If a record exists and it's not the current editing record.
             if ($existing && (empty($data['id']) || $existing->id != $data['id'])) {
                 $a = new stdClass();
-                $a->menu_label = trim($menuLabel);
+                $a->menu_label = trim($menulabel);
                 $errors['menu_label'] = get_string('label_error', 'local_easycustmenu', $a);
             }
         }
 
         // Validate menu_link is a valid URL.
-        $menuLink = $data['menu_link'] ?? '';
-        if (!empty($data['isdivider']) && !empty($menuLink)) {
-            $menuurl = trim($menuLink);
+        $menulink = $data['menu_link'] ?? '';
+        if (!empty($data['isdivider']) && !empty($menulink)) {
+            $menuurl = trim($menulink);
             // Check if URL has valid format (absolute URL or relative/internal path).
             $isabsoluteurl = preg_match('~^https?://[^\s/$.?#].[^\s]*$~i', $menuurl);
             $isrelativeurl = preg_match('~^(/|\.\/|\.\./)[^\s]*$~', $menuurl);

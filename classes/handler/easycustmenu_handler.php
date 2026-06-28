@@ -97,7 +97,7 @@ class easycustmenu_handler {
             $othercondition = [
                 'label_tooltip_title' => isset($mformdata->label_tooltip_title) ? $mformdata->label_tooltip_title : '',
                 'link_target' => isset($mformdata->link_target) ? $mformdata->link_target : 0,
-                'isdivider' => $isdivider
+                'isdivider' => $isdivider,
             ];
 
             // Process the data.
