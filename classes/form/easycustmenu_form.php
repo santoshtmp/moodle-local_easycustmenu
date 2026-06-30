@@ -50,28 +50,9 @@ class easycustmenu_form extends \moodleform {
         // Form header.
         $mform->addElement('header', 'generalsettings', get_string($menuitemtitle, 'local_easycustmenu'));
 
-        // Register a custom rule that makes a field required only when isdivider is NOT checked.
-        $mform->registerRule(
-            'requiredifnotdivider',
-            'callback',
-            function ($value, $isdivider) {
-                if (!empty($isdivider)) {
-                    return true; // Skip requirement when divider is checked.
-                }
-                return trim((string) $value) !== '';
-            }
-        );
-
         // Menu label field.
         $mform->addElement('text', 'menu_label', get_string('menu_label', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_label', PARAM_TEXT);
-        $mform->addRule(
-            'menu_label',
-            get_string('required'),
-            'requiredifnotdivider',
-            $this->_form->exportValue('isdivider'),
-            'server'
-        );
         $mform->_required[] = 'menu_label';
         $mform->hideIf('menu_label', 'isdivider', 'checked');
         $mform->disabledIf('menu_label', 'isdivider', 'checked');
@@ -79,13 +60,6 @@ class easycustmenu_form extends \moodleform {
         // Menu link field.
         $mform->addElement('text', 'menu_link', get_string('menu_link', 'local_easycustmenu'), ['size' => 50]);
         $mform->setType('menu_link', PARAM_URL);
-        $mform->addRule(
-            'menu_label',
-            get_string('required'),
-            'requiredifnotdivider',
-            $this->_form->exportValue('isdivider'),
-            'server'
-        );
         $mform->_required[] = 'menu_link';
         $mform->hideIf('menu_link', 'isdivider', 'checked');
         $mform->disabledIf('menu_link', 'isdivider', 'checked');
